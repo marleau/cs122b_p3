@@ -9,7 +9,6 @@ Compile and Run
 
     $ cd to/dir/containing/java/source/files
     $ javac Main.java
-    $ java -classpath "./cs122bp1/*:." cs122bp1.Main
 
 List of error codes
 -------------------
