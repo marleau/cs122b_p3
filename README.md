@@ -7,9 +7,9 @@ By Steven Neisius and Arielle Paek, Group 10
 Testing Employee
 ----------------
 
-Name: Tester CS122B
-Email: test@inter.net
-Password: pass
+Name: Tester CS122B  
+Email: test@inter.net  
+Password: pass  
 
 Setup database
 --------------
