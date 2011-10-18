@@ -12,7 +12,7 @@
 	<% if ( ShoppingCart.isCartEmpty(request, response) ) { %>
 		Your cart is empty. 
 		<br>
-		<a href="/project2_10/ListResults">Browse</a> for some movies.
+		<a href="ListResults">Browse</a> for some movies.
 	<% } else { %>
 		Don't forget to checkout the movies in your cart!
 	<% } %>
