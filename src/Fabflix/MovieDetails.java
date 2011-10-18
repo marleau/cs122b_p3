@@ -126,6 +126,7 @@ public class MovieDetails extends HttpServlet {
 				ListResults.footer(out, dbcon, 0);
 			}
 		} catch (SQLException ex) {
+			//TODO header and footer
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
@@ -134,6 +135,7 @@ public class MovieDetails extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
+			//TODO header and footer
 			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>"
 					+ ex.toString() + "</P></BODY></HTML>");
 			return;

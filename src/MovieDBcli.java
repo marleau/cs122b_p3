@@ -48,7 +48,6 @@ public class MovieDBcli {
             // Incorporate mySQL driver
             Class.forName("com.mysql.jdbc.Driver").newInstance();
         } catch (Exception e) {
-            // TODO find out what exception this throws and how to deal with it
             System.out.println("\n"
                     + "***********************************\n"
                     + "***********************************\n"
@@ -421,7 +420,6 @@ public class MovieDBcli {
 
                 switch (menuChoice) {
                     case 1:
-                        //TODO star ID editable?
                         System.out.print("Enter ID:");
                         readLine = br.readLine();
                         id = Integer.parseInt(readLine);
@@ -599,7 +597,6 @@ public class MovieDBcli {
 
                 switch (menuChoice) {
                     case 1:
-                        //TODO customer ID editable?
                         System.out.print("Enter ID:");
                         readLine = br.readLine();
                         id = Integer.parseInt(readLine);
@@ -725,10 +722,6 @@ public class MovieDBcli {
                 System.out.println("\n\nInvalid credit card number.");
                 return false;
             }
-
-            //TODO remove spaces from cc_id on input?
-            //TODO do we have to match the name on file to the customer name?
-
         } catch (SQLException ex) {
             printSQLError(ex);
             return false;
@@ -740,7 +733,6 @@ public class MovieDBcli {
     private static int addCustomer(int id, String firstName, String lastName, String cc_id, String address, String email, String password) {
         try {
             Statement update = connection.createStatement();
-            //TODO compare provided name and cc_id to database records
             int retID = update.executeUpdate("INSERT INTO customers VALUES("
                     + id + ", '"
                     + firstName + "', '"
@@ -1052,7 +1044,7 @@ public class MovieDBcli {
         BufferedReader stdin = new BufferedReader(new InputStreamReader(System.in));
         System.out.print("Press Enter to continue.");
         try {
-            int ch = stdin.read();
+        	stdin.read();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }

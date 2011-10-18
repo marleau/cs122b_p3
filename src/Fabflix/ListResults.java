@@ -1,7 +1,4 @@
 package Fabflix;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
@@ -282,6 +279,7 @@ public class ListResults extends HttpServlet {
 			out.close();
 
 		} catch (SQLException ex) {
+			//TODO header and footer
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
@@ -290,6 +288,7 @@ public class ListResults extends HttpServlet {
 			out.println("</BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
+			//TODO header and footer
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString()
 					+ "</P></BODY></HTML>");
 			return;

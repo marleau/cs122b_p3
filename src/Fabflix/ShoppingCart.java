@@ -1,7 +1,6 @@
 package Fabflix;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,6 +19,11 @@ import javax.sql.DataSource;
 
 public class ShoppingCart extends HttpServlet {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// get cart
 		HttpSession session = request.getSession();
@@ -106,7 +110,11 @@ public class ShoppingCart extends HttpServlet {
 		int qty;
 		synchronized(cart) {
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
-				qty = Integer.valueOf(request.getParameter(entry.getKey())) ;
+				try{
+					qty = Integer.valueOf(request.getParameter(entry.getKey())) ;
+				}catch(Exception e){
+					qty = 0;
+				}
 				if (qty > 0)
 					cart.put(entry.getKey(), qty);
 				else

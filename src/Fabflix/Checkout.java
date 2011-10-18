@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.naming.Context;
@@ -23,6 +22,11 @@ import javax.sql.DataSource;
 
 
 public class Checkout extends HttpServlet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		LoginPage.kickNonUsers(request, response);
 		HttpSession session = request.getSession();
