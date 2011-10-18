@@ -18,8 +18,8 @@ Setup database
     $ mysql -u root -p
     mysql> drop database moviedb;
     mysql> create database moviedb;
-    mysql> source createtable.sql
-    mysql> source raw_data.sql
+    mysql> source createtable.sql;
+    mysql> source raw_data.sql;
 
 To compile
 ----------
