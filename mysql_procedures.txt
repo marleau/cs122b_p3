@@ -10,8 +10,3 @@ $$
 -- change delimiter to ;
 DELIMITER ;
 
--- to remove procedure
--- DROP PROCEDURE add_movie;
-
--- to run procedure
--- CALL add_movie;
