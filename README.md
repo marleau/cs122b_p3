@@ -18,7 +18,7 @@ To compile
 ----------
 
     $ cd into/project/folder
-    $ javac -d bin/ -classpath "$CLASSPATH:.:./lib/mysql-connector-java-5.1.17-bin.jar:" src/*.java
+    $ javac -d bin/ -classpath "$CLASSPATH:./lib/mysql-connector-java-5.1.17-bin.jar:" src/*.java
 
 Keep in Mind
 ------------
