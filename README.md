@@ -4,6 +4,16 @@ Project 3
 For CS 122B, 2011 Fall  
 By Steven Neisius and Arielle Paek, Group 10
 
+Setup database
+--------------
+
+    $ cd into/project/folder
+    $ mysql -u root -p
+    mysql> drop database moviedb;
+    mysql> create database moviedb;
+    mysql> source createtable.sql
+    mysql> source raw_data.sql
+
 To compile
 ----------
 
