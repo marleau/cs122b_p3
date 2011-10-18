@@ -1,4 +1,4 @@
-INSERT INTO employees VALUES('test@inter.net','pass','Test CS122B');
+INSERT INTO employees VALUES('test@inter.net','pass','Tester CS122B');
 INSERT INTO movies VALUES(490001, 'The Aviator', 2004, 'Martin Scorsese','http://ia.imdb.com/media/imdb/01/I/05/31/48m.jpg','http://movies.apple.com/movies/miramax/the_aviator/the_aviator-tlr-ref.mov');
 INSERT INTO movies VALUES(490002, 'Ocean\'s Twelve', 2004, 'StevenSoderbergh', 'http://ia.imdb.com/media/imdb/01/I/32/23/58m.jpg','http://raincloud.warnerbros.com/wbmovies/oceans12/trailer/trailer_lo/trailer_MSTR.mov');
 INSERT INTO movies VALUES(490003, 'Hostage', 2005, 'Florent Emilio Siri','http://ia.imdb.com/media/imdb/01/I/13/78/68m.jpg','http://images.apple.com/movies/miramax/hostage/hostage-ref.mov');
