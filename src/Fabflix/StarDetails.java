@@ -6,14 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 /**
  * Servlet implementation class StarDetails
@@ -41,24 +39,9 @@ public class StarDetails extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		try {
-			Context initCtx = new InitialContext();
-			if (initCtx == null)
-				out.println("initCtx is NULL");
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				out.println("envCtx is NULL");
-
-			// Look up our data source
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				out.println("dbcon is null.");
-
+			
+			Connection dbcon = ListResults.openConnection();
+			
 			// READ STAR ID
 			Integer starID;
 			try {
@@ -78,13 +61,11 @@ public class StarDetails extends HttpServlet {
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-//				out.println("<HTML><HEAD><TITLE>FabFlix -- " + starName + "</TITLE></HEAD><BODY>");// OPEN
-																									// HTML
 
+				ServletContext context = getServletContext();
 				HttpSession session = request.getSession();
 				session.setAttribute("title", starName);
-//				ListResults.header(request, out, 0);
-				out.println(ListResults.header(session));
+				out.println(ListResults.header(context, session));
 
 				// Star Details
 				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\"" + starIMG + "\">" + "<BR>");
@@ -93,21 +74,24 @@ public class StarDetails extends HttpServlet {
 
 				ListResults.listMoviesIMG(out, dbcon, starID);
 
-				out.println("<HR>");// Footer
-
-				ListResults.footer(out, dbcon, 0);
-
-				out.println("</BODY></HTML>");
-				rs.close();
-				statement.close();
-				dbcon.close();
+				
 			} else {// starID didn't return a star
-				String title = "FabFlix -- Star Not Found";
-				out.println("<HTML><HEAD><TITLE>" + title + "</TITLE></HEAD>");
-				ListResults.header(request, out, 0);
-				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
-				ListResults.footer(out, dbcon, 0);
+				ServletContext context = getServletContext();
+				HttpSession session = request.getSession();
+
+				session.setAttribute("title", "FabFlix -- Star Not Found");
+				out.println(ListResults.header(context, session));
+				out.println("<H1>Star Not Found</H1>");
+				
 			}
+			// Footer
+
+			ListResults.footer(out, dbcon, 0);
+
+			rs.close();
+			statement.close();
+			dbcon.close();
+			
 		} catch (SQLException ex) {
 			//TODO header and footer
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");

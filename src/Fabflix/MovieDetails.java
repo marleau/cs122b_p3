@@ -2,14 +2,12 @@ package Fabflix;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
-import javax.naming.InitialContext;
-import javax.naming.Context;
 
 import java.sql.*;
 
@@ -40,24 +38,8 @@ public class MovieDetails extends HttpServlet {
 		PrintWriter out = response.getWriter();
 
 		try {
-			Context initCtx = new InitialContext();
-			if (initCtx == null)
-				out.println("initCtx is NULL");
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				out.println("envCtx is NULL");
-
-			// Look up our data source
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				out.println("dbcon is null.");
-
+			Connection dbcon = ListResults.openConnection();
+			
 			// READ movieID
 			Integer movieID;
 			try {
@@ -79,13 +61,12 @@ public class MovieDetails extends HttpServlet {
 				String bannerURL = rs.getString("banner_url");
 				String trailerURL = rs.getString("trailer_url");
 
-//				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD><BODY>");// OPEN
-																								// HTML
 
+				ServletContext context = getServletContext();
 				HttpSession session = request.getSession();
 				session.setAttribute("title", title);
 //				ListResults.header(request, out, 0);
-				out.println(ListResults.header(session));
+				out.println(ListResults.header(context, session));
 
 
 				// Movie Info
@@ -110,21 +91,23 @@ public class MovieDetails extends HttpServlet {
 
 				ListResults.listStarsIMG(out, dbcon, movieID);
 
-				out.println("<HR>");// Footer
-
-				ListResults.footer(out, dbcon, 0);
-
-				out.println("</BODY></HTML>");
-				rs.close();
-				statement.close();
-				dbcon.close();
 			} else {
-				String title = "Movie Not Found";
-				out.println("<HTML><HEAD><TITLE>FabFlix -- " + title + "</TITLE></HEAD>");
-				ListResults.header(request, out, 0);
-				out.println("<BODY><H1>" + title + "</H1></BODY></HTML>");
-				ListResults.footer(out, dbcon, 0);
+				ServletContext context = getServletContext();
+				HttpSession session = request.getSession();
+
+				session.setAttribute("title", "FabFlix -- Movie Not Found");
+				out.println(ListResults.header(context, session));
+				out.println("<H1>Movie Not Found</H1>");
 			}
+
+			// Footer
+
+			ListResults.footer(out, dbcon, 0);
+
+			rs.close();
+			statement.close();
+			dbcon.close();
+			
 		} catch (SQLException ex) {
 			//TODO header and footer
 			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");

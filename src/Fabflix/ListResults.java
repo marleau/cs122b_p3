@@ -1,5 +1,8 @@
 package Fabflix;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
@@ -11,12 +14,15 @@ import java.util.regex.PatternSyntaxException;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
+
 
 /**
  * Servlet implementation class listResults
@@ -39,25 +45,7 @@ public class ListResults extends HttpServlet {
 
 		try {
 
-			// Open context for mySQL pooling
-			Context initCtx = new InitialContext();
-			if (initCtx == null)
-				out.println("initCtx is NULL");
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				out.println("envCtx is NULL");
-
-			// Look up our data source in context.xml
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				out.println("dbcon is null.");
-			// connection is now open
+			Connection dbcon = openConnection();
 
 			String searchBy = request.getParameter("by");// title,letter,genre,year,director
 			String arg = request.getParameter("arg");// search string
@@ -190,12 +178,13 @@ public class ListResults extends HttpServlet {
 
 			// TITLE
 
+			ServletContext context = getServletContext();
 			HttpSession session = request.getSession();
 			session.setAttribute("title", "Search by " + searchBy + ": " + arg);
 			
 			
 //			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
-			out.println(header(session));
+			out.println(header(context, session));
 			// BODY
 
 //			header(request, out, resultsPerPage);
@@ -263,10 +252,10 @@ public class ListResults extends HttpServlet {
 				// Results per page Options
 				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
 
-				out.println("<BR><HR>");
+				out.println("<BR>");
 
 			} else {
-				out.println("<H3>No Results.</H3><hr>");
+				out.println("<H3>No Results.</H3>");
 			}
 
 			footer(out, dbcon, resultsPerPage);
@@ -276,7 +265,6 @@ public class ListResults extends HttpServlet {
 			fullStatement.close();
 			dbcon.close();
 
-			out.close();
 
 		} catch (SQLException ex) {
 			//TODO header and footer
@@ -296,11 +284,37 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
+	public static Connection openConnection() throws NamingException, SQLException {
+		// Open context for mySQL pooling
+		Context initCtx = new InitialContext();
+		if (initCtx == null)
+			System.err.println("initCtx is NULL");
+
+		Context envCtx = (Context) initCtx.lookup("java:comp/env");
+		if (envCtx == null)
+			System.err.println("envCtx is NULL");
+
+		// Look up our data source in context.xml
+		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+
+		if (ds == null)
+			System.err.println("ds is null.");
+
+		Connection dbcon = ds.getConnection();
+		if (dbcon == null)
+			System.err.println("dbcon is null.");
+		// connection is now open
+		return dbcon;
+	}
+
 	public static void addToCart(PrintWriter out, Integer movieID) {
 		out.println("<a href=\"cart?add="+movieID+"\">Add to Cart</a>");
 	}
 
 	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
+
+		out.println("<HR>");
+		
 		browseGenres(out, dbcon, resultsPerPage);
 
 		out.println("<HR>");
@@ -321,28 +335,58 @@ public class ListResults extends HttpServlet {
 		out.println("<HR>");
 	}
 	
-	public static String header(HttpSession session){
-		String rtn = "<!DOCTYPE html>" +
-				"		<html>" +
+	public static String header(ServletContext context, HttpSession session){
+		String rtn = "		<html>" +
 				"			<head>" +
-//				"		        <!--<base href=\"${pagecontext.request.contextpath}\" />-->" +
 				"		        <title>Fabflix - "+ session.getAttribute("title")+"</title>" +
 				"			</head>" +
 				"			<body>" +
 				"					<style>" +
-//				"				<%@ include file=\"css/style.css\" %>" +
-				style() +
+				readStyle(context) +
 				"			</style>" +
-//				"						<%@ include file=\"menu.jsp\" %>" +
-				"<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/project3_10\" class=\"first\">Fabflix</a></li>		<li><a href=\"ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"cart\">View Cart</a></li>		<li><a href=\"checkout\">Check out</a></li>		<li><a href=\"logout\">Logout</a></li>	</ul></div>" +
+				readMenu(context) +
 				"			<div class=\"content\">";
 		return rtn;
 	}
 	
-	public static String style(){
-		return "/* NORMALIZE */* {	margin: 0;	padding: 0;}ul {	list-style-type: none;}/* GLOBAL */body {    font-family: Helvetica;    font-size: 16 px;    color: #666666;}/* MENU */div.menu {	width: 100%;	height: 40 px;	background-color: #333333;	color: #eeeeee;	overflow: hidden;}div.menu a {	display: block;	text-decoration: none;	padding: 10px;	color: #999999;}div.menu a:hover {	color: #ffffff;}div.menu a.first {	color: #1e9184;}div.menu ul {	list-style-type: none;}div.menu ul li {	padding: 10 px;	background-color: #333333;}div.menu ul.main {	height: 39px;}div.menu ul.main li {	float: left;	display: inline;	border-right: 1px solid #999999;}div.menu li.first {	padding-right: 100px;}div.menu li.last {	float: right;	border: 0;}div.menu form {	padding: 10px;}div.menu input {}div.menu button {}/*div.menu ul.sub {	float: right;	background-color: #333333;}div.menu ul.sub li {	float: left;	display: inline;} *//* CONTENT */div.content {	clear: both;	padding: 20px;	line-height: 150%;}div.content form {	width:400px;}/*div.content label{	display:block;	text-align:right;	width:140px;	float:left;}div.content input{	float:left;	font-size:12px;	padding:4px 2px;	border:solid 1px #95e1d8;	width:200px;	margin:2px 0 20px 10px;}div.content button{	clear:both;	float: left;	margin-left:150px;	width:125px;	height:31px;	background:#666666;	border: 0;	text-align:center;	line-height:31px;	color:#FFFFFF;}*/h1, h2, h3 {	margin-bottom: 15px;}ul.cart {	margin-left: 20px;}p {	margin-bottom: 10px;}.error {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #fdd5d3;	border: 1px solid #f26a63;}.success {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #d4fcd9;	border: 1px solid #6af263;}div.cart {	/* border: 1px dotted green; */	width: 600px;}div.cart form {	width: 600px;}div.cart label {	margin-right: 10px;}div.cart input {	float: right;}div.cart input.qty {	width: 20px;	float: none;}div.cart li {	float: left;	display: inline;	padding-left: 10px;}div.cart li.first {	width: 250px;	padding-left: 0 px;}div.content a {	color: #1e9184;	text-decoration: none;	font-weight: bold;}div.content a:hover {	color: #f6b546;	text-decoration: underline;}hr {	height: 1px;	background: #1e9184;	border: 0;	margin: 20px 0px;}div.ccinfo label, div.ccinfo input {	margin: 10px;}";
+	public static String readStyle(ServletContext context){
+		//Automatically reads style.css from file; YAY no more replacing!
+		
+		InputStream is = context.getResourceAsStream("css/style.css");
+		String rtn = "";
+		if (is != null) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));			
+			try {
+				while (reader.ready()) {
+					rtn += reader.readLine();
+				}
+			} catch (IOException e) {
+				//If error... use old style.css
+				rtn = "/* NORMALIZE */* {	margin: 0;	padding: 0;}ul {	list-style-type: none;}/* GLOBAL */body {    font-family: Helvetica;    font-size: 16 px;    color: #666666;}/* MENU */div.menu {	width: 100%;	height: 40 px;	background-color: #333333;	color: #eeeeee;	overflow: hidden;}div.menu a {	display: block;	text-decoration: none;	padding: 10px;	color: #999999;}div.menu a:hover {	color: #ffffff;}div.menu a.first {	color: #1e9184;}div.menu ul {	list-style-type: none;}div.menu ul li {	padding: 10 px;	background-color: #333333;}div.menu ul.main {	height: 39px;}div.menu ul.main li {	float: left;	display: inline;	border-right: 1px solid #999999;}div.menu li.first {	padding-right: 100px;}div.menu li.last {	float: right;	border: 0;}div.menu form {	padding: 10px;}div.menu input {}div.menu button {}/*div.menu ul.sub {	float: right;	background-color: #333333;}div.menu ul.sub li {	float: left;	display: inline;} *//* CONTENT */div.content {	clear: both;	padding: 20px;	line-height: 150%;}div.content form {	width:400px;}/*div.content label{	display:block;	text-align:right;	width:140px;	float:left;}div.content input{	float:left;	font-size:12px;	padding:4px 2px;	border:solid 1px #95e1d8;	width:200px;	margin:2px 0 20px 10px;}div.content button{	clear:both;	float: left;	margin-left:150px;	width:125px;	height:31px;	background:#666666;	border: 0;	text-align:center;	line-height:31px;	color:#FFFFFF;}*/h1, h2, h3 {	margin-bottom: 15px;}ul.cart {	margin-left: 20px;}p {	margin-bottom: 10px;}.error {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #fdd5d3;	border: 1px solid #f26a63;}.success {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #d4fcd9;	border: 1px solid #6af263;}div.cart {	/* border: 1px dotted green; */	width: 600px;}div.cart form {	width: 600px;}div.cart label {	margin-right: 10px;}div.cart input {	float: right;}div.cart input.qty {	width: 20px;	float: none;}div.cart li {	float: left;	display: inline;	padding-left: 10px;}div.cart li.first {	width: 250px;	padding-left: 0 px;}div.content a {	color: #1e9184;	text-decoration: none;	font-weight: bold;}div.content a:hover {	color: #f6b546;	text-decoration: underline;}hr {	height: 1px;	background: #1e9184;	border: 0;	margin: 20px 0px;}div.ccinfo label, div.ccinfo input {	margin: 10px;}";
+			}
+		}
+		return rtn;
 	}
-
+	
+	public static String readMenu(ServletContext context){
+		//Automatically reads menu.jsp from file; YAY no more replacing!
+		
+		InputStream is = context.getResourceAsStream("menu.jsp");
+		String rtn = "";
+		if (is != null) {
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));			
+			try {
+				while (reader.ready()) {
+					rtn += reader.readLine();
+				}
+			} catch (IOException e) {
+				//If error... use old menu
+				rtn = "<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/project3_10\" class=\"first\">Fabflix</a></li>		<li><a href=\"ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"cart\">View Cart</a></li>		<li><a href=\"checkout\">Check out</a></li>		<li><a href=\"logout\">Logout</a></li>	</ul></div>";
+			}
+		}
+		return rtn;
+	}
+	
 	public static void listByYearLink(PrintWriter out, Integer year) {
 		listByYearLink(out, year, 0);
 	}
@@ -507,6 +551,34 @@ public class ListResults extends HttpServlet {
 		}
 		allGenre.close();
 		statement.close();
+	}
+	
+	public static String browseGenres(Integer resultsPerPage) throws SQLException, UnsupportedEncodingException, NamingException {
+		String rtn = "";
+		Connection dbcon = openConnection();
+		Statement statement = dbcon.createStatement();
+		// ===GENRE browser
+		rtn += "Browse Genres: <BR>";
+		int col = 0; // fix width of display
+		ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres g, genres_in_movies gi WHERE gi.genre_id=g.id ORDER BY name");
+		if (allGenre.next()) {
+			String genreName = allGenre.getString("name");
+			col += genreName.length();
+			rtn += "<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
+			while (allGenre.next()) {
+				genreName = allGenre.getString("name");
+				col += genreName.length();
+				rtn += " | <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
+				if (col >= 75 && allGenre.next()) { // column character width
+					genreName = allGenre.getString("name");
+					rtn += "<br><a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
+					col = genreName.length();
+				}// 10 items per row
+			}
+		}
+		allGenre.close();
+		statement.close();
+		return rtn;
 	}
 
 	public static void browseTitles(PrintWriter out) throws UnsupportedEncodingException {

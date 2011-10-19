@@ -6,14 +6,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 
 /**
@@ -42,25 +40,8 @@ public class AdvancedSearch extends HttpServlet {
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
 		try {
-			// Open context for mySQL pooling
-			Context initCtx = new InitialContext();
-//			if (initCtx == null)
-//				out.println("initCtx is NULL");
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				out.println("envCtx is NULL");
-
-			// Look up our data source in context.xml
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				out.println("dbcon is null.");
-			// connection is now open
+			
+			Connection dbcon = ListResults.openConnection();
 
 			// Get parameters
 			String t = request.getParameter("t");
@@ -161,13 +142,11 @@ public class AdvancedSearch extends HttpServlet {
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
 				// ===Advanced Search Form
+				ServletContext context = getServletContext();
 				HttpSession session = request.getSession();
 				session.setAttribute("title", "Advanced Search");
 				
-//				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
-
-//				ListResults.header(request, out, resultsPerPage);
-				out.println(ListResults.header(session));
+				out.println(ListResults.header(context, session));
 				
 				out.println("Advanced Search: ");
 
@@ -283,12 +262,13 @@ public class AdvancedSearch extends HttpServlet {
 
 				// Open HTML
 
+				ServletContext context = getServletContext();
 				HttpSession session = request.getSession();
 				session.setAttribute("title", "Advanced Search");
-//				out.println("<HTML><HEAD><TITLE>FabFlix -- Advanced Search</TITLE></HEAD><BODY>");
+
 				// BODY
-//				ListResults.header(request, out, 0);
-				out.println(ListResults.header(session));
+
+				out.println(ListResults.header(context, session));
 
 				out.println("<H2>Advanced Search</H2>"); // Show search options
 
@@ -348,10 +328,10 @@ public class AdvancedSearch extends HttpServlet {
 					// Results per page Options
 					showRppOptions(out, searchString, order, page, resultsPerPage);
 
-					out.println("<BR><HR>");
+					out.println("<BR>");
 
 				} else {
-					out.println("<H3>No Results.</H3><hr>");
+					out.println("<H3>No Results.</H3>");
 				}
 
 				ListResults.footer(out, dbcon, 0);

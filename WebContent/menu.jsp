@@ -1,6 +1,6 @@
 <div class="menu">
 	<ul class="main">
-		<li class="first"><a href="" class="first">Fabflix</a></li>
+		<li class="first"><a href="index.jsp" class="first">Fabflix</a></li>
 		<li><a href="ListResults">Browse</a></li>
 		<li><FORM ACTION="ListResults" METHOD="GET">
 				<INPUT TYPE="TEXT" NAME="arg">
