@@ -92,12 +92,15 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("</H2><BR>");
 				
-				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\"><br>Trailer</a><BR><BR>");
+				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\"><br>Trailer</a><BR>");
 				
 				if (!edit){
+					out.println("<BR>");
 					ListResults.addToCart(out, movieID);
 					out.println("<BR>");
 				}
+
+				out.println("<BR>ID: " + movieID + "<BR>");
 				
 				if (edit){
 					editMovieLink(out, movieID, title, "title");
@@ -112,7 +115,6 @@ public class MovieDetails extends HttpServlet {
 					out.println("<BR>");
 				}
 				
-				out.println("<BR>ID: " + movieID + "<BR>");
 				
 				ListResults.listByYearLink(out, year);
 				
@@ -130,11 +132,13 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("<BR>");
 				
-				ListResults.listGenres(out, dbcon, movieID);
+
+				ListResults.listGenres(out, dbcon, 0, movieID, edit);
 
 				out.println("<BR><BR>");
 
-				ListResults.listStarsIMG(out, dbcon, movieID);
+				addStarGenreLink(out, movieID, "star");
+				ListResults.listStarsIMG(out, dbcon, 0, movieID, edit);
 
 			} else {
 				session.setAttribute("title", "FabFlix -- Movie Not Found");
@@ -178,4 +182,23 @@ public class MovieDetails extends HttpServlet {
 				"</form>");
 	}
 
+	public static void addStarGenreLink(PrintWriter out, Integer movieID, String field) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<input type=\"text\" name=\"value\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
+				"</form>");
+	}
+
+	public static void deleteStarGenreLink(PrintWriter out, Integer movieID, Integer delID, String field,String name) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Delete "+name+"</button>" +
+				"</form>");
+	}
 }

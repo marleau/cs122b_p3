@@ -616,13 +616,15 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
-		listStarsIMG(out, dbcon, 0, movieID);
+		listStarsIMG(out, dbcon, 0, movieID, false);
 	}
-
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
+		listStarsIMG(out, dbcon, rpp, movieID, false);
+	}
+	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; list of images
-		out.println("Stars: <BR><BR>");
+		out.println("Stars: <BR><BR>");//TODO add edit features
 		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID + "' ORDER BY last_name");
 		while (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
@@ -658,20 +660,28 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException, UnsupportedEncodingException {
-		listGenres(out, dbcon, 0, movieID);// Default results per page
+		listGenres(out, dbcon, 0, movieID, false);// Default results per page
 	}
-
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException, UnsupportedEncodingException {
+		listGenres(out, dbcon, rpp, movieID, false);
+	}
+	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException, UnsupportedEncodingException {
 		// ===GENRES; comma separated list
 		out.println("Genre: ");
+		if (edit){MovieDetails.addStarGenreLink(out, movieID, "genre");}
 		Statement statement = dbcon.createStatement();
-		ResultSet genres = statement.executeQuery("SELECT DISTINCT name FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='" + movieID + "' ORDER BY name");
+		ResultSet genres = statement.executeQuery("SELECT DISTINCT name,genre_id FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='" + movieID + "' ORDER BY name");
 		if (genres.next()) {
 			String genre = genres.getString("name").trim();
+			Integer delID = genres.getInt("genre_id");
 			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+			if (edit){MovieDetails.deleteStarGenreLink(out, movieID, delID,"genre",genre);}
 			while (genres.next()) {
 				genre = genres.getString("name").trim();
-				out.println(", <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+				delID = genres.getInt("genre_id");
+				if(!edit){out.println(", ");}
+				out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+				if (edit){MovieDetails.deleteStarGenreLink(out, movieID, delID,"genre",genre);}
 			}
 		}
 		genres.close();
