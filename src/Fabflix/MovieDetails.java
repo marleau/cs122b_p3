@@ -137,7 +137,6 @@ public class MovieDetails extends HttpServlet {
 
 				out.println("<BR><BR>");
 
-				addStarGenreLink(out, movieID, "star");
 				ListResults.listStarsIMG(out, dbcon, 0, movieID, edit);
 
 			} else {
@@ -198,7 +197,7 @@ public class MovieDetails extends HttpServlet {
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Delete "+name+"</button>" +
+				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");
 	}
 }
