@@ -5,14 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 public class LoginPage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -61,24 +58,7 @@ public class LoginPage extends HttpServlet {
 	private boolean validUser(HttpServletRequest request, String email, String password) {
 		// Validate user
 		try {
-			Context initCtx = new InitialContext();
-			if (initCtx == null)
-				System.out.println("initCtx is NULL");
-
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				System.out.println("envCtx is NULL");
-
-			// Look up our data source
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-			if (ds == null)
-				System.out.println("ds is null.");
-
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				System.out.println("dbcon is null.");
-			
+			Connection dbcon = ListResults.openConnection();
 			HttpSession session = request.getSession();// Get client session
 
 			

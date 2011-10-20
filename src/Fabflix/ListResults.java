@@ -183,11 +183,9 @@ public class ListResults extends HttpServlet {
 			session.setAttribute("title", "Search by " + searchBy + ": " + arg);
 			
 			
-//			out.println("<HTML><HEAD><TITLE>FabFlix -- Search by " + searchBy + ": " + arg + "</TITLE></HEAD><BODY>");
 			out.println(header(context, session));
 			// BODY
 
-//			header(request, out, resultsPerPage);
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
 
@@ -324,16 +322,16 @@ public class ListResults extends HttpServlet {
 		out.println("		</div>	</body></html>");
 	}
 
-	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
-//		out.println("<a href=\"ListResults\"><H1>FabFlix</H1></a>");
-		// Fabflix link home
-		out.println("<a href=\"Home\"><H1>FabFlix</H1></a>");
-		HttpSession session = request.getSession();
-		ListResults.searchTitlesBox(out, resultsPerPage);
-		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
-		Logout.button(out);
-		out.println("<HR>");
-	}
+//	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
+////		out.println("<a href=\"ListResults\"><H1>FabFlix</H1></a>");
+//		// Fabflix link home
+//		out.println("<a href=\"Home\"><H1>FabFlix</H1></a>");
+//		HttpSession session = request.getSession();
+//		ListResults.searchTitlesBox(out, resultsPerPage);
+//		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
+//		Logout.button(out);
+//		out.println("<HR>");
+//	}
 	
 	public static String header(ServletContext context, HttpSession session){
 		String rtn = "		<html>" +
