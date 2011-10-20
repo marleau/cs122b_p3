@@ -138,6 +138,8 @@ public class CheckDB extends HttpServlet {
 					out.println(output);
 				}
 				
+				//TODO check sales date in future
+				
 				break;
 
 			default:
@@ -171,21 +173,7 @@ public class CheckDB extends HttpServlet {
 	private String printOptionMenu() {
 		// TODO reorganize menu with fewer options; e.g. Movie, Star, Genre,
 		// Customer
-//		return "<a href=\"CheckDB?option=1\">Movies without any star.</a><BR>" +
-//		"<a href=\"CheckDB?option=2\">Stars without any movie.</a><BR>" +
-//		"<a href=\"CheckDB?option=3\">Genres without any movies.</a><BR>" +
-//		"<a href=\"CheckDB?option=4\">Movies without any genres.</a><BR>" +
-//		"<a href=\"CheckDB?option=5\">Stars with no first name or last name.</a><BR>" +
-//		"<a href=\"CheckDB?option=6\">Expired customer credit card. </a><BR>" +
-//		"<a href=\"CheckDB?option=7\">Movies that are the same or almost the same.</a><BR>" +
-//		"<a href=\"CheckDB?option=8\">Stars that are the same or almost the same.</a><BR>" +
-//		"<a href=\"CheckDB?option=9\">Genres that are the same or almost the same.</a><BR>" +
-//		"<a href=\"CheckDB?option=10\">Birth date > today or year < ~1900.</a><BR>" +
-//		"<a href=\"CheckDB?option=11\">Customer email has no @ sign</a><BR><HR>";
-//		return "<a href=\"CheckDB?option=1\">Movie Errors</a><BR>" +
-//		"<a href=\"CheckDB?option=2\">Star Errors</a><BR>" +
-//		"<a href=\"CheckDB?option=3\">Genre Errors</a><BR>" +
-//		"<a href=\"CheckDB?option=4\">Customer Errors</a><BR><HR>";
+
 		
 		return "<div class=\"menu\">" +
 				"	<ul class=\"main\">" +
@@ -425,14 +413,17 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
+		//TODO remove button
 		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
+		//TODO remove and mergeWith buttons
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: <a href=\"StarDetails?id=" + starID + "\">" + starID + "</a>";
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
+		//TODO remove and mergeWith buttons
 		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a>";
 	}
 }

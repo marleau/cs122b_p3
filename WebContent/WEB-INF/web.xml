@@ -124,4 +124,14 @@
     <servlet-name>CheckDB</servlet-name>
     <url-pattern>/CheckDB</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditMovie</display-name>
+    <servlet-name>EditMovie</servlet-name>
+    <servlet-class>Fabflix.EditMovie</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditMovie</servlet-name>
+    <url-pattern>/EditMovie</url-pattern>
+  </servlet-mapping>
 </web-app>

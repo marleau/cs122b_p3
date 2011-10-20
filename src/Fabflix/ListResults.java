@@ -186,10 +186,7 @@ public class ListResults extends HttpServlet {
 			out.println(header(context, session));
 			// BODY
 
-
-			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
-
-			out.println("<BR>");
+			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2><BR>");
 
 			if (numberOfResults > 0) {// if results exist
 				out.println("( " + numberOfResults + " Results )");
@@ -321,29 +318,23 @@ public class ListResults extends HttpServlet {
 		
 		out.println("		</div>	</body></html>");
 	}
-
-//	public static void header(HttpServletRequest request, PrintWriter out, Integer resultsPerPage) {
-////		out.println("<a href=\"ListResults\"><H1>FabFlix</H1></a>");
-//		// Fabflix link home
-//		out.println("<a href=\"Home\"><H1>FabFlix</H1></a>");
-//		HttpSession session = request.getSession();
-//		ListResults.searchTitlesBox(out, resultsPerPage);
-//		out.println("Welcome, "+session.getAttribute("user.name") + "! ");
-//		Logout.button(out);
-//		out.println("<HR>");
-//	}
 	
 	public static String header(ServletContext context, HttpSession session){
 		String rtn = "		<html>" +
 				"			<head>" +
 				"		        <title>Fabflix - "+ session.getAttribute("title")+"</title>" +
 				"			</head>" +
+				"				<style>" +
+									readStyle(context) +
+				"				</style>" +
 				"			<body>" +
-				"					<style>" +
-				readStyle(context) +
-				"			</style>" +
-				readMenu(context) +
-				"			<div class=\"content\">";
+								readMenu(context) +
+				"					<div class=\"content\">";
+
+		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		if (isAdmin != null && isAdmin){
+			rtn += "<H3>ADMIN LOGIN</H3>";
+		}
 		return rtn;
 	}
 	

@@ -37,7 +37,7 @@
 	</form>
 <% } %>
 </div>
-
+<!-- TODO Hide CC form from admin logins -->
 <div class="ccinfo">
 	
 	<br><br>

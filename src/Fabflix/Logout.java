@@ -24,6 +24,7 @@ public class Logout extends HttpServlet {
 		session.removeAttribute("user.id");
 		session.removeAttribute("user.dest");
 		session.removeAttribute("login");
+		session.removeAttribute("isAdmin");
 		session.setAttribute("validCC", false);
 		response.sendRedirect("login.jsp");
 	}

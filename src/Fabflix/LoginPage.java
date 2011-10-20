@@ -19,7 +19,7 @@ public class LoginPage extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(true);// Get client session
+		HttpSession session = request.getSession();// Get client session
 
 		String email = request.getParameter("email");
 		String password = request.getParameter("password");
@@ -29,7 +29,6 @@ public class LoginPage extends HttpServlet {
 			response.sendRedirect("login.jsp");
 		} else {
 			session.setAttribute("login", true);
-			session = request.getSession();
 			session.setAttribute("user.login", email);
 			ShoppingCart.initCart(request, response);
 			try {
@@ -60,18 +59,28 @@ public class LoginPage extends HttpServlet {
 		try {
 			Connection dbcon = ListResults.openConnection();
 			HttpSession session = request.getSession();// Get client session
-
-			
+			boolean rtn = false;
 
 			Statement statement = dbcon.createStatement();
-			String query = "SELECT * FROM customers c WHERE email = '" + email + "' AND password = '" + password + "'";
-
+			String query = "SELECT * FROM employees e WHERE email = '" + email + "' AND password = '" + password + "'";
 			ResultSet rs = statement.executeQuery(query);
-			if (rs.next()) {// IF person exists with that password
-				session.setAttribute("user.name", rs.getString("first_name") + " " + rs.getString("last_name"));
-				session.setAttribute("user.id", rs.getString("id"));
-				return true;// then log in
+			
+			if (rs.next()) {// IF employee exists with that password
+				session.setAttribute("user.name", rs.getString("fullname"));
+				session.setAttribute("isAdmin", true);
+				rtn = true;
+			} else {
+				statement = dbcon.createStatement();
+				query = "SELECT * FROM customers c WHERE email = '" + email + "' AND password = '" + password + "'";
+				rs = statement.executeQuery(query);
+				if (rs.next()) {// IF person exists with that password
+					session.setAttribute("user.name", rs.getString("first_name") + " " + rs.getString("last_name"));
+					session.setAttribute("user.id", rs.getString("id"));
+					session.setAttribute("isAdmin", false);
+					rtn = true;
+				}
 			}
+			return rtn;
 
 		} catch (SQLException ex) {
 			System.out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
@@ -92,10 +101,10 @@ public class LoginPage extends HttpServlet {
 	// Validate user
 	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
-		String user = (String) session.getAttribute("user.login");
+		Boolean login = (Boolean) session.getAttribute("login");
 		
 		// Check login
-		if (user == null) {
+		if (login != null && !login) {
 			String URL = request.getRequestURL().toString();
 			String qs = request.getQueryString();
 			if (qs != null) {
