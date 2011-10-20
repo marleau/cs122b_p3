@@ -60,6 +60,7 @@ public class EditMovie extends HttpServlet {
 					}
 				} else if (action.equals("add")) {// ==========ADD
 					if (field.equals("genre")) {
+						//TODO Add genre based on name and merge with similar, because ID is not shown
 						String query = "INSERT INTO genres_in_movies VALUES(" + value + ", " + movieID + ");";
 						statement.executeUpdate(query);
 					} else if (field.equals("star")) {

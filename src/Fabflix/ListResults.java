@@ -218,7 +218,7 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
 
 				addToCart(out, movieID);
 
@@ -329,7 +329,7 @@ public class ListResults extends HttpServlet {
 
 		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 		if (isAdmin != null && isAdmin) {
-			rtn += "<H3>ADMIN LOGIN</H3>";
+			rtn += "<H3>ADMIN MODE</H3>";
 		}
 		return rtn;
 	}
@@ -641,7 +641,7 @@ public class ListResults extends HttpServlet {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
 			int starID = stars.getInt("star_id");
-			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\">" + starName + "</a>");
+			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\" height=\"120\">" + starName + "</a>");
 			if (edit) {
 				MovieDetails.deleteStarGenreLink(out, movieID, starID, "star", starName);
 			}
@@ -667,7 +667,7 @@ public class ListResults extends HttpServlet {
 			Integer movieID = movies.getInt("movie_id");
 			String bannerURL = movies.getString("banner_url");
 
-			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\">" + title + " (" + year + ")" + "</a> (");
+			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"200\">" + title + " (" + year + ")" + "</a> (");
 			ListResults.addToCart(out, movieID);
 			out.println(")<BR><BR>");
 		}

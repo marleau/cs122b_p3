@@ -18,5 +18,5 @@
 	
 	<% Boolean isAdmin = (Boolean) session.getAttribute("isAdmin"); %>
 		<% if (isAdmin != null && isAdmin){ %>
-			<H3>ADMIN LOGIN</H3>
+			<H3>ADMIN MODE</H3>
 		<% } %>

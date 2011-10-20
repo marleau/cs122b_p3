@@ -298,7 +298,7 @@ public class AdvancedSearch extends HttpServlet {
 					String bannerURL = searchResults.getString("banner_url");
 					String director = searchResults.getString("director");
 
-					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
 					ListResults.addToCart(out, movieID);
 					out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 					ListResults.listByYearLink(out, year);

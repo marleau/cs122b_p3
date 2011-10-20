@@ -92,7 +92,7 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("</H2><BR>");
 				
-				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\"><br>Trailer</a><BR>");
+				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><br>Trailer</a><BR>");
 				
 				if (!edit){
 					out.println("<BR>");
