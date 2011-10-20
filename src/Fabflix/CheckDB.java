@@ -43,7 +43,7 @@ public class CheckDB extends HttpServlet {
 			Integer option = 0;
 			try {
 				option = Integer.valueOf(request.getParameter("option"));
-				if (option < 0 || option > 11) {
+				if (option < 0 || option > 4) {
 					option = 0;
 				}
 			} catch (NumberFormatException e) {
@@ -62,59 +62,83 @@ public class CheckDB extends HttpServlet {
 
 			out.println(printOptionMenu());
 
+			out.println("<BR>");
+			
+			String output;
+			
 			switch (option) {
 			case 1:
-				// Movies without any star
-				out.println("<H1>Movies without any star.</H1><BR>");
-				out.println(printMovieWoStar());
+				// Movies Errors
+				output = printMovieWoStar();
+				if (!output.isEmpty()){
+					out.println("<H1>Missing Stars:</H1><BR>");
+					out.println(output);
+				}
+				
+				output = printMovieWoGenres();
+				if (!output.isEmpty()){
+					out.println("<H1>Missing Genres:</H1><BR>");
+					out.println(output);
+				}
+
+				out.println("<H1>*Movies that are the same or almost the same.</H1><BR>");
+				//TODO compare movies
+				
 				break;
 
 			case 2:
-				// Stars without any movie.
-				out.println("<H1>Stars without any movie.</H1><BR>");
-				out.println(printStarWoMovie());
+				// Stars Errors
+				output = printStarWoName();
+				if (!output.isEmpty()){
+					out.println("<H1>Missing First Or Last Name:</H1><BR>");
+					out.println(output);
+				}
+				
+				output = printInvlaidDOB();
+				if (!output.isEmpty()){
+					out.println("<H1>Invalid Date Of Birth:</H1><BR>");
+					out.println(output);
+				}
+				
+				output = printStarWoMovie();
+				if (!output.isEmpty()){
+					out.println("<H1>Missing Movies:</H1><BR>");
+					out.println(output);
+				}
+
+				out.println("<H1>*Stars that are the same or almost the same.</H1><BR>");
+				//TODO compare stars
+				
 				break;
 
 			case 3:
-				out.println("<H1>Genres without any movies.</H1><BR>");
-				out.println(printGenreWoMovie());
+				//Genre Errors
+				output = printGenreWoMovie();
+				if (!output.isEmpty()){
+					out.println("<H1>Empty Genres:</H1><BR>");
+					out.println(output);
+				}
+
+				out.println("<H1>*Genres that are the same or almost the same.</H1><BR>");
+				//TODO compare genres
+				
 				break;
 
 			case 4:
-				out.println("<H1>Movies without any genres.</H1><BR>");
-				out.println(printMovieWoGenres());
-				break;
+				//Customer Errors
+				output  = printInvalidEmails();
+				if (!output.isEmpty()){
+					out.println("<H1>Invalid Email:</H1><BR>");
+					out.println(output);
+				}				
 
-			case 5:
-				out.println("<H1>Stars with no first name or last name.</H1><BR>");
-				out.println(printStarWoName());
+				output = printExpiredCC();
+				if (!output.isEmpty()){
+					out.println("<H1>Expired Credit Card:</H1><BR>");
+					out.println(output);
+				}
+				
 				break;
-
-			case 6:
-				out.println("<H1>Expired customer credit card.</H1><BR>");
-				out.println(printExpiredCC());
-				break;
-
-			case 7:
-				out.println("<H1>*Movies that are the same or almost the same.</H1><BR>");
-				break;
-
-			case 8:
-				out.println("<H1>*Stars that are the same or almost the same.</H1><BR>");
-				break;
-
-			case 9:
-				out.println("<H1>*Genres that are the same or almost the same.</H1><BR>");
-				break;
-
-			case 10:
-				out.println("<H1>Birth date > today or year < ~1900.</H1><BR>");
-				out.println(printInvlaidDOB());
-				break;
-
-			case 11:
-				out.println("<H1>Customer email has no @ sign</H1><BR>");
-				out.println(printInvalidEmails());
 
 			default:
 				break;
@@ -147,17 +171,30 @@ public class CheckDB extends HttpServlet {
 	private String printOptionMenu() {
 		// TODO reorganize menu with fewer options; e.g. Movie, Star, Genre,
 		// Customer
-		return "<a href=\"CheckDB?option=1\">Movies without any star.</a><BR>" +
-		"<a href=\"CheckDB?option=2\">Stars without any movie.</a><BR>" +
-		"<a href=\"CheckDB?option=3\">Genres without any movies.</a><BR>" +
-		"<a href=\"CheckDB?option=4\">Movies without any genres.</a><BR>" +
-		"<a href=\"CheckDB?option=5\">Stars with no first name or last name.</a><BR>" +
-		"<a href=\"CheckDB?option=6\">Expired customer credit card. </a><BR>" +
-		"<a href=\"CheckDB?option=7\">Movies that are the same or almost the same.</a><BR>" +
-		"<a href=\"CheckDB?option=8\">Stars that are the same or almost the same.</a><BR>" +
-		"<a href=\"CheckDB?option=9\">Genres that are the same or almost the same.</a><BR>" +
-		"<a href=\"CheckDB?option=10\">Birth date > today or year < ~1900.</a><BR>" +
-		"<a href=\"CheckDB?option=11\">Customer email has no @ sign</a><BR><HR>";
+//		return "<a href=\"CheckDB?option=1\">Movies without any star.</a><BR>" +
+//		"<a href=\"CheckDB?option=2\">Stars without any movie.</a><BR>" +
+//		"<a href=\"CheckDB?option=3\">Genres without any movies.</a><BR>" +
+//		"<a href=\"CheckDB?option=4\">Movies without any genres.</a><BR>" +
+//		"<a href=\"CheckDB?option=5\">Stars with no first name or last name.</a><BR>" +
+//		"<a href=\"CheckDB?option=6\">Expired customer credit card. </a><BR>" +
+//		"<a href=\"CheckDB?option=7\">Movies that are the same or almost the same.</a><BR>" +
+//		"<a href=\"CheckDB?option=8\">Stars that are the same or almost the same.</a><BR>" +
+//		"<a href=\"CheckDB?option=9\">Genres that are the same or almost the same.</a><BR>" +
+//		"<a href=\"CheckDB?option=10\">Birth date > today or year < ~1900.</a><BR>" +
+//		"<a href=\"CheckDB?option=11\">Customer email has no @ sign</a><BR><HR>";
+//		return "<a href=\"CheckDB?option=1\">Movie Errors</a><BR>" +
+//		"<a href=\"CheckDB?option=2\">Star Errors</a><BR>" +
+//		"<a href=\"CheckDB?option=3\">Genre Errors</a><BR>" +
+//		"<a href=\"CheckDB?option=4\">Customer Errors</a><BR><HR>";
+		
+		return "<div class=\"menu\">" +
+				"	<ul class=\"main\">" +
+				"		<li><a href=\"CheckDB?option=1\">Movie Errors</a></li>" +
+				"		<li><a href=\"CheckDB?option=2\">Star Errors</a></li>" +
+				"		<li><a href=\"CheckDB?option=3\">Genre Errors</a></li>" +
+				"		<li><a href=\"CheckDB?option=4\">Customer Errors</a></li>" +
+				"   </ul>" +
+				"</div>";
 
 	}
 
