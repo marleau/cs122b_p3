@@ -427,11 +427,11 @@ public class CheckDB extends HttpServlet {
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
 		//TODO remove and mergeWith buttons
-		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: <a href=\"StarDetails?id=" + starID + "\">" + starID + "</a>";
+		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
 		//TODO remove and mergeWith buttons
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a>";
+		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
 	}
 }

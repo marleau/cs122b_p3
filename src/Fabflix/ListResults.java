@@ -79,7 +79,6 @@ public class ListResults extends HttpServlet {
 			}
 			if (searchBy.equals("title")) {
 				try {
-					arg = arg.replace("\'", "\\\'");
 					Pattern.compile(arg);
 				} catch (PatternSyntaxException exception) {
 					arg = "";
@@ -135,7 +134,7 @@ public class ListResults extends HttpServlet {
 				listStart = 0;
 				page = 1;
 			}
-
+			arg = arg.replace("\'", "\\\'");//CLEAN FOR SQL
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
 			Statement fullStatement = dbcon.createStatement();
@@ -168,6 +167,8 @@ public class ListResults extends HttpServlet {
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
 			}
 
+			arg = arg.replace("\\\'", "\'");//RESTORE FOR LINKS
+			
 			// Get results for this page's display
 			ResultSet searchResults = statement.executeQuery(query);
 
@@ -193,7 +194,7 @@ public class ListResults extends HttpServlet {
 			out.println(header(context, session));
 			// BODY
 
-			out.println("<H2>Search by " + searchBy + ": " + arg.replace("\\\'", "\'") + "</H2><BR>");
+			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2><BR>");
 
 			if (numberOfResults > 0) {// if results exist
 				out.println("( " + numberOfResults + " Results )");

@@ -113,7 +113,6 @@ public class AdvancedSearch extends HttpServlet {
 
 			Integer paramCount = 0;
 			if (!(t == null || t.isEmpty())) {
-				t = t.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				t = "";
@@ -122,19 +121,16 @@ public class AdvancedSearch extends HttpServlet {
 				paramCount++;
 			}
 			if (!(d == null || d.isEmpty())) {
-				d = d.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				d = "";
 			}
 			if (!(fn == null || fn.isEmpty())) {
-				fn = fn.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				fn = "";
 			}
 			if (!(ln == null || ln.isEmpty())) {
-				ln = ln.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				ln = "";
@@ -145,6 +141,12 @@ public class AdvancedSearch extends HttpServlet {
 			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" + "&y=" + y + "&d=" + java.net.URLEncoder.encode(d, "UTF-8") + "&fn="
 					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
+
+			t = t.replace("\'", "\\\'");
+			d = d.replace("\'", "\\\'");
+			fn = fn.replace("\'", "\\\'");
+			ln = ln.replace("\'", "\\\'");
+			
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
 				// ===Advanced Search Form
