@@ -19,4 +19,5 @@
 	<% Boolean isAdmin = (Boolean) session.getAttribute("isAdmin"); %>
 		<% if (isAdmin != null && isAdmin){ %>
 			<H3>ADMIN MODE</H3>
+			<%@ include file="adminmenu.jsp" %>
 		<% } %>

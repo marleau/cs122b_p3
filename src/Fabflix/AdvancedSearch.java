@@ -39,6 +39,8 @@ public class AdvancedSearch extends HttpServlet {
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
 		try {
 			
 			Connection dbcon = ListResults.openConnection();
@@ -111,6 +113,7 @@ public class AdvancedSearch extends HttpServlet {
 
 			Integer paramCount = 0;
 			if (!(t == null || t.isEmpty())) {
+				t = t.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				t = "";
@@ -119,16 +122,19 @@ public class AdvancedSearch extends HttpServlet {
 				paramCount++;
 			}
 			if (!(d == null || d.isEmpty())) {
+				d = d.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				d = "";
 			}
 			if (!(fn == null || fn.isEmpty())) {
+				fn = fn.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				fn = "";
 			}
 			if (!(ln == null || ln.isEmpty())) {
+				ln = ln.replace("\'", "\\\'");
 				paramCount++;
 			} else {
 				ln = "";
@@ -142,8 +148,6 @@ public class AdvancedSearch extends HttpServlet {
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
 				// ===Advanced Search Form
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
 				session.setAttribute("title", "Advanced Search");
 				
 				out.println(ListResults.header(context, session));
@@ -154,7 +158,7 @@ public class AdvancedSearch extends HttpServlet {
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
 						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" 
 						+ "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
-						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\"><BR>"
+						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\" checked><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
 				ListResults.footer(out, dbcon, resultsPerPage);
@@ -262,8 +266,7 @@ public class AdvancedSearch extends HttpServlet {
 
 				// Open HTML
 
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
+
 				session.setAttribute("title", "Advanced Search");
 
 				// BODY
@@ -342,17 +345,17 @@ public class AdvancedSearch extends HttpServlet {
 			}
 
 		} catch (SQLException ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
-			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString());
-			out.println("</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();

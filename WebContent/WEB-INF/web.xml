@@ -24,6 +24,11 @@
     <res-type>java.io.File</res-type>
     <res-auth>Container</res-auth>
   </resource-ref>
+  <resource-ref>
+    <res-ref-name>adminmenu.jsp</res-ref-name>
+    <res-type>java.io.File</res-type>
+    <res-auth>Container</res-auth>
+  </resource-ref>
   <servlet>
     <description></description>
     <display-name>ListResults</display-name>
@@ -133,5 +138,15 @@
   <servlet-mapping>
     <servlet-name>EditMovie</servlet-name>
     <url-pattern>/EditMovie</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditStar</display-name>
+    <servlet-name>EditStar</servlet-name>
+    <servlet-class>Fabflix.EditStar</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditStar</servlet-name>
+    <url-pattern>/EditStar</url-pattern>
   </servlet-mapping>
 </web-app>

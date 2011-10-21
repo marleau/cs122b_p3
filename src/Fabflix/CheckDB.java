@@ -33,7 +33,17 @@ public class CheckDB extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Kick non admins
+
+		LoginPage.kickNonUsers(request, response);// kick if not logged in
+
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
+		
+		// Kick non admins
+		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		if (isAdmin == null || !isAdmin){
+			response.sendRedirect("index.jsp");
+		}
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -53,8 +63,6 @@ public class CheckDB extends HttpServlet {
 			}
 
 			// OPEN HTML
-			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			session.setAttribute("title", "CheckDB");
 
 			// HEADER
@@ -96,7 +104,7 @@ public class CheckDB extends HttpServlet {
 				
 				output = printInvlaidDOB();
 				if (!output.isEmpty()){
-					out.println("<H1>Invalid Date Of Birth:</H1><BR>");
+					out.println("<H1>Date Of Birth Flagged:</H1><BR>");
 					out.println(output);
 				}
 				
@@ -153,18 +161,18 @@ public class CheckDB extends HttpServlet {
 
 			dbcon.close();
 
-		} catch (SQLException ex) {
-			// TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+		}  catch (SQLException ex) {
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			// TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();
@@ -177,10 +185,10 @@ public class CheckDB extends HttpServlet {
 		
 		return "<div class=\"menu\">" +
 				"	<ul class=\"main\">" +
-				"		<li><a href=\"CheckDB?option=1\">Movie Errors</a></li>" +
-				"		<li><a href=\"CheckDB?option=2\">Star Errors</a></li>" +
-				"		<li><a href=\"CheckDB?option=3\">Genre Errors</a></li>" +
-				"		<li><a href=\"CheckDB?option=4\">Customer Errors</a></li>" +
+				"		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>" +
+				"		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" +
+				"		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>" +
+				"		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" +
 				"   </ul>" +
 				"</div>";
 

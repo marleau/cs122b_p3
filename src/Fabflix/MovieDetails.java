@@ -36,6 +36,8 @@ public class MovieDetails extends HttpServlet {
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
 
 		try {
 			Connection dbcon = ListResults.openConnection();
@@ -48,8 +50,6 @@ public class MovieDetails extends HttpServlet {
 				movieID = 0;
 			}
 
-			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 			
 			Boolean edit = false; // trigger edit mode
@@ -80,8 +80,7 @@ public class MovieDetails extends HttpServlet {
 
 
 				// Movie Info
-				out.println("<H2>" + title + " (" + year + ")");
-				
+				out.println("<H1>" + title + " (" + year + ")");
 				if (isAdmin != null && isAdmin){
 					if (edit){
 						out.println("(<A HREF=\"MovieDetails?id="+movieID+"&edit=false\">Stop Editing</A>)");
@@ -89,18 +88,19 @@ public class MovieDetails extends HttpServlet {
 						out.println("(<A HREF=\"MovieDetails?id="+movieID+"&edit=true\">Edit</A>)");
 					}
 				}
+				out.println("</H1><BR>");
 				
-				out.println("</H2><BR>");
+				//TODO add DELETE MOVIE
 				
-				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><br>Trailer</a><BR>");
+				
+				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><BR>Trailer</a><BR><BR>");
 				
 				if (!edit){
-					out.println("<BR>");
 					ListResults.addToCart(out, movieID);
-					out.println("<BR>");
+					out.println("<BR><BR>");
 				}
 
-				out.println("<BR>ID: " + movieID + "<BR>");
+				out.println("ID: " + movieID + "<BR>");
 				
 				if (edit){
 					editMovieLink(out, movieID, title, "title");
@@ -154,18 +154,17 @@ public class MovieDetails extends HttpServlet {
 			dbcon.close();
 			
 		} catch (SQLException ex) {
-			//TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			//TODO header and footer
-			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>"
-					+ ex.toString() + "</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();

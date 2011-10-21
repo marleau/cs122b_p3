@@ -1,7 +1,11 @@
 package Fabflix;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -11,15 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class EditMovie
+ * Servlet implementation class EditStar
  */
-public class EditMovie extends HttpServlet {
+public class EditStar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public EditMovie() {
+	public EditStar() {
 		super();
 	}
 
@@ -38,7 +42,7 @@ public class EditMovie extends HttpServlet {
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
 		String field = request.getParameter("field");
-		String movieID = request.getParameter("movieID");
+		String starID = request.getParameter("starID");
 
 		//Scrub Args
 		value = value.replace("\'", "\\\'");
@@ -46,7 +50,7 @@ public class EditMovie extends HttpServlet {
 		
 		
 		//Kick non admins
-		if (movieID == null || isAdmin == null || !isAdmin) {
+		if (starID == null || isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
 		}
 
@@ -57,34 +61,22 @@ public class EditMovie extends HttpServlet {
 
 			if (action != null && field != null && value != null) {
 				if (action.equals("delete")) {// ==========DELETE
-					if (field.equals("genre")) {
-						String query = "DELETE FROM genres_in_movies WHERE genre_id = '" + value + "' AND movie_id = '" + movieID + "'";
-						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
-						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
+					if (field.equals("movie")) {
+						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + starID + "' AND movie_id = '" + value + "'";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("add")) {// ==========ADD
-					if (field.equals("genre")) {
-						//TODO Add genre based on name and merge with similar, because ID is not shown
-						String query = "INSERT INTO genres_in_movies VALUES(" + value + ", " + movieID + ");";
-						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
-						String query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
+					if (field.equals("movie")) {
+						String query = "INSERT INTO stars_in_movies VALUES(" + starID + ", " + value + ");";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("edit")) {// ==========EDIT
-					if (field.equals("title") || field.equals("year") || field.equals("director") || field.equals("banner_url") || field.equals("trailer_url")) {
-						if (field.equals("year")) {
-							try {
-								Integer year = Integer.valueOf(value);
-								value = year.toString();
-							} catch (Exception e) {
-								response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
-								return;
-							}
+					if (field.equals("first_name") || field.equals("last_name") || field.equals("dob") || field.equals("photo_url")) {
+						if (field.equals("dob") && !isValidDate(value)) {
+							response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
+							return;
 						}
-						String query = "UPDATE movies SET " + field + " = '" + value + "' WHERE id = '" + movieID + "'";
+						String query = "UPDATE stars SET " + field + " = '" + value + "' WHERE id = '" + starID + "'";
 						statement.executeUpdate(query);
 					}
 				}
@@ -94,10 +86,25 @@ public class EditMovie extends HttpServlet {
 		} catch (SQLException e) {
 		}
 
-		response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
+		response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
 
 	}
+	
+    public static boolean isValidDate(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date testDate = null;
+        try {
+            testDate = sdf.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        if (!sdf.format(testDate).equals(date)) {
+            return false;
+        }
+        return true;
 
+    }
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.sendRedirect("index.jsp");
 	}
