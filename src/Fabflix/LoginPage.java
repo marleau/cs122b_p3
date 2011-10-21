@@ -99,7 +99,7 @@ public class LoginPage extends HttpServlet {
 	}
 
 	// Validate user
-	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public static boolean kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 		Boolean login = (Boolean) session.getAttribute("login");
 		
@@ -114,6 +114,8 @@ public class LoginPage extends HttpServlet {
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
 			response.sendRedirect("login");
+			return true;
 		}
+		return false;
 	}
 }

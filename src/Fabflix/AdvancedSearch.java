@@ -33,7 +33,7 @@ public class AdvancedSearch extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 

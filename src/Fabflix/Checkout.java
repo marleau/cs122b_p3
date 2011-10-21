@@ -28,7 +28,7 @@ public class Checkout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		LoginPage.kickNonUsers(request, response);
+		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 		HttpSession session = request.getSession();
 		if (request.getParameter("updateCart") != null) {
 			ShoppingCart.updateCart(request, response);	
