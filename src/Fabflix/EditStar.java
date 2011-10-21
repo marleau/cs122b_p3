@@ -45,8 +45,7 @@ public class EditStar extends HttpServlet {
 		String starID = request.getParameter("starID");
 
 		//Scrub Args
-		value = value.replace("\'", "\\\'");
-		field = field.replace("\'", "\\\'");
+		value = ListResults.cleanSQL(value);
 		
 		
 		//Kick non admins

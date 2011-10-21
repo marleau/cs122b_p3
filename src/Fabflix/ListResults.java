@@ -134,40 +134,39 @@ public class ListResults extends HttpServlet {
 				listStart = 0;
 				page = 1;
 			}
-			arg = arg.replace("\'", "\\\'");//CLEAN FOR SQL
+			String cleanArg = cleanSQL(arg);//CLEAN FOR SQL
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
 			Statement fullStatement = dbcon.createStatement();
 			String query;
 			String fullQuery;// full search to count results
-			if (arg.isEmpty()) {
+			if (cleanArg.isEmpty()) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
 			} else if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
-						+ arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+						+ cleanArg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
-						+ arg + "') as results";
+						+ cleanArg + "') as results";
 			} else if (searchBy.equals("letter")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '^" + arg + "' " + sortBy + " LIMIT " + listStart
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '^" + cleanArg + "' " + sortBy + " LIMIT " + listStart
 						+ "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + arg + "') as results";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + cleanArg + "') as results";
 			} else if (searchBy.equals("title")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '" + cleanArg + "' " + sortBy + " LIMIT " + listStart
 						+ "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg + "') as results";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + cleanArg + "') as results";
 			} else if (searchBy.equals("first_name") || searchBy.equals("last_name")) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
-						+ searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+						+ searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
-						+ searchBy + " = '" + arg + "') as results";
+						+ searchBy + " = '" + cleanArg + "') as results";
 			} else {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT "
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT "
 						+ listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + cleanArg + "') as results";
 			}
 
-			arg = arg.replace("\\\'", "\'");//RESTORE FOR LINKS
 			
 			// Get results for this page's display
 			ResultSet searchResults = statement.executeQuery(query);
@@ -282,6 +281,10 @@ public class ListResults extends HttpServlet {
 			return;
 		}
 		out.close();
+	}
+
+	public static String cleanSQL(String arg) {
+		return arg.replace("'", "''");
 	}
 
 	public static Connection openConnection() throws NamingException, SQLException {

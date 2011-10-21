@@ -104,7 +104,7 @@ public class LoginPage extends HttpServlet {
 		Boolean login = (Boolean) session.getAttribute("login");
 		
 		// Check login
-		if (login != null && !login) {
+		if (login == null || !login) {
 			String URL = request.getRequestURL().toString();
 			String qs = request.getQueryString();
 			if (qs != null) {

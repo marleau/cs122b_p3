@@ -142,10 +142,10 @@ public class AdvancedSearch extends HttpServlet {
 					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
 
-			t = t.replace("\'", "\\\'");
-			d = d.replace("\'", "\\\'");
-			fn = fn.replace("\'", "\\\'");
-			ln = ln.replace("\'", "\\\'");
+			t = ListResults.cleanSQL(t);
+			d = ListResults.cleanSQL(d);
+			fn = ListResults.cleanSQL(fn);
+			ln = ListResults.cleanSQL(ln);
 			
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {

@@ -41,8 +41,7 @@ public class EditMovie extends HttpServlet {
 		String movieID = request.getParameter("movieID");
 
 		//Scrub Args
-		value = value.replace("\'", "\\\'");
-		field = field.replace("\'", "\\\'");
+		value = ListResults.cleanSQL(value);
 		
 		
 		//Kick non admins
