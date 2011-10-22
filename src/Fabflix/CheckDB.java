@@ -38,10 +38,10 @@ public class CheckDB extends HttpServlet {
 
 		ServletContext context = getServletContext();
 		HttpSession session = request.getSession();
-		
+
 		// Kick non admins
 		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-		if (isAdmin == null || !isAdmin){
+		if (isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
 		}
 
@@ -68,86 +68,86 @@ public class CheckDB extends HttpServlet {
 			// HEADER
 			out.println(ListResults.header(context, session));
 
-			out.println(printOptionMenu());
+			out.println(printOptionMenu(option));
 
 			out.println("<BR>");
-			
+
 			String output;
-			
+
 			switch (option) {
 			case 1:
 				// Movies Errors
 				output = printMovieWoStar();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Missing Stars:</H1><BR>");
 					out.println(output);
 				}
-				
+
 				output = printMovieWoGenres();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Missing Genres:</H1><BR>");
 					out.println(output);
 				}
 
 				out.println("<H1>*Movies that are the same or almost the same.</H1><BR>");
-				//TODO compare movies
-				
+				// TODO compare movies
+
 				break;
 
 			case 2:
 				// Stars Errors
 				output = printStarWoName();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Missing First Or Last Name:</H1><BR>");
 					out.println(output);
 				}
-				
+
 				output = printInvlaidDOB();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Date Of Birth Flagged:</H1><BR>");
 					out.println(output);
 				}
-				
+
 				output = printStarWoMovie();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Missing Movies:</H1><BR>");
 					out.println(output);
 				}
 
 				out.println("<H1>*Stars that are the same or almost the same.</H1><BR>");
-				//TODO compare stars
-				
+				// TODO compare stars
+
 				break;
 
 			case 3:
-				//Genre Errors
+				// Genre Errors
 				output = printGenreWoMovie();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Empty Genres:</H1><BR>");
 					out.println(output);
 				}
 
 				out.println("<H1>*Genres that are the same or almost the same.</H1><BR>");
-				//TODO compare genres
-				
+				// TODO compare genres
+
 				break;
 
 			case 4:
-				//Customer Errors
-				output  = printInvalidEmails();
-				if (!output.isEmpty()){
+				// Customer Errors
+				output = printInvalidEmails();
+				if (!output.isEmpty()) {
 					out.println("<H1>Invalid Email:</H1><BR>");
 					out.println(output);
-				}				
+				}
 
 				output = printExpiredCC();
-				if (!output.isEmpty()){
+				if (!output.isEmpty()) {
 					out.println("<H1>Expired Credit Card:</H1><BR>");
 					out.println(output);
 				}
-				
-				//TODO check sales date in future
-				
+
+				// TODO check sales date in future
+
 				break;
 
 			default:
@@ -161,7 +161,7 @@ public class CheckDB extends HttpServlet {
 
 			dbcon.close();
 
-		}  catch (SQLException ex) {
+		} catch (SQLException ex) {
 			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
@@ -171,27 +171,49 @@ public class CheckDB extends HttpServlet {
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
 			out.println(ListResults.header(context, session));
-			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
-					+ ex.toString() + "</P></DIV></BODY></HTML>");
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();
 	}
 
-	private String printOptionMenu() {
-		// TODO reorganize menu with fewer options; e.g. Movie, Star, Genre,
-		// Customer
+	private String printOptionMenu(int option) {
+		String rtn = "";
+		rtn += "<div class=\"menu\"><ul class=\"main\"><li>";
+		if (option != 1) {
+			rtn += "<a href=\"CheckDB?option=1\">";
+		}
+		rtn += "Movie Warnings";
+		if (option != 1) {
+			rtn += "</a>";
+		}
+		rtn += "</li><li>";
+		if (option != 2) {
+			rtn += "<a href=\"CheckDB?option=2\">";
+		}
+		rtn += "Star Warnings";
+		if (option != 2) {
+			rtn += "</a>";
+		}
+		rtn += "</li><li>";
+		if (option != 3) {
+			rtn += "<a href=\"CheckDB?option=3\">";
+		}
+		rtn += "Genre Warnings";
+		if (option != 3) {
+			rtn += "</a>";
+		}
+		rtn += "</li><li>";
+		if (option != 4) {
+			rtn += "<a href=\"CheckDB?option=4\">";
+		}
+		rtn += "Customer Warnings";
+		if (option != 4) {
+			rtn += "</a>";
+		}
+		rtn += "</li></ul></div>";
 
-		
-		return "<div class=\"menu\">" +
-				"	<ul class=\"main\">" +
-				"		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" +
-				"   </ul>" +
-				"</div>";
-
+		return rtn;
 	}
 
 	private String printMovieWoStar() throws SQLException, NamingException {
@@ -271,7 +293,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -301,7 +323,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -331,7 +353,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -358,7 +380,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -380,7 +402,7 @@ public class CheckDB extends HttpServlet {
 			String photoURL = searchResults.getString("photo_url");
 
 			// TODO add edit name to star page
-			
+
 			rtn += printStarSummary(starID, first_name, last_name, photoURL);
 
 			rtn += "<BR><BR>";
@@ -389,7 +411,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -416,22 +438,22 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
 	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
-		//TODO remove button
+		// TODO remove button
 		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
-		//TODO remove and mergeWith buttons
+		// TODO remove and mergeWith buttons
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
-		//TODO remove and mergeWith buttons
+		// TODO remove and mergeWith buttons
 		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
 	}
 }
