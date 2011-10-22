@@ -33,7 +33,7 @@ public class AdvancedSearch extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -142,10 +142,10 @@ public class AdvancedSearch extends HttpServlet {
 					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
 
-			t = t.replaceAll("\'", "\\\'");
-			d = d.replaceAll("\'", "\\\'");
-			fn = fn.replaceAll("\'", "\\\'");
-			ln = ln.replaceAll("\'", "\\\'");
+			t = ListResults.cleanSQL(t);
+			d = ListResults.cleanSQL(d);
+			fn = ListResults.cleanSQL(fn);
+			ln = ListResults.cleanSQL(ln);
 			
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
@@ -154,7 +154,7 @@ public class AdvancedSearch extends HttpServlet {
 				
 				out.println(ListResults.header(context, session));
 				
-				out.println("Advanced Search: ");
+				out.println("<h1>Advanced Search</h1>");
 
 				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"

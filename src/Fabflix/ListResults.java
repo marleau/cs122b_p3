@@ -36,7 +36,7 @@ public class ListResults extends HttpServlet {
 
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -87,7 +87,6 @@ public class ListResults extends HttpServlet {
 				}
 			}
 
-			String cleanArg = cleanSQL(arg);//CLEAN FOR SQL
 			
 			// ===SORT
 			String sortBy = "";
@@ -138,6 +137,8 @@ public class ListResults extends HttpServlet {
 				listStart = 0;
 				page = 1;
 			}
+
+			String cleanArg = cleanSQL(arg);//CLEAN FOR SQL
 			
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
@@ -287,9 +288,8 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
-	public String cleanSQL(String arg) {
-		String rtn = arg.replaceAll("([^A-Za-z0-9.,\"% _-]+)", "");
-		return rtn.replaceAll("'", "\'");
+	public static String cleanSQL(String arg) {
+		return arg.replace("'", "''");
 	}
 
 	public static Connection openConnection() throws NamingException, SQLException {

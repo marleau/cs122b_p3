@@ -28,7 +28,7 @@ public class EditMovie extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -41,8 +41,7 @@ public class EditMovie extends HttpServlet {
 		String movieID = request.getParameter("movieID");
 
 		//Scrub Args
-		value = value.replace("\'", "\\\'");
-		field = field.replace("\'", "\\\'");
+		value = ListResults.cleanSQL(value);
 		
 		
 		//Kick non admins
