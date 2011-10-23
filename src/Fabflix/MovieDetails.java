@@ -40,7 +40,7 @@ public class MovieDetails extends HttpServlet {
 		HttpSession session = request.getSession();
 
 		try {
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 			
 			// READ movieID
 			Integer movieID;

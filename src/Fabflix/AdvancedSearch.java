@@ -44,7 +44,7 @@ public class AdvancedSearch extends HttpServlet {
 		HttpSession session = request.getSession();
 		try {
 			
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 
 			// Get parameters
 			String t = request.getParameter("t");
@@ -143,10 +143,10 @@ public class AdvancedSearch extends HttpServlet {
 					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
 
-			t = ListResults.cleanSQL(t);
-			d = ListResults.cleanSQL(d);
-			fn = ListResults.cleanSQL(fn);
-			ln = ListResults.cleanSQL(ln);
+			t = Database.cleanSQL(t);
+			d = Database.cleanSQL(d);
+			fn = Database.cleanSQL(fn);
+			ln = Database.cleanSQL(ln);
 			
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {

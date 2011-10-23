@@ -41,7 +41,7 @@ public class StarDetails extends HttpServlet {
 		HttpSession session = request.getSession();
 		try {
 			
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 			
 			// READ STAR ID
 			Integer starID;
