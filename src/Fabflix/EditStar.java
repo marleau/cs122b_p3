@@ -21,17 +21,10 @@ import javax.servlet.http.HttpSession;
 public class EditStar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public EditStar() {
 		super();
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 		Login.kickNonUsers(request, response);
