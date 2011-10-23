@@ -103,15 +103,15 @@ public class MovieDetails extends HttpServlet {
 				out.println("ID: " + movieID + "<BR>");
 				
 				if (edit){
-					editMovieLink(out, movieID, title, "title");
+					EditMovie.editMovieLink(out, movieID, title, "title");
 					out.println("<BR>");
 				}
 				if (edit){
-					editMovieLink(out, movieID, bannerURL, "banner_url");
+					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
 					out.println("<BR>");
 				}
 				if (edit){
-					editMovieLink(out, movieID, trailerURL, "trailer_url");
+					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
 					out.println("<BR>");
 				}
 				
@@ -119,7 +119,7 @@ public class MovieDetails extends HttpServlet {
 				ListResults.listByYearLink(out, year);
 				
 				if (edit){
-					editMovieLink(out, movieID, year.toString(), "year");
+					EditMovie.editMovieLink(out, movieID, year.toString(), "year");
 				}
 
 				out.println("<BR>");
@@ -127,7 +127,7 @@ public class MovieDetails extends HttpServlet {
 				ListResults.listByDirectorLink(out, director);
 
 				if (edit){
-					editMovieLink(out, movieID, director, "director");
+					EditMovie.editMovieLink(out, movieID, director, "director");
 				}
 				
 				out.println("<BR>");
@@ -170,33 +170,4 @@ public class MovieDetails extends HttpServlet {
 		out.close();
 	}
 
-	private void editMovieLink(PrintWriter out, Integer movieID, String oldVal, String field) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
-				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Change "+field+"</button>" +
-				"</form>");
-	}
-
-	public static void addStarGenreLink(PrintWriter out, Integer movieID, String field) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
-				"<input type=\"text\" name=\"value\" />" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
-				"</form>");
-	}
-
-	public static void deleteStarGenreLink(PrintWriter out, Integer movieID, Integer delID, String field,String name) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
-				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
-				"</form>");
-	}
 }

@@ -149,4 +149,14 @@
     <servlet-name>EditStar</servlet-name>
     <url-pattern>/EditStar</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditGenre</display-name>
+    <servlet-name>EditGenre</servlet-name>
+    <servlet-class>Fabflix.EditGenre</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditGenre</servlet-name>
+    <url-pattern>/EditGenre</url-pattern>
+  </servlet-mapping>
 </web-app>

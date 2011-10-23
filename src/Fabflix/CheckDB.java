@@ -286,8 +286,6 @@ public class CheckDB extends HttpServlet {
 
 			rtn += printMovieSummary(movieID, title, year, bannerURL);
 
-			// TODO add star to movie from movie page
-
 			rtn += "<BR><BR>";
 		}
 
@@ -314,8 +312,6 @@ public class CheckDB extends HttpServlet {
 			String photoURL = searchResults.getString("photo_url");
 
 			rtn += printStarSummary(starID, first_name, last_name, photoURL);
-
-			// TODO add movie to star from star page
 
 			rtn += "<BR><BR>";
 		}
@@ -391,8 +387,6 @@ public class CheckDB extends HttpServlet {
 
 			rtn += printMovieSummary(movieID, title, year, bannerURL);
 
-			// TODO add genre to movie from movie page
-
 			rtn += "<BR><BR>";
 		}
 
@@ -444,8 +438,6 @@ public class CheckDB extends HttpServlet {
 
 			rtn += printStarSummary(starID, first_name, last_name, photoURL);
 
-			// TODO add edit name to star page
-
 			rtn += "<BR><BR>";
 		}
 
@@ -468,9 +460,9 @@ public class CheckDB extends HttpServlet {
 			String photoURL = searchResults.getString("photo_url");
 			Integer count = searchResults.getInt("cnt");
 
-			rtn += printStarSimilarSummary(starID, first_name, last_name, photoURL, count);
+			rtn += printSimilarStarSummary(starID, first_name, last_name, photoURL, count);
 
-			// TODO add merge similar
+			// TODO add merge similar stars
 
 			rtn += "<BR><BR>";
 		}
@@ -525,8 +517,6 @@ public class CheckDB extends HttpServlet {
 			String last_name = searchResults.getString("last_name");
 			String photoURL = searchResults.getString("photo_url");
 
-			// TODO add edit name to star page
-
 			rtn += printStarSummary(starID, first_name, last_name, photoURL);
 
 			rtn += "<BR><BR>";
@@ -577,7 +567,7 @@ public class CheckDB extends HttpServlet {
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
 	}
 
-	public String printStarSimilarSummary(Integer starID, String first_name, String last_name, String photoURL, Integer count) {
+	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, Integer count) {
 		//TODO mergeWith buttons
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID + "<BR>Count: " + count + "<BR>Merge";
 	}

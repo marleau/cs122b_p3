@@ -998,7 +998,6 @@ public class MovieDBcli {
     private static void printSQLError(SQLException ex) {
         /*In cases where the requested tasks cannot be accomplished, print out
         a clear, crisp error message–do not just pass along some Java exception! */
-        //TODO add clean mySQL error messages
         // List of error codes:
         // http://dev.mysql.com/doc/refman/5.0/en/connector-j-reference-error-sqlstates.html
         // http://dev.mysql.com/doc/refman/5.5/en/error-messages-server.html

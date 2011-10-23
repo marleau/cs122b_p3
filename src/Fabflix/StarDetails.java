@@ -96,22 +96,22 @@ public class StarDetails extends HttpServlet {
 				
 				out.println("ID: " + starID + "<BR>");// STAR DETAILS
 				if (edit){
-					editStarLink(out, starID, first_name, "first_name");
+					EditStar.editStarLink(out, starID, first_name, "first_name");
 					out.println("<BR>");
 				}
 				if (edit){
-					editStarLink(out, starID, last_name, "last_name");
+					EditStar.editStarLink(out, starID, last_name, "last_name");
 					out.println("<BR>");
 				}
 				if (edit){
-					editStarLink(out, starID, starIMG, "photo_url");
+					EditStar.editStarLink(out, starID, starIMG, "photo_url");
 					out.println("<BR>");
 				}
 				
 				out.println("Date of Birth: " + dob);
 				if (edit){
 					out.println(" (yyyy-MM-dd)");
-					editStarLink(out, starID, dob, "dob");
+					EditStar.editStarLink(out, starID, dob, "dob");
 					out.println("<BR>");
 				}
 
@@ -152,33 +152,5 @@ public class StarDetails extends HttpServlet {
 	}
 
 	
-	private void editStarLink(PrintWriter out, Integer starID, String oldVal, String field) {
-		out.println("<form method=\"post\" action=\"EditStar\">" +
-				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Change "+field+"</button>" +
-				"</form>");
-	}
 
-	public static void addMovieLink(PrintWriter out, Integer starID, String field) {
-		out.println("<form method=\"post\" action=\"EditStar\">" +
-				"<input type=\"text\" name=\"value\" />" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
-				"</form>");
-	}
-
-	public static void deleteMovieLink(PrintWriter out, Integer starID, Integer delID, String field,String name) {
-		out.println("<form method=\"post\" action=\"EditStar\">" +
-				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
-				"</form>");
-	}
 }

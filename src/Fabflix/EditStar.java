@@ -1,6 +1,7 @@
 package Fabflix;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -51,6 +52,7 @@ public class EditStar extends HttpServlet {
 		//Kick non admins
 		if (starID == null || isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
+			return;
 		}
 
 		try {
@@ -103,7 +105,35 @@ public class EditStar extends HttpServlet {
         return true;
 
     }
-    
+	public static void editStarLink(PrintWriter out, Integer starID, String oldVal, String field) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
+				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Change "+field+"</button>" +
+				"</form>");
+	}
+
+	public static void addMovieLink(PrintWriter out, Integer starID, String field) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
+				"<input type=\"text\" name=\"value\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
+				"</form>");
+	}
+
+	public static void removeMovieLink(PrintWriter out, Integer starID, Integer delID, String field,String name) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
+				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
+				"</form>");
+	}
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.sendRedirect("index.jsp");
 	}

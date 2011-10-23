@@ -1,6 +1,7 @@
 package Fabflix;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.*;
 
 import javax.naming.NamingException;
@@ -47,6 +48,7 @@ public class EditMovie extends HttpServlet {
 		//Kick non admins
 		if (movieID == null || isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
+			return;
 		}
 
 		try {
@@ -95,6 +97,36 @@ public class EditMovie extends HttpServlet {
 
 		response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
 
+	}
+
+	public static void editMovieLink(PrintWriter out, Integer movieID, String oldVal, String field) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Change "+field+"</button>" +
+				"</form>");
+	}
+
+	public static void addStarGenreLink(PrintWriter out, Integer movieID, String field) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<input type=\"text\" name=\"value\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
+				"</form>");
+	}
+
+	public static void removeStarGenreLink(PrintWriter out, Integer movieID, Integer delID, String field,String name) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
+				"</form>");
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
