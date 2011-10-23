@@ -91,6 +91,60 @@ div.menu ul.sub li {
 	display: inline;
 } */
 
+/* ADMIN MENU */
+
+div.admin-menu {
+	width: 100%;
+	height: 40 px;
+    border-top: 1px solid #999999;
+	background-color: #666666;
+	color: #eeeeee;
+	overflow: hidden;
+}
+
+div.admin-menu a {
+	display: block;
+	text-decoration: none;
+	padding: 10px;
+	color: #eeeeee;
+}
+
+div.admin-menu a:hover {
+	color: #000000;
+}
+
+div.admin-menu a.first {
+	color: #1e9184;
+}
+
+div.admin-menu ul {
+	list-style-type: none;
+}
+
+div.admin-menu ul li {
+	padding: 10 px;
+	background-color: #666666;
+}
+
+div.admin-menu ul.admin-main {
+	height: 39px;
+}
+
+div.admin-menu ul.admin-main li {
+	float: left;
+	display: inline;
+	border-right: 1px solid #999999;
+}
+
+div.admin-menu li.first {
+	padding-right: 100px;
+}
+
+div.admin-menu li.last {
+	float: right;
+	border: 0;
+}
+
 /* CONTENT */
 
 div.content {

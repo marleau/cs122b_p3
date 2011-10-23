@@ -14,9 +14,10 @@
 	
 	<%@ include file="menu.jsp" %>
 	
+	<% Boolean isAdmin = (Boolean) session.getAttribute("isAdmin"); %>
+	<% if (isAdmin != null && isAdmin){ %>
+		<%@ include file="admin-menu.jsp" %>
+	<% } %>	
+		
 	<div class="content">
 	
-	<% Boolean isAdmin = (Boolean) session.getAttribute("isAdmin"); %>
-		<% if (isAdmin != null && isAdmin){ %>
-			<H3>ADMIN LOGIN</H3>
-		<% } %>
