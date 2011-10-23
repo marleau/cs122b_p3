@@ -134,4 +134,14 @@
     <servlet-name>EditMovie</servlet-name>
     <url-pattern>/EditMovie</url-pattern>
   </servlet-mapping>
+    <servlet>
+    <description></description>
+    <display-name>AdminLogin</display-name>
+    <servlet-name>AdminLogin</servlet-name>
+    <servlet-class>Fabflix.AdminLogin</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AdminLogin</servlet-name>
+    <url-pattern>/admin</url-pattern>
+  </servlet-mapping>
 </web-app>
