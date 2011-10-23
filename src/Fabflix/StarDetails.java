@@ -31,13 +31,14 @@ public class StarDetails extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		Login.kickNonUsers(request, response);// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
-
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
 		try {
 			
 			Connection dbcon = ListResults.openConnection();
@@ -49,6 +50,17 @@ public class StarDetails extends HttpServlet {
 			} catch (Exception e) {
 				starID = 0;
 			}
+			
+			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+			
+			Boolean edit = false; // trigger edit mode
+			if (isAdmin != null && isAdmin){
+				try {
+					edit = Boolean.valueOf(request.getParameter("edit"));
+				} catch (Exception e) {
+					edit = false;
+				}
+			}
 
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
@@ -57,28 +69,58 @@ public class StarDetails extends HttpServlet {
 			ResultSet rs = statement.executeQuery(query);
 
 			if (rs.next()) {// Get star if ID exists
-				String starName = rs.getString("first_name") + " " + rs.getString("last_name");
+				String first_name = rs.getString("first_name");
+				String last_name = rs.getString("last_name");
+				String starName = first_name + " " + last_name;
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
 
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
+
 				session.setAttribute("title", starName);
 				out.println(ListResults.header(context, session));
 
 				// Star Details
-				out.println("<H1>" + starName + "</H1><BR>" + "<img src=\"" + starIMG + "\">" + "<BR>");
+				out.println("<H1>" + starName + " " );
+				if (isAdmin != null && isAdmin){
+					if (edit){
+						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=false\">Stop Editing</A>)");
+					}else{
+						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=true\">Edit</A>)");
+					}
+				}
+				out.println("</H1><BR>");
+				//TODO add DELETE STAR
+				
+				out.println("<img src=\"" + starIMG + "\" height=\"300\"><BR><BR>");
+				
 				out.println("ID: " + starID + "<BR>");// STAR DETAILS
-				out.println("Date of Birth: " + dob + "<BR><BR>");
+				if (edit){
+					EditStar.editStarLink(out, starID, first_name, "first_name");
+					out.println("<BR>");
+				}
+				if (edit){
+					EditStar.editStarLink(out, starID, last_name, "last_name");
+					out.println("<BR>");
+				}
+				if (edit){
+					EditStar.editStarLink(out, starID, starIMG, "photo_url");
+					out.println("<BR>");
+				}
+				
+				out.println("Date of Birth: " + dob);
+				if (edit){
+					out.println(" (yyyy-MM-dd)");
+					EditStar.editStarLink(out, starID, dob, "dob");
+					out.println("<BR>");
+				}
 
-				ListResults.listMoviesIMG(out, dbcon, starID);
+				out.println("<BR><BR>");
+				
+				ListResults.listMoviesIMG(out, dbcon, 0, starID, edit);
 
 				
 			} else {// starID didn't return a star
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
-
 				session.setAttribute("title", "FabFlix -- Star Not Found");
 				out.println(ListResults.header(context, session));
 				out.println("<H1>Star Not Found</H1>");
@@ -92,19 +134,18 @@ public class StarDetails extends HttpServlet {
 			statement.close();
 			dbcon.close();
 			
-		} catch (SQLException ex) {
-			//TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+		}  catch (SQLException ex) {
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			//TODO header and footer
-			out.println("<HTML>" + "<HEAD><TITLE>" + "MovieDB: Error" + "</TITLE></HEAD>\n<BODY>" + "<P>SQL error in doGet: " + ex.getMessage() + "<br>"
-					+ ex.toString() + "</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();

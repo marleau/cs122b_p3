@@ -2,7 +2,11 @@ package Fabflix;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -12,15 +16,15 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 /**
- * Servlet implementation class EditMovie
+ * Servlet implementation class EditStar
  */
-public class EditMovie extends HttpServlet {
+public class EditStar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public EditMovie() {
+	public EditStar() {
 		super();
 	}
 
@@ -29,7 +33,7 @@ public class EditMovie extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
+		// if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 		Login.kickNonUsers(request, response);
 		Login.kickNonAdmin(request, response);
 
@@ -41,14 +45,14 @@ public class EditMovie extends HttpServlet {
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
 		String field = request.getParameter("field");
-		String movieID = request.getParameter("movieID");
+		String starID = request.getParameter("starID");
 
 		//Scrub Args
 		value = ListResults.cleanSQL(value);
 		
 		
 		//Kick non admins
-		if (movieID == null || isAdmin == null || !isAdmin) {
+		if (starID == null || isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
 			return;
 		}
@@ -60,34 +64,22 @@ public class EditMovie extends HttpServlet {
 
 			if (action != null && field != null && value != null) {
 				if (action.equals("delete")) {// ==========DELETE
-					if (field.equals("genre")) {
-						String query = "DELETE FROM genres_in_movies WHERE genre_id = '" + value + "' AND movie_id = '" + movieID + "'";
-						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
-						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
+					if (field.equals("movie")) {
+						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + starID + "' AND movie_id = '" + value + "'";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("add")) {// ==========ADD
-					if (field.equals("genre")) {
-						//TODO Add genre based on name and merge with similar, because ID is not shown
-						String query = "INSERT INTO genres_in_movies VALUES(" + value + ", " + movieID + ");";
-						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
-						String query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
+					if (field.equals("movie")) {
+						String query = "INSERT INTO stars_in_movies VALUES(" + starID + ", " + value + ");";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("edit")) {// ==========EDIT
-					if (field.equals("title") || field.equals("year") || field.equals("director") || field.equals("banner_url") || field.equals("trailer_url")) {
-						if (field.equals("year")) {
-							try {
-								Integer year = Integer.valueOf(value);
-								value = year.toString();
-							} catch (Exception e) {
-								response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
-								return;
-							}
+					if (field.equals("first_name") || field.equals("last_name") || field.equals("dob") || field.equals("photo_url")) {
+						if (field.equals("dob") && !isValidDate(value)) {
+							response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
+							return;
 						}
-						String query = "UPDATE movies SET " + field + " = '" + value + "' WHERE id = '" + movieID + "'";
+						String query = "UPDATE stars SET " + field + " = '" + value + "' WHERE id = '" + starID + "'";
 						statement.executeUpdate(query);
 					}
 				}
@@ -97,40 +89,53 @@ public class EditMovie extends HttpServlet {
 		} catch (SQLException e) {
 		}
 
-		response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
+		response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
 
 	}
+	
+    public static boolean isValidDate(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date testDate = null;
+        try {
+            testDate = sdf.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        if (!sdf.format(testDate).equals(date)) {
+            return false;
+        }
+        return true;
 
-	public static void editMovieLink(PrintWriter out, Integer movieID, String oldVal, String field) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
+    }
+	public static void editStarLink(PrintWriter out, Integer starID, String oldVal, String field) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Change "+field+"</button>" +
 				"</form>");
 	}
 
-	public static void addStarGenreLink(PrintWriter out, Integer movieID, String field) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
+	public static void addMovieLink(PrintWriter out, Integer starID, String field) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"text\" name=\"value\" />" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
 				"</form>");
 	}
 
-	public static void removeStarGenreLink(PrintWriter out, Integer movieID, Integer delID, String field,String name) {
-		out.println("<form method=\"post\" action=\"EditMovie\">" +
+	public static void removeMovieLink(PrintWriter out, Integer starID, Integer delID, String name) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");
 	}
-
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.sendRedirect("index.jsp");
 	}

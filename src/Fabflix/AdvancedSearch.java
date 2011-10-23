@@ -33,12 +33,15 @@ public class AdvancedSearch extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+	//	if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
+		Login.kickNonUsers(request, response);
 
 		response.setContentType("text/html"); // Response mime type
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
 		try {
 			
 			Connection dbcon = ListResults.openConnection();
@@ -139,22 +142,26 @@ public class AdvancedSearch extends HttpServlet {
 			String searchString = "t=" + java.net.URLEncoder.encode(t, "UTF-8") + "" + "&y=" + y + "&d=" + java.net.URLEncoder.encode(d, "UTF-8") + "&fn="
 					+ java.net.URLEncoder.encode(fn, "UTF-8") + "&ln=" + java.net.URLEncoder.encode(ln, "UTF-8") + "&sub=" + sub;
 
+
+			t = ListResults.cleanSQL(t);
+			d = ListResults.cleanSQL(d);
+			fn = ListResults.cleanSQL(fn);
+			ln = ListResults.cleanSQL(ln);
+			
 			// If no parameter, show search; If one parameter, do basic search
 			if (paramCount == 0) {
 				// ===Advanced Search Form
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
 				session.setAttribute("title", "Advanced Search");
 				
 				out.println(ListResults.header(context, session));
 				
-				out.println("Advanced Search: ");
+				out.println("<h1>Advanced Search</h1>");
 
 				out.println("<FORM ACTION=\"AdvancedSearch\" METHOD=\"GET\">" + "Title: <INPUT TYPE=\"TEXT\" NAME=\"t\"><BR>"
 						+ "Year: <INPUT TYPE=\"TEXT\" NAME=\"y\"><BR>" + "Director: <INPUT TYPE=\"TEXT\" NAME=\"d\"><BR>"
 						+ "Star's First Name: <INPUT TYPE=\"TEXT\" NAME=\"fn\"><BR>" 
 						+ "Star's Last Name: <INPUT TYPE=\"TEXT\" NAME=\"ln\"><BR>"
-						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\"><BR>"
+						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\" checked><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
 				ListResults.footer(out, dbcon, resultsPerPage);
@@ -262,8 +269,7 @@ public class AdvancedSearch extends HttpServlet {
 
 				// Open HTML
 
-				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
+
 				session.setAttribute("title", "Advanced Search");
 
 				// BODY
@@ -298,7 +304,7 @@ public class AdvancedSearch extends HttpServlet {
 					String bannerURL = searchResults.getString("banner_url");
 					String director = searchResults.getString("director");
 
-					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
 					ListResults.addToCart(out, movieID);
 					out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 					ListResults.listByYearLink(out, year);
@@ -342,17 +348,17 @@ public class AdvancedSearch extends HttpServlet {
 			}
 
 		} catch (SQLException ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
-			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString());
-			out.println("</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();

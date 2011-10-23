@@ -11,10 +11,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class LoginPage extends HttpServlet {
+public class Login extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	public LoginPage() {
+	public Login() {
 		super();
 	}
 
@@ -101,13 +101,17 @@ public class LoginPage extends HttpServlet {
 		return false;
 	}
 
-	// Validate user
+	// if not logged in, redirect to login page
 	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 		Boolean login = (Boolean) session.getAttribute("login");
 		
+		if (login == null) {
+			session.setAttribute("login", false);
+		}
+		
 		// Check login
-		if (login != null && !login) {
+		if (!login) {
 			String URL = request.getRequestURL().toString();
 			String qs = request.getQueryString();
 			if (qs != null) {
@@ -116,6 +120,15 @@ public class LoginPage extends HttpServlet {
 			// Save destination till after logged in
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
+			response.sendRedirect("login");
+		}
+	}
+	
+	public static void kickNonAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		HttpSession session = request.getSession();
+		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		
+		if (!isAdmin) {
 			response.sendRedirect("login");
 		}
 	}

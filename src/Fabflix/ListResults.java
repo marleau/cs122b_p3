@@ -24,9 +24,7 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 
-/**
- * Servlet implementation class listResults
- */
+// Servlet implementation class listResults
 public class ListResults extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -36,13 +34,15 @@ public class ListResults extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		LoginPage.kickNonUsers(request, response);// kick if not logged in
+		Login.kickNonUsers(request, response);// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
 		// Output stream to STDOUT
 		PrintWriter out = response.getWriter();
 
+		ServletContext context = getServletContext();
+		HttpSession session = request.getSession();
 		try {
 
 			Connection dbcon = openConnection();
@@ -55,7 +55,8 @@ public class ListResults extends HttpServlet {
 
 			// ===Search By
 			try {
-				if (!(searchBy.equals("title") || searchBy.equals("letter") || searchBy.equals("genre") || searchBy.equals("year") || searchBy.equals("director") || searchBy.equals("first_name") || searchBy.equals("last_name"))) {
+				if (!(searchBy.equals("title") || searchBy.equals("letter") || searchBy.equals("genre") || searchBy.equals("year")
+						|| searchBy.equals("director") || searchBy.equals("first_name") || searchBy.equals("last_name"))) {
 					searchBy = "title";
 				}
 			} catch (NullPointerException e) {
@@ -66,6 +67,7 @@ public class ListResults extends HttpServlet {
 			if (arg == null) {
 				arg = "";
 			}
+
 			if (searchBy.equals("letter")) {
 				if (arg.isEmpty()) {
 					arg = " ";
@@ -74,14 +76,16 @@ public class ListResults extends HttpServlet {
 					// character search
 				}
 			}
+
 			if (searchBy.equals("title")) {
 				try {
 					Pattern.compile(arg);
 				} catch (PatternSyntaxException exception) {
 					arg = "";
-				} 
+				}
 			}
 
+			
 			// ===SORT
 			String sortBy = "";
 			try {
@@ -132,32 +136,41 @@ public class ListResults extends HttpServlet {
 				page = 1;
 			}
 
+			String cleanArg = cleanSQL(arg);//CLEAN FOR SQL
+			
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
 			Statement fullStatement = dbcon.createStatement();
 			String query;
 			String fullQuery;// full search to count results
-			if (arg.isEmpty()) {
+			if (cleanArg.isEmpty()) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT * FROM movies) AS results";
 			} else if (searchBy.equals("genre")) {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
-						+ arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '" + arg + "') as results";
+						+ cleanArg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres gr ON g.genre_id=gr.id WHERE name = '"
+						+ cleanArg + "') as results";
 			} else if (searchBy.equals("letter")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '^" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + arg + "') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '^" + cleanArg + "' " + sortBy + " LIMIT " + listStart
+						+ "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '^" + cleanArg + "') as results";
 			} else if (searchBy.equals("title")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + arg + "') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE title REGEXP '" + cleanArg + "' " + sortBy + " LIMIT " + listStart
+						+ "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE title REGEXP '" + cleanArg + "') as results";
 			} else if (searchBy.equals("first_name") || searchBy.equals("last_name")) {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "+searchBy+" = '"+ arg +"' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "+searchBy+" = '"+ arg +"') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
+						+ searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
+						+ searchBy + " = '" + cleanArg + "') as results";
 			} else {
-				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + arg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
-				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + arg + "') as results";
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT "
+						+ listStart + "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m WHERE " + searchBy + " = '" + cleanArg + "') as results";
 			}
 
+			
 			// Get results for this page's display
 			ResultSet searchResults = statement.executeQuery(query);
 
@@ -178,11 +191,8 @@ public class ListResults extends HttpServlet {
 
 			// TITLE
 
-			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			session.setAttribute("title", "Search by " + searchBy + ": " + arg);
-			
-			
+
 			out.println(header(context, session));
 			// BODY
 
@@ -212,16 +222,16 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\"></a><BR><BR>");
+				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
 
 				addToCart(out, movieID);
-				
+
 				out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
-				listByYearLink(out, year,resultsPerPage);
+				listByYearLink(out, year, resultsPerPage);
 
 				out.println("<BR>");
-				
-				listByDirectorLink(out, director,resultsPerPage);
+
+				listByDirectorLink(out, director, resultsPerPage);
 
 				out.println("<BR>");
 
@@ -230,9 +240,8 @@ public class ListResults extends HttpServlet {
 				out.println("<BR>");
 
 				listStars(out, dbcon, resultsPerPage, movieID);
-				
-//				String target = (String) session.getAttribute("user.dest");
 
+				// String target = (String) session.getAttribute("user.dest");
 
 				out.println("<BR><BR><HR>");
 			}
@@ -260,23 +269,25 @@ public class ListResults extends HttpServlet {
 			fullStatement.close();
 			dbcon.close();
 
-
 		} catch (SQLException ex) {
-			//TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");
+			out.println(ListResults.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
 			} // end while
-			out.println("</BODY></HTML>");
+			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			//TODO header and footer
-			out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY><P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString()
-					+ "</P></BODY></HTML>");
+			out.println(ListResults.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 		out.close();
+	}
+
+	public static String cleanSQL(String arg) {
+		return arg.replace("'", "''");
 	}
 
 	public static Connection openConnection() throws NamingException, SQLException {
@@ -303,38 +314,25 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void addToCart(PrintWriter out, Integer movieID) {
-		out.println("<a href=\"cart?add="+movieID+"\">Add to Cart</a>");
+		out.println("<a href=\"cart?add=" + movieID + "\">Add to Cart</a>");
 	}
 
 	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
 
 		out.println("<HR>");
-		
+
 		browseGenres(out, dbcon, resultsPerPage);
 
 		out.println("<HR>");
 
 		browseTitles(out, resultsPerPage);
-		
+
 		out.println("		</div>	</body></html>");
 	}
-	
-	public static String header(ServletContext context, HttpSession session){
-		String rtn = "		<html>" +
-				"			<head>" +
-				"		        <title>Fabflix - "+ session.getAttribute("title")+"</title>" +
-				"			</head>" +
-				"				<style>" +
-									readStyle(context) +
-				"				</style>" +
-				"			<body>" +
-								readMenu(context) +
-				"					<div class=\"content\">";
 
-		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-		if (isAdmin != null && isAdmin){
-			rtn += "<H3>ADMIN LOGIN</H3>";
-		}
+	public static String header(ServletContext context, HttpSession session) {
+		String rtn = "		<html>" + "			<head>" + "		        <title>Fabflix - " + session.getAttribute("title") + "</title>" + "			</head>" + "				<style>"
+				+ readStyle(context) + "				</style>" + "			<body>" + readMenu(context, session) + "					<div class=\"content\">";
 		return rtn;
 	}
 	
@@ -344,21 +342,20 @@ public class ListResults extends HttpServlet {
 		InputStream is = context.getResourceAsStream("css/style.css");
 		String rtn = "";
 		if (is != null) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is));			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			try {
 				while (reader.ready()) {
-					rtn += reader.readLine();
+					rtn += reader.readLine() + "\n";
 				}
 			} catch (IOException e) {
-				//If error... use old style.css
+				// If error... use old style.css
 				rtn = "/* NORMALIZE */* {	margin: 0;	padding: 0;}ul {	list-style-type: none;}/* GLOBAL */body {    font-family: Helvetica;    font-size: 16 px;    color: #666666;}/* MENU */div.menu {	width: 100%;	height: 40 px;	background-color: #333333;	color: #eeeeee;	overflow: hidden;}div.menu a {	display: block;	text-decoration: none;	padding: 10px;	color: #999999;}div.menu a:hover {	color: #ffffff;}div.menu a.first {	color: #1e9184;}div.menu ul {	list-style-type: none;}div.menu ul li {	padding: 10 px;	background-color: #333333;}div.menu ul.main {	height: 39px;}div.menu ul.main li {	float: left;	display: inline;	border-right: 1px solid #999999;}div.menu li.first {	padding-right: 100px;}div.menu li.last {	float: right;	border: 0;}div.menu form {	padding: 10px;}div.menu input {}div.menu button {}/*div.menu ul.sub {	float: right;	background-color: #333333;}div.menu ul.sub li {	float: left;	display: inline;} *//* CONTENT */div.content {	clear: both;	padding: 20px;	line-height: 150%;}div.content form {	width:400px;}/*div.content label{	display:block;	text-align:right;	width:140px;	float:left;}div.content input{	float:left;	font-size:12px;	padding:4px 2px;	border:solid 1px #95e1d8;	width:200px;	margin:2px 0 20px 10px;}div.content button{	clear:both;	float: left;	margin-left:150px;	width:125px;	height:31px;	background:#666666;	border: 0;	text-align:center;	line-height:31px;	color:#FFFFFF;}*/h1, h2, h3 {	margin-bottom: 15px;}ul.cart {	margin-left: 20px;}p {	margin-bottom: 10px;}.error {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #fdd5d3;	border: 1px solid #f26a63;}.success {	margin: 15px;	text-align: center;	width: 400px;	padding: 10px;	background: #d4fcd9;	border: 1px solid #6af263;}div.cart {	/* border: 1px dotted green; */	width: 600px;}div.cart form {	width: 600px;}div.cart label {	margin-right: 10px;}div.cart input {	float: right;}div.cart input.qty {	width: 20px;	float: none;}div.cart li {	float: left;	display: inline;	padding-left: 10px;}div.cart li.first {	width: 250px;	padding-left: 0 px;}div.content a {	color: #1e9184;	text-decoration: none;	font-weight: bold;}div.content a:hover {	color: #f6b546;	text-decoration: underline;}hr {	height: 1px;	background: #1e9184;	border: 0;	margin: 20px 0px;}div.ccinfo label, div.ccinfo input {	margin: 10px;}";
 			}
 		}
 		return rtn;
 	}
 	
-	public static String readMenu(ServletContext context){
-		//Automatically reads menu.jsp from file; YAY no more replacing!
+	public static String readMenu(ServletContext context, HttpSession session){
 		
 		InputStream is = context.getResourceAsStream("menu.jsp");
 		String rtn = "";
@@ -371,6 +368,21 @@ public class ListResults extends HttpServlet {
 			} catch (IOException e) {
 				//If error... use old menu
 				rtn = "<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/project3_10\" class=\"first\">Fabflix</a></li>		<li><a href=\"ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"cart\">View Cart</a></li>		<li><a href=\"checkout\">Check out</a></li>		<li><a href=\"logout\">Logout</a></li>	</ul></div>";
+			}
+		}
+		
+		// if admin, include admin menu
+		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		if (isAdmin != null && isAdmin){
+			is = context.getResourceAsStream("admin-menu.jsp");
+		
+			if (is != null) {
+				BufferedReader reader = new BufferedReader(new InputStreamReader(is));			
+				try {
+					while (reader.ready()) {
+						rtn += reader.readLine();
+					}
+				} catch (IOException e) {}
 			}
 		}
 		return rtn;
@@ -616,19 +628,32 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
-		listStarsIMG(out, dbcon, 0, movieID);
+		listStarsIMG(out, dbcon, 0, movieID, false);
 	}
 
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
+		listStarsIMG(out, dbcon, rpp, movieID, false);
+	}
+
+	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; list of images
-		out.println("Stars: <BR><BR>");
-		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID + "' ORDER BY last_name");
+		out.println("Stars: ");
+		if (edit) {
+			EditMovie.addStarGenreLink(out, movieID, "star");
+		}
+		out.println("<BR><BR>");
+		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID
+						+ "' ORDER BY last_name");
 		while (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
-			String starID = stars.getString("star_id");
-			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\">" + starName + "</a><BR><BR>");
+			int starID = stars.getInt("star_id");
+			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\" height=\"120\">" + starName + "</a>");
+			if (edit) {
+				EditMovie.removeStarGenreLink(out, movieID, starID, "star", starName);
+			}
+			out.println("<BR><BR>");
 		}
 		stars.close();
 		statement.close();
@@ -639,8 +664,15 @@ public class ListResults extends HttpServlet {
 	}
 
 	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer starID) throws SQLException {
+		
+	}
+	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer starID, Boolean edit) throws SQLException {
 		Statement statement = dbcon.createStatement();
-		out.println("Starred in:<BR><BR>");
+		out.println("Starred in:");
+		if (edit) {
+			EditStar.addMovieLink(out, starID, "movie");
+		}
+		out.println("<BR><BR>");
 		ResultSet movies = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
 				+ "AND s.star_id=s1.id " + "AND s1.id = '" + starID + "' ORDER BY year DESC");
 
@@ -650,28 +682,57 @@ public class ListResults extends HttpServlet {
 			Integer movieID = movies.getInt("movie_id");
 			String bannerURL = movies.getString("banner_url");
 
-			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\">" + title + " (" + year + ")" + "</a> (");
-			ListResults.addToCart(out, movieID);
-			out.println(")<BR><BR>");
+			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"200\">" + title + " (" + year + ")" + "</a>");
+			if (edit){
+				EditStar.removeMovieLink(out, starID, movieID, title + " ("+year+")");
+			}else{
+				out.println(" (");
+				ListResults.addToCart(out, movieID);
+				out.println(")");
+			}
+			out.println("<BR><BR>");
 		}
 
 	}
 
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException, UnsupportedEncodingException {
-		listGenres(out, dbcon, 0, movieID);// Default results per page
+		listGenres(out, dbcon, 0, movieID, false);// Default results per page
 	}
 
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException, UnsupportedEncodingException {
+		listGenres(out, dbcon, rpp, movieID, false);
+	}
+
+	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException,
+			UnsupportedEncodingException {
 		// ===GENRES; comma separated list
 		out.println("Genre: ");
+		if (edit) {
+			EditMovie.addStarGenreLink(out, movieID, "genre");
+			out.println("<BR>");
+		}
 		Statement statement = dbcon.createStatement();
-		ResultSet genres = statement.executeQuery("SELECT DISTINCT name FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='" + movieID + "' ORDER BY name");
+		ResultSet genres = statement.executeQuery("SELECT DISTINCT name,genre_id FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='"
+						+ movieID + "' ORDER BY name");
 		if (genres.next()) {
 			String genre = genres.getString("name").trim();
+			Integer delID = genres.getInt("genre_id");
 			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+			if (edit) {
+				EditMovie.removeStarGenreLink(out, movieID, delID, "genre", genre);
+				out.println("<BR>");
+			}
 			while (genres.next()) {
 				genre = genres.getString("name").trim();
-				out.println(", <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+				delID = genres.getInt("genre_id");
+				if (!edit) {
+					out.println(", ");
+				}
+				out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
+				if (edit) {
+					EditMovie.removeStarGenreLink(out, movieID, delID, "genre", genre);
+					out.println("<BR>");
+				}
 			}
 		}
 		genres.close();

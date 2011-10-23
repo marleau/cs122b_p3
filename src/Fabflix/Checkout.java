@@ -28,7 +28,7 @@ public class Checkout extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		LoginPage.kickNonUsers(request, response);
+		Login.kickNonUsers(request, response);
 		HttpSession session = request.getSession();
 		if (request.getParameter("updateCart") != null) {
 			ShoppingCart.updateCart(request, response);	
@@ -85,7 +85,7 @@ public class Checkout extends HttpServlet {
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		LoginPage.kickNonUsers(request, response);
+		Login.kickNonUsers(request, response);
 		HttpSession session = request.getSession(true);// Get client session
 		session.setAttribute("title", "Checkout");
 		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");

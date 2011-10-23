@@ -7,15 +7,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-public class HomePage extends HttpServlet {
+public class Home extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    public HomePage() {
+    public Home() {
         super();
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        LoginPage.kickNonUsers(request, response);
+        Login.kickNonUsers(request, response);
         HttpSession session = request.getSession();
         session.setAttribute("title", "Home");
         response.sendRedirect("index.jsp");
