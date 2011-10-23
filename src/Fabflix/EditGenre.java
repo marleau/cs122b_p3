@@ -49,10 +49,12 @@ public class EditGenre extends HttpServlet {
 		String genreID = request.getParameter("genreID");
 
 		// Scrub Args
-		value = ListResults.cleanSQL(value);
-
+		if (value != null){
+			value = ListResults.cleanSQL(value);
+		}
+		
 		// Kick non admins
-		if (genreID == null || isAdmin == null || !isAdmin) {
+		if (isAdmin == null || !isAdmin) {
 			response.sendRedirect("index.jsp");
 			return;
 		}
@@ -63,7 +65,21 @@ public class EditGenre extends HttpServlet {
 			Statement statement = dbcon.createStatement();
 
 			//TODO genre editing
-			
+			if (action != null && field != null) {
+				if (action.equals("delete")) {// ==========DELETE
+					if (field.equals("genre") && genreID != null) {
+						String query = "DELETE FROM genres WHERE id = '" + genreID + "'";
+						statement.executeUpdate(query);
+					}else if (field.equals("allEmpty")){
+						//FIXME Delete from where genre is not in genres_in_movies 
+						String query = "DELETE FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
+						statement.executeUpdate(query);
+					}
+				}
+				
+				
+				
+			}
 			
 			
 			
@@ -72,8 +88,33 @@ public class EditGenre extends HttpServlet {
 		} catch (SQLException e) {
 		}
 
+		try {
+			String target = (String) session.getAttribute("EditGenre.dest");
+			if (target != null) {
+				session.removeAttribute("EditGenre.dest");
+				response.sendRedirect(target);
+				return;
+			}
+		} catch (Exception ignored) {
+		}
+		
 		response.sendRedirect("CheckDB");// TODO correct return EditGenre.dest
 
+	}
+	public static String deleteGenreLink(Integer genreID, String name) {
+		return "<form method=\"post\" action=\"EditGenre\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"genre\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=genreID VALUE=\""+ genreID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Delete "+name+"</button>" +
+				"</form>";
+	}
+	public static String deleteAllEmptyGenreLink() {
+		return "<form method=\"post\" action=\"EditGenre\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"allEmpty\">" +
+				"<button type=\"submit\" value=\"submit\">Delete All Empty Genres</button>" +
+				"</form>";
 	}
 
 	public static void savePath(HttpServletRequest request) {

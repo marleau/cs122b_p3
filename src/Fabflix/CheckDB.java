@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
 /**
  * Servlet implementation class CheckDB
  */
@@ -35,7 +34,9 @@ public class CheckDB extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
+		if (LoginPage.kickNonUsers(request, response)) {
+			return;
+		}// kick if not logged in
 
 		HttpSession session = request.getSession();
 
@@ -83,13 +84,11 @@ public class CheckDB extends HttpServlet {
 			out.println(ListResults.header(context, session));
 
 			out.println(printOptionMenu());
-			if (option > 0){
+			if (option > 0) {
 				out.println(printSubMenu(option));
 			}
 
 			out.println("<BR>");
-
-			String output;
 
 			switch (option) {
 			case 1:
@@ -99,12 +98,12 @@ public class CheckDB extends HttpServlet {
 					out.println("<H1>Missing Stars:</H1><BR>");
 					out.println(printMovieWoStar());
 					break;
-					
+
 				case 2:
 					out.println("<H1>Missing Genres:</H1><BR>");
 					out.println(printMovieWoGenres());
 					break;
-					
+
 				case 3:
 					out.println("<H1>Duplicate Movies.</H1><BR>");
 					out.println(printSimilarMoivies());
@@ -122,17 +121,17 @@ public class CheckDB extends HttpServlet {
 					out.println("<H1>Missing First Or Last Name:</H1><BR>");
 					out.println(printStarWoName());
 					break;
-					
+
 				case 2:
 					out.println("<H1>Date Of Birth Flagged:</H1><BR>");
 					out.println(printInvlaidDOB());
 					break;
-					
+
 				case 3:
 					out.println("<H1>Missing Movies:</H1><BR>");
 					out.println(printStarWoMovie());
 					break;
-					
+
 				case 4:
 					out.println("<H1>Stars that are the same or almost the same.</H1><BR>");
 					out.println(printSimilarStar());
@@ -144,14 +143,16 @@ public class CheckDB extends HttpServlet {
 				break;
 
 			case 3:
-				//Genre Errors
+				// Genre Errors
 				switch (sub) {
 				case 1:
+					EditGenre.savePath(request);
 					out.println("<H1>Empty Genres:</H1><BR>");
 					out.println(printGenreWoMovie());
 					break;
-					
+
 				case 2:
+					EditGenre.savePath(request);
 					out.println("<H1>Genres that are the same or almost the same.</H1><BR>");
 					out.println(printSimilarGenres());
 					break;
@@ -162,7 +163,7 @@ public class CheckDB extends HttpServlet {
 				break;
 
 			case 4:
-				//Customer Errors
+				// Customer Errors
 				switch (sub) {
 				case 1:
 					out.println("<H1>Invalid Email:</H1><BR>");
@@ -177,7 +178,7 @@ public class CheckDB extends HttpServlet {
 				default:
 					break;
 				}
-				//TODO check sales date in future?
+				// TODO check sales date in future?
 				break;
 
 			default:
@@ -208,62 +209,28 @@ public class CheckDB extends HttpServlet {
 	}
 
 	private String printOptionMenu() {
-		return "<div class=\"menu\">" +
-				"	<ul class=\"main\">" +
-				"		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>" +
-				"		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" +
-				"   </ul>" +
-				"</div>";
+		return "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>" + "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>" + "		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" + "   </ul>" + "</div>";
 	}
 
 	private String printSubMenu(Integer option) {
 		String rtn = "";
 		switch (option) {
 		case 1:
-			rtn = "<div class=\"menu\">" +
-			"	<ul class=\"main\">" +
-			"		<li>Movie</li>" +
-			"		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>" +
-			"		<li><a href=\"CheckDB?option=1&sub=2\">Missing Genre</a></li>" +
-			"		<li><a href=\"CheckDB?option=1&sub=3\">Duplicate Movies</a></li>" +
-			"   </ul>" +
-			"</div>";
+			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Movie</li>" + "		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=2\">Missing Genre</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=3\">Duplicate Movies</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 2:
-			rtn = "<div class=\"menu\">" +
-			"	<ul class=\"main\">" +
-			"		<li>Star</li>" +
-			"		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>" +
-			"		<li><a href=\"CheckDB?option=2&sub=2\">DOB Warning</a></li>" +
-			"		<li><a href=\"CheckDB?option=2&sub=3\">Missing Movies</a></li>" +
-			"		<li><a href=\"CheckDB?option=2&sub=4\">Duplicate Stars</a></li>" +
-			"   </ul>" +
-			"</div>";
+			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Star</li>" + "		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=2\">DOB Warning</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=3\">Missing Movies</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=4\">Duplicate Stars</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 3:
-			rtn = "<div class=\"menu\">" +
-			"	<ul class=\"main\">" +
-			"		<li>Genre</li>" +
-			"		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>" +
-			"		<li><a href=\"CheckDB?option=3&sub=2\">Duplicate Genre</a></li>" +
-			"   </ul>" +
-			"</div>";
+			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Genre</li>" + "		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>" + "		<li><a href=\"CheckDB?option=3&sub=2\">Duplicate Genre</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 4:
-			rtn = "<div class=\"menu\">" +
-			"	<ul class=\"main\">" +
-			"		<li>Customer</li>" +
-			"		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>" +
-			"		<li><a href=\"CheckDB?option=4&sub=2\">Invalid CC</a></li>" +
-			"   </ul>" +
-			"</div>";
+			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Customer</li>" + "		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>" + "		<li><a href=\"CheckDB?option=4&sub=2\">Invalid CC</a></li>" + "   </ul>" + "</div>";
 			break;
-		
+
 		default:
 			break;
-		}		
+		}
 		return rtn;
 	}
 
@@ -327,13 +294,18 @@ public class CheckDB extends HttpServlet {
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM genres g LEFT OUTER JOIN genres_in_movies gi ON gi.genre_id=g.id LEFT OUTER JOIN movies m ON gi.movie_id=m.id WHERE genre_id IS NULL OR movie_id IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
+		searchResults.last();
+		if (searchResults.getRow() > 0) {
+			rtn += EditGenre.deleteAllEmptyGenreLink();
+		}
+		searchResults.beforeFirst();
+		rtn += "<BR><BR>";
 		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
 			String name = searchResults.getString("name");
 			int id = searchResults.getInt("id");
 
-			// TODO make remove button remove empty genre
-			// TODO make a remove all empty genres button
-			rtn += "ID: " + id + "<BR>" + name + "<BR>Remove";
+			rtn += "ID: " + id + "<BR>" + name + "<BR>";
+			rtn += EditGenre.deleteGenreLink(id, name);
 
 			rtn += "<BR><BR>";
 		}
@@ -357,14 +329,14 @@ public class CheckDB extends HttpServlet {
 
 			// TODO make remove button combine genre
 			// TODO make a combine all similar genres button
-			rtn += name + "<BR>Count: " + count +  "<BR>Merge";
+			rtn += name + "<BR>Count: " + count + "<BR>Merge";
 
 			rtn += "<BR><BR>";
 		}
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -415,7 +387,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -469,7 +441,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+
 		return rtn;
 	}
 
@@ -557,8 +529,8 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
-		//TODO remove button
-		//TODO link to customer info page
+		// TODO remove button
+		// TODO link to customer info page
 		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
 	}
 
@@ -568,7 +540,7 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, Integer count) {
-		//TODO mergeWith buttons
+		// TODO mergeWith buttons
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID + "<BR>Count: " + count + "<BR>Merge";
 	}
 
@@ -576,14 +548,11 @@ public class CheckDB extends HttpServlet {
 		// TODO remove and mergeWith buttons
 		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
 	}
-	
-	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
-		//TODO mergeWith buttons
-		//TODO searchBy similar to, or display similar
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a><BR>Count: "+ count + "<BR>Merge";
-	}
-	
-	
 
+	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
+		// TODO mergeWith buttons
+		// TODO searchBy similar to, or display similar
+		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a><BR>Count: " + count + "<BR>Merge";
+	}
 
 }

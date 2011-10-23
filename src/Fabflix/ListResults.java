@@ -700,7 +700,7 @@ public class ListResults extends HttpServlet {
 
 			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"200\">" + title + " (" + year + ")" + "</a>");
 			if (edit){
-				EditStar.removeMovieLink(out, starID, movieID, "movie", title + " ("+year+")");
+				EditStar.removeMovieLink(out, starID, movieID, title + " ("+year+")");
 			}else{
 				out.println(" (");
 				ListResults.addToCart(out, movieID);

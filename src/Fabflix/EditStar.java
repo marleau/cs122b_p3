@@ -125,11 +125,11 @@ public class EditStar extends HttpServlet {
 				"</form>");
 	}
 
-	public static void removeMovieLink(PrintWriter out, Integer starID, Integer delID, String field,String name) {
+	public static void removeMovieLink(PrintWriter out, Integer starID, Integer delID, String name) {
 		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");
