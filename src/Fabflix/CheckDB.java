@@ -265,6 +265,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
+		dbcon.close();
 		return rtn;
 	}
 
@@ -292,7 +293,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -316,7 +317,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -344,7 +345,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -367,7 +368,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -395,7 +396,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -421,7 +422,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-
+		dbcon.close();
 		return rtn;
 	}
 
@@ -448,7 +449,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+		dbcon.close();
 		return rtn;
 	}
 
@@ -477,7 +478,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+		dbcon.close();
 		return rtn;
 	}
 
@@ -504,7 +505,7 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
-		
+		dbcon.close();
 		return rtn;
 	}
 

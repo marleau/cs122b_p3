@@ -579,6 +579,7 @@ public class ListResults extends HttpServlet {
 		}
 		allGenre.close();
 		statement.close();
+		dbcon.close();
 		return rtn;
 	}
 

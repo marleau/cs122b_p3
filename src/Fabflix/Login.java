@@ -59,7 +59,7 @@ public class Login extends HttpServlet {
 		try {
 			Connection dbcon = Database.openConnection();
 			HttpSession session = request.getSession();// Get client session
-			boolean rtn = false;
+			boolean valid = false;
 
 			Statement statement = dbcon.createStatement();
 			String query = "SELECT * FROM employees e WHERE email = '" + email + "' AND password = '" + password + "'";
@@ -69,7 +69,7 @@ public class Login extends HttpServlet {
 			if (rs.next()) {
 				session.setAttribute("user.name", rs.getString("fullname"));
 				session.setAttribute("isAdmin", true);
-				rtn = true;
+				valid = true;
 			} else {
 				statement = dbcon.createStatement();
 				query = "SELECT * FROM customers c WHERE email = '" + email + "' AND password = '" + password + "'";
@@ -80,10 +80,12 @@ public class Login extends HttpServlet {
 					session.setAttribute("user.name", rs.getString("first_name") + " " + rs.getString("last_name"));
 					session.setAttribute("user.id", rs.getString("id"));
 					session.setAttribute("isAdmin", false);
-					rtn = true;
+					valid = true;
 				}
 			}
-			return rtn;
+			
+			dbcon.close();
+			return valid;
 
 		} catch (SQLException ex) {
 			System.out.println("<HTML><HEAD><TITLE>MovieDB: Error</TITLE></HEAD><BODY>");

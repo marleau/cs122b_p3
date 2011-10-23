@@ -2,6 +2,8 @@ package Fabflix;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -35,4 +37,19 @@ public class Database {
 	public static String cleanSQL(String arg) {
 		return arg.replace("'", "''");
 	}
+	
+    public static boolean isValidDate(String date) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        java.util.Date testDate = null;
+        try {
+            testDate = sdf.parse(date);
+        } catch (ParseException e) {
+            return false;
+        }
+        if (!sdf.format(testDate).equals(date)) {
+            return false;
+        }
+        return true;
+
+    }
 }
