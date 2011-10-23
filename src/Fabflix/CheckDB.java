@@ -166,7 +166,7 @@ public class CheckDB extends HttpServlet {
 
 			// FOOTER
 
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 			ListResults.footer(out, dbcon, 0);
 
 			dbcon.close();
@@ -215,7 +215,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printMovieWoStar() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM movies m LEFT OUTER JOIN stars_in_movies s ON s.movie_id=m.id LEFT OUTER JOIN stars st ON s.star_id=st.id WHERE star_id IS NULL OR movie_id IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -237,12 +237,13 @@ public class CheckDB extends HttpServlet {
 
 		searchResults.close();
 		statement.close();
+		dbcon.close();
 		return rtn;
 	}
 
 	private String printStarWoMovie() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM stars s LEFT OUTER JOIN stars_in_movies si ON si.star_id=s.id LEFT OUTER JOIN movies m ON si.movie_id=m.id WHERE star_id IS NULL OR movie_id IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -269,7 +270,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printGenreWoMovie() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM genres g LEFT OUTER JOIN genres_in_movies gi ON gi.genre_id=g.id LEFT OUTER JOIN movies m ON gi.movie_id=m.id WHERE genre_id IS NULL OR movie_id IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -297,7 +298,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printSimilarGenres() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT *, COUNT(name) cnt FROM genres GROUP BY SOUNDEX(name) HAVING COUNT(SOUNDEX(name)) > 1 ORDER BY name";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -321,7 +322,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printMovieWoGenres() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres ge ON g.genre_id=ge.id WHERE movie_id IS NULL or genre_id IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -349,7 +350,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printSimilarMoivies() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT *,COUNT(*) cnt FROM movies GROUP BY SOUNDEX(title),year HAVING COUNT(SOUNDEX(title)) > 1 ORDER BY title";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -372,7 +373,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printStarWoName() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM stars s WHERE first_name = '' OR last_name = '' OR first_name IS NULL OR last_name IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -400,7 +401,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printSimilarStar() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT *,COUNT(*) cnt FROM stars GROUP BY SOUNDEX(first_name),SOUNDEX(last_name),dob HAVING COUNT(SOUNDEX(first_name)) > 1 ORDER BY last_name";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -426,7 +427,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printExpiredCC() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM customers WHERE cc_id IN (SELECT id FROM creditcards WHERE expiration <= CURDATE() )";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -453,7 +454,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printInvlaidDOB() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM stars s WHERE dob <= '1900/01/01' OR dob >= CURDATE()";
 		ResultSet searchResults = statement.executeQuery(query);
@@ -482,7 +483,7 @@ public class CheckDB extends HttpServlet {
 
 	private String printInvalidEmails() throws SQLException, NamingException {
 		String rtn = "";
-		Connection dbcon = ListResults.openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		String query = "SELECT * FROM customers WHERE id NOT IN (SELECT id FROM customers WHERE email REGEXP '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,4}$')";
 		ResultSet searchResults = statement.executeQuery(query);

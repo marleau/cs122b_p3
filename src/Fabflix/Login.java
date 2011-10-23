@@ -57,7 +57,7 @@ public class Login extends HttpServlet {
 	private boolean validUser(HttpServletRequest request, String email, String password) {
 		// Validate user
 		try {
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 			HttpSession session = request.getSession();// Get client session
 			boolean rtn = false;
 

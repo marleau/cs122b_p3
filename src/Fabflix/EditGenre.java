@@ -60,7 +60,7 @@ public class EditGenre extends HttpServlet {
 		}
 
 		try {
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 
 			Statement statement = dbcon.createStatement();
 

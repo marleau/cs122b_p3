@@ -58,7 +58,7 @@ public class EditStar extends HttpServlet {
 		}
 
 		try {
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 
 			Statement statement = dbcon.createStatement();
 

@@ -45,7 +45,7 @@ public class ListResults extends HttpServlet {
 		HttpSession session = request.getSession();
 		try {
 
-			Connection dbcon = openConnection();
+			Connection dbcon = Database.openConnection();
 
 			String searchBy = request.getParameter("by");// title,letter,genre,year,director
 			String arg = request.getParameter("arg");// search string
@@ -290,28 +290,28 @@ public class ListResults extends HttpServlet {
 		return arg.replace("'", "''");
 	}
 
-	public static Connection openConnection() throws NamingException, SQLException {
-		// Open context for mySQL pooling
-		Context initCtx = new InitialContext();
-		if (initCtx == null)
-			System.err.println("initCtx is NULL");
-
-		Context envCtx = (Context) initCtx.lookup("java:comp/env");
-		if (envCtx == null)
-			System.err.println("envCtx is NULL");
-
-		// Look up our data source in context.xml
-		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-
-		if (ds == null)
-			System.err.println("ds is null.");
-
-		Connection dbcon = ds.getConnection();
-		if (dbcon == null)
-			System.err.println("dbcon is null.");
-		// connection is now open
-		return dbcon;
-	}
+//	public static Connection openConnection() throws NamingException, SQLException {
+//		// Open context for mySQL pooling
+//		Context initCtx = new InitialContext();
+//		if (initCtx == null)
+//			System.err.println("initCtx is NULL");
+//
+//		Context envCtx = (Context) initCtx.lookup("java:comp/env");
+//		if (envCtx == null)
+//			System.err.println("envCtx is NULL");
+//
+//		// Look up our data source in context.xml
+//		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
+//
+//		if (ds == null)
+//			System.err.println("ds is null.");
+//
+//		Connection dbcon = ds.getConnection();
+//		if (dbcon == null)
+//			System.err.println("dbcon is null.");
+//		// connection is now open
+//		return dbcon;
+//	}
 
 	public static void addToCart(PrintWriter out, Integer movieID) {
 		out.println("<a href=\"cart?add=" + movieID + "\">Add to Cart</a>");
@@ -556,7 +556,7 @@ public class ListResults extends HttpServlet {
 	
 	public static String browseGenres(Integer resultsPerPage) throws SQLException, UnsupportedEncodingException, NamingException {
 		String rtn = "";
-		Connection dbcon = openConnection();
+		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
 		// ===GENRE browser
 		rtn += "Browse Genres: <BR>";

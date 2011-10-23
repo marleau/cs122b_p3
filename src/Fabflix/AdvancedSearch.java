@@ -44,7 +44,7 @@ public class AdvancedSearch extends HttpServlet {
 		HttpSession session = request.getSession();
 		try {
 			
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 
 			// Get parameters
 			String t = request.getParameter("t");
