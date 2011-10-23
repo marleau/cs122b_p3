@@ -136,7 +136,7 @@ public class ListResults extends HttpServlet {
 				page = 1;
 			}
 
-			String cleanArg = cleanSQL(arg);//CLEAN FOR SQL
+			String cleanArg = Database.cleanSQL(arg);//CLEAN FOR SQL
 			
 			// Declare our statement
 			Statement statement = dbcon.createStatement();
@@ -286,9 +286,9 @@ public class ListResults extends HttpServlet {
 		out.close();
 	}
 
-	public static String cleanSQL(String arg) {
-		return arg.replace("'", "''");
-	}
+//	public static String cleanSQL(String arg) {
+//		return arg.replace("'", "''");
+//	}
 
 //	public static Connection openConnection() throws NamingException, SQLException {
 //		// Open context for mySQL pooling

@@ -31,4 +31,8 @@ public class Database {
 		// connection is now open
 		return dbcon;
 	}
+	
+	public static String cleanSQL(String arg) {
+		return arg.replace("'", "''");
+	}
 }

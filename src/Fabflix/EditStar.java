@@ -48,7 +48,7 @@ public class EditStar extends HttpServlet {
 		String starID = request.getParameter("starID");
 
 		//Scrub Args
-		value = ListResults.cleanSQL(value);
+		value = Database.cleanSQL(value);
 		
 		
 		//Kick non admins

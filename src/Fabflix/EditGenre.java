@@ -50,7 +50,7 @@ public class EditGenre extends HttpServlet {
 
 		// Scrub Args
 		if (value != null){
-			value = ListResults.cleanSQL(value);
+			value = Database.cleanSQL(value);
 		}
 		
 		// Kick non admins

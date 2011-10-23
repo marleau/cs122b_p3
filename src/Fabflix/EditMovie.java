@@ -44,7 +44,7 @@ public class EditMovie extends HttpServlet {
 		String movieID = request.getParameter("movieID");
 
 		//Scrub Args
-		value = ListResults.cleanSQL(value);
+		value = Database.cleanSQL(value);
 		
 		
 		//Kick non admins
