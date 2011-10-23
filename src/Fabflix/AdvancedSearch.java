@@ -153,7 +153,7 @@ public class AdvancedSearch extends HttpServlet {
 				// ===Advanced Search Form
 				session.setAttribute("title", "Advanced Search");
 				
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 				
 				out.println("<h1>Advanced Search</h1>");
 
@@ -164,7 +164,7 @@ public class AdvancedSearch extends HttpServlet {
 						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\" checked><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
-				ListResults.footer(out, dbcon, resultsPerPage);
+				Page.footer(out, dbcon, resultsPerPage);
 				out.println("</body></html>");
 			} else if (paramCount == 1 && sub.isEmpty()) {
 				// Redirect to simple search for single parameter
@@ -274,7 +274,7 @@ public class AdvancedSearch extends HttpServlet {
 
 				// BODY
 
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 
 				out.println("<H2>Advanced Search</H2>"); // Show search options
 
@@ -340,7 +340,7 @@ public class AdvancedSearch extends HttpServlet {
 					out.println("<H3>No Results.</H3>");
 				}
 
-				ListResults.footer(out, dbcon, 0);
+				Page.footer(out, dbcon, 0);
 
 				searchResults.close();
 				statement.close();
@@ -348,7 +348,7 @@ public class AdvancedSearch extends HttpServlet {
 			}
 
 		} catch (SQLException ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
@@ -356,7 +356,7 @@ public class AdvancedSearch extends HttpServlet {
 			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
 					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;

@@ -60,7 +60,7 @@ public class CheckDB extends HttpServlet {
 			session.setAttribute("title", "CheckDB");
 
 			// HEADER
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 
 			out.println(printOptionMenu());
 			if (option > 0) {
@@ -167,12 +167,12 @@ public class CheckDB extends HttpServlet {
 			// FOOTER
 
 			Connection dbcon = ListResults.openConnection();
-			ListResults.footer(out, dbcon, 0);
+			Page.footer(out, dbcon, 0);
 
 			dbcon.close();
 
 		} catch (SQLException ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
@@ -180,7 +180,7 @@ public class CheckDB extends HttpServlet {
 			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}

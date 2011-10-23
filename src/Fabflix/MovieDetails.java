@@ -76,7 +76,7 @@ public class MovieDetails extends HttpServlet {
 				String trailerURL = rs.getString("trailer_url");
 
 				session.setAttribute("title", title);
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 
 
 				// Movie Info
@@ -141,20 +141,20 @@ public class MovieDetails extends HttpServlet {
 
 			} else {
 				session.setAttribute("title", "FabFlix -- Movie Not Found");
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 				out.println("<H1>Movie Not Found</H1>");
 			}
 
 			// Footer
 
-			ListResults.footer(out, dbcon, 0);
+			Page.footer(out, dbcon, 0);
 
 			rs.close();
 			statement.close();
 			dbcon.close();
 			
 		} catch (SQLException ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
@@ -162,7 +162,7 @@ public class MovieDetails extends HttpServlet {
 			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
 					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
