@@ -41,7 +41,7 @@ public class StarDetails extends HttpServlet {
 		HttpSession session = request.getSession();
 		try {
 			
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 			
 			// READ STAR ID
 			Integer starID;
@@ -78,7 +78,7 @@ public class StarDetails extends HttpServlet {
 
 
 				session.setAttribute("title", starName);
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 
 				// Star Details
 				out.println("<H1>" + starName + " " );
@@ -122,20 +122,20 @@ public class StarDetails extends HttpServlet {
 				
 			} else {// starID didn't return a star
 				session.setAttribute("title", "FabFlix -- Star Not Found");
-				out.println(ListResults.header(context, session));
+				out.println(Page.header(context, session));
 				out.println("<H1>Star Not Found</H1>");
 				
 			}
 			// Footer
 
-			ListResults.footer(out, dbcon, 0);
+			Page.footer(out, dbcon, 0);
 
 			rs.close();
 			statement.close();
 			dbcon.close();
 			
 		}  catch (SQLException ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
 				ex = ex.getNextException();
@@ -143,7 +143,7 @@ public class StarDetails extends HttpServlet {
 			out.println("</DIV></BODY></HTML>");
 		} // end catch SQLException
 		catch (java.lang.Exception ex) {
-			out.println(ListResults.header(context, session));
+			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
 					+ ex.toString() + "</P></DIV></BODY></HTML>");
 			return;

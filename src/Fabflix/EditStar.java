@@ -21,17 +21,10 @@ import javax.servlet.http.HttpSession;
 public class EditStar extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public EditStar() {
 		super();
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
 		Login.kickNonUsers(request, response);
@@ -48,17 +41,15 @@ public class EditStar extends HttpServlet {
 		String starID = request.getParameter("starID");
 
 		//Scrub Args
-		value = ListResults.cleanSQL(value);
+		value = Database.cleanSQL(value);
 		
-		
-		//Kick non admins
-		if (starID == null || isAdmin == null || !isAdmin) {
+		if (starID == null) {
 			response.sendRedirect("index.jsp");
 			return;
 		}
 
 		try {
-			Connection dbcon = ListResults.openConnection();
+			Connection dbcon = Database.openConnection();
 
 			Statement statement = dbcon.createStatement();
 
@@ -75,7 +66,7 @@ public class EditStar extends HttpServlet {
 					}
 				} else if (action.equals("edit")) {// ==========EDIT
 					if (field.equals("first_name") || field.equals("last_name") || field.equals("dob") || field.equals("photo_url")) {
-						if (field.equals("dob") && !isValidDate(value)) {
+						if (field.equals("dob") && !Database.isValidDate(value)) {
 							response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
 							return;
 						}
@@ -93,20 +84,20 @@ public class EditStar extends HttpServlet {
 
 	}
 	
-    public static boolean isValidDate(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        java.util.Date testDate = null;
-        try {
-            testDate = sdf.parse(date);
-        } catch (ParseException e) {
-            return false;
-        }
-        if (!sdf.format(testDate).equals(date)) {
-            return false;
-        }
-        return true;
-
-    }
+//    public static boolean isValidDate(String date) {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+//        java.util.Date testDate = null;
+//        try {
+//            testDate = sdf.parse(date);
+//        } catch (ParseException e) {
+//            return false;
+//        }
+//        if (!sdf.format(testDate).equals(date)) {
+//            return false;
+//        }
+//        return true;
+//
+//    }
 	public static void editStarLink(PrintWriter out, Integer starID, String oldVal, String field) {
 		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
