@@ -437,8 +437,6 @@ public class CheckDB extends HttpServlet {
 
 			rtn += printSimilarStarSummary(starID, first_name, last_name, photoURL, dob, count);
 
-			// TODO add merge similar stars
-
 			rtn += "<BR><BR>";
 		}
 
@@ -532,32 +530,26 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
-		// TODO remove button
 		// TODO link to customer info page
 		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
-		// TODO remove and mergeWith buttons
 		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
 	}
 
 	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, String dob, Integer count) {
-		// TODO mergeWith buttons
 		return "<img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "<BR>Date of Birth: " + dob + "<BR>Count: " + count + "<BR>"
 				+ EditStar.mergeStarLink(starID);
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
-		// TODO remove and mergeWith buttons
 		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
 	}
 
 	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
-		// TODO mergeWith buttons
-		// TODO searchBy similar to, or display similar
 		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a><BR>Count: " + count
-				+ "<BR>Merge";
+				+ "<BR>" + EditMovie.mergeMovieLink(movieID);
 	}
 
 	public static void savePath(HttpServletRequest request) {

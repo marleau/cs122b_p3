@@ -141,26 +141,13 @@ public class EditGenre extends HttpServlet {
 				
 			}
 			
-			
-			
 			dbcon.close();
 		} catch (NamingException e) {
 		} catch (SQLException e) {
 		} catch (Exception e) {
 		}
 
-		try {
-			String target = (String) session.getAttribute("CheckDB.dest");
-			if (target != null) {
-				session.removeAttribute("CheckDB.dest");
-				response.sendRedirect(target);
-				return;
-			}
-		} catch (Exception ignored) {
-		}
-		
-		response.sendRedirect("CheckDB");// TODO correct return EditGenre.dest
-
+		CheckDB.returnPath(session, response);
 	}
 	public static String mergeGenreLink(String name) {
 		return "<form method=\"post\" action=\"EditGenre\">" +

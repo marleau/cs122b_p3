@@ -83,7 +83,7 @@ public class EditStar extends HttpServlet {
 						PrintWriter out = response.getWriter();
 						ServletContext context = getServletContext();
 						out.println(Page.header(context, session));
-						out.println("<H1>Pick Best</H1>");
+						out.println("<H1>Pick The Best:</H1>");
 						out.println("<FORM ACTION=\"EditStar\" METHOD=\"POST\">");
 
 						String photo_url;

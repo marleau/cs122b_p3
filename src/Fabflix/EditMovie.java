@@ -5,10 +5,12 @@ import java.io.PrintWriter;
 import java.sql.*;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class EditMovie
@@ -57,7 +59,7 @@ public class EditMovie extends HttpServlet {
 
 			Statement statement = dbcon.createStatement();
 
-			if (action != null && field != null && value != null) {
+			if (action != null && field != null) {
 				if (action.equals("delete")) {// ==========DELETE
 					if (field.equals("genre")) {
 						String query = "DELETE FROM genres_in_movies WHERE genre_id = '" + value + "' AND movie_id = '" + movieID + "'";
@@ -66,9 +68,8 @@ public class EditMovie extends HttpServlet {
 						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
 						statement.executeUpdate(query);
 					}
-				} else if (action.equals("add")) {// ==========ADD
+				} else if (action.equals("add") && value != null) {// ==========ADD
 					if (field.equals("genre") && !value.isEmpty()) {
-						//TODO Add genre based on name and merge with similar, because ID is not shown
 						String genreName = value;
 						String genreID = "0";
 						String query = "SELECT id FROM genres g WHERE name = '" + genreName + "'";
@@ -95,7 +96,7 @@ public class EditMovie extends HttpServlet {
 						String query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
 						statement.executeUpdate(query);
 					}
-				} else if (action.equals("edit")) {// ==========EDIT
+				} else if (action.equals("edit") && value != null) {// ==========EDIT
 					if (field.equals("title") || field.equals("year") || field.equals("director") || field.equals("banner_url") || field.equals("trailer_url")) {
 						if (field.equals("year")) {
 							try {
@@ -108,6 +109,66 @@ public class EditMovie extends HttpServlet {
 						}
 						String query = "UPDATE movies SET " + field + " = '" + value + "' WHERE id = '" + movieID + "'";
 						statement.executeUpdate(query);
+					}
+				}else if (action.equals("merge")){
+					if (field.equals("movie") && !movieID.isEmpty()){
+						// Get all similar names
+						HttpSession session = request.getSession();
+						String query = "SELECT * FROM movies WHERE SOUNDEX(title) = SOUNDEX((SELECT title FROM movies WHERE id = '"+movieID+"')) AND year = (SELECT year FROM movies WHERE id = '"+movieID+"')";
+						ResultSet similarNames = statement.executeQuery(query);
+
+						PrintWriter out = response.getWriter();
+						ServletContext context = getServletContext();
+						out.println(Page.header(context, session));
+						out.println("<H1>Pick The Best:</H1>");
+						out.println("<FORM ACTION=\"EditMovie\" METHOD=\"POST\">");
+
+						String banner_url;
+						int mid=0;
+						String title, year;
+						while (similarNames.next()){
+							banner_url = similarNames.getString("banner_url");
+							mid = similarNames.getInt("id");
+							title = similarNames.getString("title");
+							year = similarNames.getString("year");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"movieID\" VALUE=\""+mid+"\"><img src=\""+banner_url+"\"> "+title +" (" + year+")<BR><BR>");
+						}
+						
+						out.println("<INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"onMovie\">");
+						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
+						
+						Page.footer(out);
+						out.close();
+						dbcon.close();
+						return;
+						
+					} else if (field.equals("onMovie") && !movieID.isEmpty()){
+						HttpSession session = request.getSession();
+						String query = "SELECT * FROM movies WHERE id = '"+movieID+"'";
+						ResultSet starQ = statement.executeQuery(query);
+						
+						starQ.next();
+						String year = starQ.getString("year");
+						String title = starQ.getString("title");
+
+						//Update all stars to use new movieID
+						statement = dbcon.createStatement();
+						String update = "UPDATE stars_in_movies SET movie_id = '"+movieID+"' WHERE movie_id IN (SELECT id FROM movies WHERE SOUNDEX(title) = SOUNDEX('"+title+"') AND year = '"+year+"')";
+						statement.executeUpdate(update);
+						
+						//Update all genres to use new movieID
+						statement = dbcon.createStatement();
+						update = "UPDATE genres_in_movies SET movie_id = '"+movieID+"' WHERE movie_id IN (SELECT id FROM movies WHERE SOUNDEX(title) = SOUNDEX('"+title+"') AND year = '"+year+"')";
+						statement.executeUpdate(update);
+
+						//Remove old movies
+						statement = dbcon.createStatement();
+						update = "DELETE FROM movies WHERE SOUNDEX(title) = SOUNDEX('"+title+"') AND year = '"+year+"' AND id != '"+movieID+"'";
+						statement.executeUpdate(update);
+						
+						CheckDB.returnPath(session, response);
+						dbcon.close();
+						return;
 					}
 				}
 			}
@@ -138,6 +199,15 @@ public class EditMovie extends HttpServlet {
 				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Add "+field+"</button>" +
 				"</form>");
+	}
+
+	public static String mergeMovieLink(Integer movieID) {
+		return "<form method=\"post\" action=\"EditMovie\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"merge\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Merge</button>" +
+				"</form>";
 	}
 
 	public static void removeStarGenreLink(PrintWriter out, Integer movieID, Integer delID, String field,String name) {
