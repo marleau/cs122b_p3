@@ -4,7 +4,7 @@
 
 <%@ include file="header.jsp" %>
 
-&uarr; Click on a menu item to perform administrative duties.
+<b>&uarr;</b> Click on a menu item to perform administrative duties.
 
 
 <%@ include file="footer.jsp" %>

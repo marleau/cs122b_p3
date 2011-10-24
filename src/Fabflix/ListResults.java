@@ -189,8 +189,8 @@ public class ListResults extends HttpServlet {
 			out.println(Page.header(context, session));
 			// BODY
 
-			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2><BR>");
-			out.println(Page.browse(resultsPerPage));
+			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
+			out.println(Page.browseMenu(searchBy, arg, order, page, resultsPerPage));
 
 			if (numberOfResults > 0) {// if results exist
 				out.println("( " + numberOfResults + " Results )");
@@ -200,7 +200,6 @@ public class ListResults extends HttpServlet {
 					showPageControls(out, searchBy, arg, order, page, resultsPerPage, numberOfPages);
 					out.println("<BR><BR>");
 				}
-				showSortOptions(out, searchBy, arg, order, page, resultsPerPage);
 				out.println("<BR>");
 			}
 
@@ -216,7 +215,7 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
+				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\" alt=\""+title+"\"></a><BR><BR>");
 
 				Page.addToCart(out, movieID);
 
@@ -336,48 +335,6 @@ public class ListResults extends HttpServlet {
 		}
 	}
 
-	private void showSortOptions(PrintWriter out, String searchBy, String arg, String order, Integer page, Integer resultsPerPage)
-			throws UnsupportedEncodingException {
-		// sorting and results per page options
-		out.println("Sort by: Title(");
-
-		if (!order.equals("t_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=t_a\">asc</a>");
-		} else {
-			out.println("asc");
-		}
-
-		out.println(")(");
-
-		if (!order.equals("t_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=t_d\">des</a>");
-		} else {
-			out.println("des");
-		}
-
-		out.println(") Year(");
-
-		if (!order.equals("y_a")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=y_a\">asc</a>");
-		} else {
-			out.println("asc");
-		}
-
-		out.println(")(");
-
-		if (!order.equals("y_d")) {
-			out.println("<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
-					+ resultsPerPage + "&order=y_d\">des</a>");
-		} else {
-			out.println("des");
-		}
-
-		out.println(")");
-	}
-
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box
 		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
@@ -473,7 +430,7 @@ public class ListResults extends HttpServlet {
 			Integer movieID = movies.getInt("movie_id");
 			String bannerURL = movies.getString("banner_url");
 
-			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"200\">" + title + " (" + year + ")" + "</a>");
+			out.println("<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"200\" alt=\""+title+"\">" + title + " (" + year + ")" + "</a>");
 			if (edit){
 				EditStar.removeMovieLink(out, starID, movieID, title + " ("+year+")");
 			}else{

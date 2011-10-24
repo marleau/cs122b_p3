@@ -82,7 +82,7 @@ public class Page {
 	
 	// Browse
 	
-	public static String browse(Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
+	public static String browseMenu(String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
 		String b = "<ul class=\"browse\">\n<li>Browse by</li>\n";
 		
 		b += "<li><a href=\"#\">Genre</a><ul class=\"sub-browse\">";
@@ -92,7 +92,8 @@ public class Page {
 		b += "<li><a href=\"#\">Title</a><ul class=\"sub-browse\">";
 		b += browseTitles(resultsPerPage);
 		b += "</ul></li>";
-		
+		b += "<li>&nbsp;&nbsp;&nbsp;&nbsp;Sort by&nbsp;&nbsp;&nbsp;&nbsp;</li>";
+		b += sortOptions(searchBy, arg, order, page, resultsPerPage);
 		b += "</ul>";
 		return b;
 	}
@@ -121,6 +122,51 @@ public class Page {
 		st.close();
 		dbcon.close();
 		return g;
+	}
+	
+	private static String sortOptions(String searchBy, String arg, String order, Integer page, Integer resultsPerPage) throws UnsupportedEncodingException {
+		String s = "";
+		s += "<li>Title&nbsp;";
+		
+//		if (!order.equals("t_a")) {
+			s += "<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=t_a\">&uarr;</a>";
+//		} else {
+//			s += "&uarr;";
+//		}
+		
+		s += "&nbsp;";
+		
+//		if (!order.equals("t_d")) {
+			s += "<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=t_d\">&darr;</a>";
+//		} else {
+//			s += "&darr;";
+//		}
+		
+		s += "</li>";
+		s += "<li>&nbsp;&nbsp;or&nbsp;&nbsp;</li>";
+		s += "<li>Year&nbsp;";
+		
+//		if (!order.equals("y_a")) {
+			s += "<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=y_a\">&uarr;</a>";
+//		} else {
+//			s += "&uarr;";
+//		}
+		
+		s += "&nbsp;";
+		
+//		if (!order.equals("y_d")) {
+			s += "<a href=\"ListResults?by=" + searchBy + "&arg=" + java.net.URLEncoder.encode(arg, "UTF-8") + "&page=" + page + "&rpp="
+					+ resultsPerPage + "&order=y_d\">&darr;</a>";
+//		} else {
+//			s += "&darr;";
+//		}
+		
+		s += "</li>";
+		
+		return s;
 	}
 	
 	// Helpers
