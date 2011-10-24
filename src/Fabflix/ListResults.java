@@ -1,8 +1,5 @@
 package Fabflix;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
@@ -12,8 +9,6 @@ import java.sql.Statement;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -33,7 +28,6 @@ public class ListResults extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
-//		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
 
 		response.setContentType("text/html"); // Response mime type
 

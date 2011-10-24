@@ -1,11 +1,14 @@
 package Fabflix;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import javax.naming.NamingException;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -40,7 +43,6 @@ public class EditGenre extends HttpServlet {
 		response.setContentType("text/html"); // Response mime type
 
 		HttpSession session = request.getSession();
-		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
@@ -52,11 +54,6 @@ public class EditGenre extends HttpServlet {
 			value = Database.cleanSQL(value);
 		}
 		
-		// Kick non admins
-		if (isAdmin == null || !isAdmin) {
-			response.sendRedirect("index.jsp");
-			return;
-		}
 
 		try {
 			Connection dbcon = Database.openConnection();
@@ -70,9 +67,36 @@ public class EditGenre extends HttpServlet {
 						String query = "DELETE FROM genres WHERE id = '" + genreID + "'";
 						statement.executeUpdate(query);
 					}else if (field.equals("allEmpty")){
-						//FIXME Delete from where genre is not in genres_in_movies 
 						String query = "DELETE FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
 						statement.executeUpdate(query);
+					}
+				} else if (action.equals("merge")){
+					if (field.equals("genre") && !value.isEmpty() && genreID == null){
+						// Get all similar names
+						String query = "SELECT * FROM genres g WHERE SOUNDEX(name) = SOUNDEX('"+ value +"') GROUP BY name";
+						ResultSet similarNames = statement.executeQuery(query);
+
+						PrintWriter out = response.getWriter();
+						ServletContext context = getServletContext();
+						out.println(Page.header(context, session));
+						out.println("<FORM ACTION=\"EditGenre\" METHOD=\"POST\">");
+						
+						while (similarNames.next()){
+							String name = similarNames.getString("name");
+							int gid = similarNames.getInt("id");
+							
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\""+gid+"\">"+name+"<BR>");
+						}
+						
+						
+						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
+						
+						Page.footer(out, dbcon, 0);
+						
+						return;
+						
+					} else if (field.equals("genre") && !value.isEmpty() && genreID != null){
+						//TODO merge genres
 					}
 				}
 				
@@ -99,6 +123,14 @@ public class EditGenre extends HttpServlet {
 		
 		response.sendRedirect("CheckDB");// TODO correct return EditGenre.dest
 
+	}
+	public static String mergeGenreLink(String name) {
+		return "<form method=\"post\" action=\"EditGenre\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=\"value\" VALUE=\""+name+"\" />" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=\"action\" VALUE=\"merge\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=\"field\" VALUE=\"genre\">" +
+				"<button type=\"submit\" value=\"submit\">Merge "+name+"</button>" +
+				"</form>";
 	}
 	public static String deleteGenreLink(Integer genreID, String name) {
 		return "<form method=\"post\" action=\"EditGenre\">" +

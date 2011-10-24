@@ -218,7 +218,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM movies m LEFT OUTER JOIN stars_in_movies s ON s.movie_id=m.id LEFT OUTER JOIN stars st ON s.star_id=st.id WHERE star_id IS NULL OR movie_id IS NULL";
+		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM stars_in_movies)";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
 			Integer movieID;
@@ -246,7 +246,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM stars s LEFT OUTER JOIN stars_in_movies si ON si.star_id=s.id LEFT OUTER JOIN movies m ON si.movie_id=m.id WHERE star_id IS NULL OR movie_id IS NULL";
+		String query = "SELECT * FROM stars WHERE id NOT IN (SELECT star_id FROM stars_in_movies)";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each star, DISPLAY INFORMATION
 			Integer starID;
@@ -274,7 +274,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM genres g LEFT OUTER JOIN genres_in_movies gi ON gi.genre_id=g.id LEFT OUTER JOIN movies m ON gi.movie_id=m.id WHERE genre_id IS NULL OR movie_id IS NULL";
+		String query = "SELECT * FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
 		ResultSet searchResults = statement.executeQuery(query);
 		searchResults.last();
 		if (searchResults.getRow() > 0) {
@@ -311,8 +311,10 @@ public class CheckDB extends HttpServlet {
 
 			// TODO make remove button combine genre
 			// TODO make a combine all similar genres button
-			rtn += name + "<BR>Count: " + count + "<BR>Merge";
+			rtn += name + "<BR>Count: " + count + "<BR>";
 
+			rtn += EditGenre.mergeGenreLink(name);
+			
 			rtn += "<BR><BR>";
 		}
 
@@ -326,7 +328,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM movies m LEFT OUTER JOIN genres_in_movies g ON g.movie_id=m.id LEFT OUTER JOIN genres ge ON g.genre_id=ge.id WHERE movie_id IS NULL or genre_id IS NULL";
+		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM genres_in_movies)";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
 			Integer movieID;
