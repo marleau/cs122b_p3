@@ -100,26 +100,11 @@ public class EditGenre extends HttpServlet {
 						return;
 						
 					} else if (field.equals("setGenre") && genreID != null && !genreID.isEmpty() && !oldName.isEmpty()){
-						//TODO merge genres
-
 						if (genreID.equals("0") && value.isEmpty()){//No blank name for a genre
-							try {
-								String target = (String) session.getAttribute("EditGenre.dest");
-								if (target != null) {
-									session.removeAttribute("EditGenre.dest");
-									response.sendRedirect(target);
-									return;
-								}
-							} catch (Exception ignored) {
-							}
-							response.sendRedirect("CheckDB");
+							CheckDB.returnPath(session, response);
 							return;
 						}
 						
-//						PrintWriter out = response.getWriter();
-//						ServletContext context = getServletContext();
-//						out.println(Page.header(context, session));
-
 						String newName = "";
 						
 						if (genreID.equals("0")){
@@ -149,9 +134,6 @@ public class EditGenre extends HttpServlet {
 						statement = dbcon.createStatement();
 						update = "DELETE FROM genres WHERE SOUNDEX(name) = SOUNDEX('"+oldName+"') AND id != '"+genreID+"'";
 						statement.executeUpdate(update);
-
-//						Page.footer(out);
-//						out.close();
 					}
 				}
 				
@@ -168,9 +150,9 @@ public class EditGenre extends HttpServlet {
 		}
 
 		try {
-			String target = (String) session.getAttribute("EditGenre.dest");
+			String target = (String) session.getAttribute("CheckDB.dest");
 			if (target != null) {
-				session.removeAttribute("EditGenre.dest");
+				session.removeAttribute("CheckDB.dest");
 				response.sendRedirect(target);
 				return;
 			}
@@ -204,15 +186,6 @@ public class EditGenre extends HttpServlet {
 				"</form>";
 	}
 
-	public static void savePath(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		String URL = request.getRequestURL().toString();
-		String qs = request.getQueryString();
-		if (qs != null) {
-			URL += "?" + qs;
-		}
-		// Save destination
-		session.setAttribute("EditGenre.dest", URL);
-	}
+
 
 }
