@@ -168,7 +168,6 @@ public class CheckDB extends HttpServlet {
 
 			Connection dbcon = ListResults.openConnection();
 			ListResults.footer(out, dbcon, 0);
-
 			dbcon.close();
 
 		} catch (SQLException ex) {
