@@ -129,7 +129,7 @@ public class Login extends HttpServlet {
 		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 		
 		if (isAdmin == null || !isAdmin) {
-			response.sendRedirect("index");
+			response.sendRedirect("Home");
 			return true;
 		}
 		return false;

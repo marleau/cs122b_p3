@@ -33,7 +33,7 @@ public class ListResults extends HttpServlet {
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
-		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
+//		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
 
 		response.setContentType("text/html"); // Response mime type
 
