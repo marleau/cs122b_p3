@@ -9,7 +9,6 @@ import java.sql.Statement;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -395,7 +394,7 @@ public class ListResults extends HttpServlet {
 		// ===STARS; list of images
 		out.println("Stars: ");
 		if (edit) {
-			EditMovie.addStarGenreLink(out, movieID, "star");
+			EditMovie.addStarGenreLink(out, movieID, "star ID");
 		}
 		out.println("<BR><BR>");
 		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID

@@ -67,11 +67,31 @@ public class EditMovie extends HttpServlet {
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("add")) {// ==========ADD
-					if (field.equals("genre")) {
+					if (field.equals("genre") && !value.isEmpty()) {
 						//TODO Add genre based on name and merge with similar, because ID is not shown
-						String query = "INSERT INTO genres_in_movies VALUES(" + value + ", " + movieID + ");";
-						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
+						String genreName = value;
+						String genreID = "0";
+						String query = "SELECT id FROM genres g WHERE name = '" + genreName + "'";
+						ResultSet genreQ = statement.executeQuery(query);
+						if (genreQ.next()){
+							genreID = genreQ.getString("id");
+						}else{
+							//create a genre entry
+							statement = dbcon.createStatement();
+							String update = "INSERT INTO genres VALUES( 0, '" + genreName + "');";
+							statement.executeUpdate(update);
+
+							statement = dbcon.createStatement();
+							query = "SELECT id FROM genres g WHERE name = '" + genreName + "'";
+							genreQ = statement.executeQuery(query);
+							genreID = genreQ.getString("id");
+						}
+						
+						
+						statement = dbcon.createStatement();
+						String update = "INSERT INTO genres_in_movies VALUES(" + genreID + ", " + movieID + ");";
+						statement.executeUpdate(update);
+					} else if (field.equals("star ID")) {
 						String query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
 						statement.executeUpdate(query);
 					}
@@ -116,7 +136,7 @@ public class EditMovie extends HttpServlet {
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
+				"<button type=\"submit\" value=\"submit\">Add "+field+"</button>" +
 				"</form>");
 	}
 

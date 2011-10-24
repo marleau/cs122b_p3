@@ -46,9 +46,9 @@ public class EditGenre extends HttpServlet {
 		if (value != null){
 			value = Database.cleanSQL(value);
 		}
-//		if (genreID != null){
-//			genreID = Database.cleanSQL(genreID);
-//		}
+		if (genreID != null){
+			genreID = Database.cleanSQL(genreID);
+		}
 		if (oldName != null){
 			oldName = Database.cleanSQL(oldName);
 		}
@@ -96,34 +96,62 @@ public class EditGenre extends HttpServlet {
 						
 						Page.footer(out);
 						out.close();
+						dbcon.close();
 						return;
 						
 					} else if (field.equals("setGenre") && genreID != null && !genreID.isEmpty() && !oldName.isEmpty()){
 						//TODO merge genres
-						
-						PrintWriter out = response.getWriter();
-						ServletContext context = getServletContext();
-						out.println(Page.header(context, session));
 
-						out.println("GenreID: "+genreID+"<BR>");//IF 0 THEN grab first ID of oldName
+						if (genreID.equals("0") && value.isEmpty()){//No blank name for a genre
+							try {
+								String target = (String) session.getAttribute("EditGenre.dest");
+								if (target != null) {
+									session.removeAttribute("EditGenre.dest");
+									response.sendRedirect(target);
+									return;
+								}
+							} catch (Exception ignored) {
+							}
+							response.sendRedirect("CheckDB");
+							return;
+						}
+						
+//						PrintWriter out = response.getWriter();
+//						ServletContext context = getServletContext();
+//						out.println(Page.header(context, session));
+
+						String newName = "";
 						
 						if (genreID.equals("0")){
 							String query = "SELECT * FROM genres g WHERE SOUNDEX(name) = SOUNDEX('"+ oldName +"') GROUP BY name";
 							ResultSet similarNames = statement.executeQuery(query);
 							similarNames.next();
 							genreID = similarNames.getString("id");
+							newName = value;
+						} else {
+							String query = "SELECT * FROM genres g WHERE id = '"+genreID+"'";
+							ResultSet similarNames = statement.executeQuery(query);
+							similarNames.next();
+							newName = similarNames.getString("name");
 						}
 						
+						//Rename genreID to new name
+						statement = dbcon.createStatement();
+						String update = "UPDATE genres SET name = '"+newName+"' WHERE id = '"+genreID+"'";
+						statement.executeUpdate(update);
 						
+						//Update all movies to use new genreID
+						statement = dbcon.createStatement();
+						update = "UPDATE genres_in_movies SET genre_id = '"+genreID+"' WHERE genre_id IN (SELECT id FROM genres g WHERE SOUNDEX(name) = SOUNDEX('"+oldName+"'))";
+						statement.executeUpdate(update);
 
+						//Remove old names
+						statement = dbcon.createStatement();
+						update = "DELETE FROM genres WHERE SOUNDEX(name) = SOUNDEX('"+oldName+"') AND id != '"+genreID+"'";
+						statement.executeUpdate(update);
 
-						out.println("Value: "+value+"<BR>");//newName if ID = 0
-						out.println("GenreID: "+genreID+"<BR>");//IF 0 THEN grab first ID of oldName
-						out.println("OldName: "+oldName+"<BR>");
-
-						Page.footer(out);
-						out.close();
-						return;
+//						Page.footer(out);
+//						out.close();
 					}
 				}
 				
@@ -136,6 +164,7 @@ public class EditGenre extends HttpServlet {
 			dbcon.close();
 		} catch (NamingException e) {
 		} catch (SQLException e) {
+		} catch (Exception e) {
 		}
 
 		try {
