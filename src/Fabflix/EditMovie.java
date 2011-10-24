@@ -40,13 +40,16 @@ public class EditMovie extends HttpServlet {
 		String movieID = request.getParameter("movieID");
 
 		//Scrub Args
-		value = Database.cleanSQL(value);
+		if (value != null){
+			value = Database.cleanSQL(value);
+		}
 		
-		
-		//Kick non admins
+
 		if (movieID == null ) {
 			response.sendRedirect("index.jsp");
 			return;
+		}else {
+			movieID = Database.cleanSQL(movieID);
 		}
 
 		try {

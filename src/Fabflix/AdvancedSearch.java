@@ -164,7 +164,7 @@ public class AdvancedSearch extends HttpServlet {
 						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\" checked><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
-				Page.footer(session, out, resultsPerPage);
+				Page.footer(out);
 				out.println("</body></html>");
 			} else if (paramCount == 1 && sub.isEmpty()) {
 				// Redirect to simple search for single parameter
@@ -340,7 +340,7 @@ public class AdvancedSearch extends HttpServlet {
 					out.println("<H3>No Results.</H3>");
 				}
 
-				Page.footer(session, out, 0);
+				Page.footer(out);
 
 				searchResults.close();
 				statement.close();

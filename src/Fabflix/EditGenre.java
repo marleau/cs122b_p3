@@ -39,10 +39,18 @@ public class EditGenre extends HttpServlet {
 		String action = request.getParameter("action");
 		String field = request.getParameter("field");
 		String genreID = request.getParameter("genreID");
+		
+		String oldName =request.getParameter("oldName");
 
 		// Scrub Args
 		if (value != null){
 			value = Database.cleanSQL(value);
+		}
+//		if (genreID != null){
+//			genreID = Database.cleanSQL(genreID);
+//		}
+		if (oldName != null){
+			oldName = Database.cleanSQL(oldName);
 		}
 		
 
@@ -62,7 +70,7 @@ public class EditGenre extends HttpServlet {
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("merge")){
-					if (field.equals("genre") && !value.isEmpty() && genreID == null){
+					if (field.equals("genre") && value != null && !value.isEmpty() && genreID == null){
 						// Get all similar names
 						String query = "SELECT * FROM genres g WHERE SOUNDEX(name) = SOUNDEX('"+ value +"') GROUP BY name";
 						ResultSet similarNames = statement.executeQuery(query);
@@ -70,24 +78,52 @@ public class EditGenre extends HttpServlet {
 						PrintWriter out = response.getWriter();
 						ServletContext context = getServletContext();
 						out.println(Page.header(context, session));
+						out.println("<H1>Pick Proper Spelling</H1>");
 						out.println("<FORM ACTION=\"EditGenre\" METHOD=\"POST\">");
-						
+
+						String name;
+						int gid=0;
 						while (similarNames.next()){
-							String name = similarNames.getString("name");
-							int gid = similarNames.getInt("id");
-							
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\""+gid+"\">"+name+"<BR>");
+							name = similarNames.getString("name");
+							gid = similarNames.getInt("id");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\""+gid+"\">"+name+"<BR><BR>");
+						}
+						
+						out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\"0\"> New Name: <INPUT TYPE=\"TEXT\" NAME=\"value\"><BR><BR>");
+						
+						out.println("<INPUT TYPE=\"Hidden\" NAME=\"oldName\" VALUE=\""+value+"\"><INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"setGenre\">");
+						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
+						
+						Page.footer(out);
+						out.close();
+						return;
+						
+					} else if (field.equals("setGenre") && genreID != null && !genreID.isEmpty() && !oldName.isEmpty()){
+						//TODO merge genres
+						
+						PrintWriter out = response.getWriter();
+						ServletContext context = getServletContext();
+						out.println(Page.header(context, session));
+
+						out.println("GenreID: "+genreID+"<BR>");//IF 0 THEN grab first ID of oldName
+						
+						if (genreID.equals("0")){
+							String query = "SELECT * FROM genres g WHERE SOUNDEX(name) = SOUNDEX('"+ oldName +"') GROUP BY name";
+							ResultSet similarNames = statement.executeQuery(query);
+							similarNames.next();
+							genreID = similarNames.getString("id");
 						}
 						
 						
-						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
-						
-						Page.footer(session, out, 0);
-						
+
+
+						out.println("Value: "+value+"<BR>");//newName if ID = 0
+						out.println("GenreID: "+genreID+"<BR>");//IF 0 THEN grab first ID of oldName
+						out.println("OldName: "+oldName+"<BR>");
+
+						Page.footer(out);
+						out.close();
 						return;
-						
-					} else if (field.equals("genre") && !value.isEmpty() && genreID != null){
-						//TODO merge genres
 					}
 				}
 				

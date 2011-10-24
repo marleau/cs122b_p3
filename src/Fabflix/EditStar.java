@@ -34,11 +34,15 @@ public class EditStar extends HttpServlet {
 		String starID = request.getParameter("starID");
 
 		//Scrub Args
-		value = Database.cleanSQL(value);
+		if (value != null){
+			value = Database.cleanSQL(value);
+		}
 		
 		if (starID == null) {
 			response.sendRedirect("index.jsp");
 			return;
+		}else{
+			starID = Database.cleanSQL(starID);
 		}
 
 		try {

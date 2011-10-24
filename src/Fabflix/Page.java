@@ -76,7 +76,7 @@ public class Page {
 		return rtn;
 	}
 	
-	public static void footer(HttpSession session, PrintWriter out, Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
+	public static void footer(PrintWriter out) {
 		out.println("</div></body></html>");
 	}	
 	

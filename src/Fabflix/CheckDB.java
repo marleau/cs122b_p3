@@ -168,7 +168,7 @@ public class CheckDB extends HttpServlet {
 			// FOOTER
 
 			Connection dbcon = Database.openConnection();
-			Page.footer(session, out, 0);
+			Page.footer(out);
 
 			dbcon.close();
 

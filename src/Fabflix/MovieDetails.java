@@ -139,7 +139,7 @@ public class MovieDetails extends HttpServlet {
 
 			// Footer
 
-			Page.footer(session, out, 0);
+			Page.footer(out);
 
 			rs.close();
 			statement.close();
