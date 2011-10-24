@@ -1,11 +1,11 @@
 
 <%@page import="Fabflix.ListResults"%>
-<%-- if (isAdmin != null && !isAdmin) { --%>
+<% if (session.getAttribute("isAdmin") != null && !(Boolean)session.getAttribute("isAdmin")) { %>
 	<BR><HR>
 	<%= ListResults.browseGenres(0) %>
 	<BR><HR>
 	<%= ListResults.browseTitles(0) %>
-<%-- } --%>
+<% } %>
 		</div>
 	</body>
 

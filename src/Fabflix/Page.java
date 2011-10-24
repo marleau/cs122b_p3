@@ -72,11 +72,14 @@ public class Page {
 		return rtn;
 	}
 	
-	public static void footer(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
+	public static void footer(HttpSession session, PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
+		boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		if (!isAdmin) { 
 		out.println("<hr>");
 		ListResults.browseGenres(out, dbcon, resultsPerPage);
 		out.println("<hr>");
 		ListResults.browseTitles(out, resultsPerPage);
+		}
 		out.println("</div></body></html>");
 	}	
 	

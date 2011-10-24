@@ -17,17 +17,10 @@ import java.sql.*;
 public class MovieDetails extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public MovieDetails() {
 		super();
 	}
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
 		Login.kickNonUsers(request, response);// kick if not logged in
@@ -92,7 +85,6 @@ public class MovieDetails extends HttpServlet {
 				
 				//TODO add DELETE MOVIE
 				
-				
 				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><BR>Trailer</a><BR><BR>");
 				
 				if (!edit){
@@ -147,7 +139,7 @@ public class MovieDetails extends HttpServlet {
 
 			// Footer
 
-			Page.footer(out, dbcon, 0);
+			Page.footer(session, out, dbcon, 0);
 
 			rs.close();
 			statement.close();

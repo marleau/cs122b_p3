@@ -255,7 +255,7 @@ public class ListResults extends HttpServlet {
 				out.println("<H3>No Results.</H3>");
 			}
 
-			Page.footer(out, dbcon, resultsPerPage);
+			Page.footer(session, out, dbcon, resultsPerPage);
 
 			searchResults.close();
 			statement.close();

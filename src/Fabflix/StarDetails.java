@@ -128,7 +128,7 @@ public class StarDetails extends HttpServlet {
 			}
 			// Footer
 
-			Page.footer(out, dbcon, 0);
+			Page.footer(session, out, dbcon, 0);
 
 			rs.close();
 			statement.close();
