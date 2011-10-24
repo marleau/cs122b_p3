@@ -35,48 +35,50 @@
 <% } %>
 </div>
 <!-- TODO Hide CC form from admin logins -->
-<div class="ccinfo">
-	
-	<br><br>
 
-	<form method="post" action="checkout">
-		<h3>Credit Card Information</h3>
+<% if ((Boolean)session.getAttribute("isAdmin") != null && !(Boolean)session.getAttribute("isAdmin")) { %>
+	<div class="ccinfo">
 		
-		<% if (session.getAttribute("ccError") != null) { %>
-			<p class="error">Your credit card information is not valid.</p>
-		<% } %>
-		
-		<label>First Name</label><input type="text" name="firstName" />
-		
-		<br>
-		
-		<label>Last Name</label><input type="text" name="lastName" />
-		
-		<br>
-		
-		<label>Card Number</label><input type="text" name="id" />
-		
-		<br>
-		
-		<p><b>Expiration Date</b></p>
-		
-		<label>Month</label><input type=text" name="month" />
-		
-		<br>
-		
-		<label>Day</label><input type=text" name="day" />
-		
-		<br>
-		
-		<label>Year</label><input type=text" name="year" />
-		
-		<br>
-		
-		<button type="submit" value="submit">Process Order</button>
+		<br><br>
 	
-	</form>
-</div>
-
+		<form method="post" action="checkout">
+			<h3>Credit Card Information</h3>
+			
+			<% if (session.getAttribute("ccError") != null) { %>
+				<p class="error">Your credit card information is not valid.</p>
+			<% } %>
+			
+			<label>First Name</label><input type="text" name="firstName" />
+			
+			<br>
+			
+			<label>Last Name</label><input type="text" name="lastName" />
+			
+			<br>
+			
+			<label>Card Number</label><input type="text" name="id" />
+			
+			<br>
+			
+			<p><b>Expiration Date</b></p>
+			
+			<label>Month</label><input type=text" name="month" />
+			
+			<br>
+			
+			<label>Day</label><input type=text" name="day" />
+			
+			<br>
+			
+			<label>Year</label><input type=text" name="year" />
+			
+			<br>
+			
+			<button type="submit" value="submit">Process Order</button>
+		
+		</form>
+	</div>
+<% } %>
 <% } else { %>
 	<p class="success">Your order has been processed.</p>
 <% } %>
