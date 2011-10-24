@@ -9,7 +9,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 /**
  * Servlet implementation class EditMovie
@@ -34,8 +33,6 @@ public class EditMovie extends HttpServlet {
 
 		response.setContentType("text/html"); // Response mime type
 
-		HttpSession session = request.getSession();
-		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
@@ -47,7 +44,7 @@ public class EditMovie extends HttpServlet {
 		
 		
 		//Kick non admins
-		if (movieID == null || isAdmin == null || !isAdmin) {
+		if (movieID == null ) {
 			response.sendRedirect("index.jsp");
 			return;
 		}
