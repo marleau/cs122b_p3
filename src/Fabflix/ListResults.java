@@ -48,11 +48,11 @@ public class ListResults extends HttpServlet {
 			// ===Search By
 			try {
 				if (!(searchBy.equals("title") || searchBy.equals("letter") || searchBy.equals("genre") || searchBy.equals("year")
-						|| searchBy.equals("director") || searchBy.equals("first_name") || searchBy.equals("last_name"))) {
-					searchBy = "title";
+						|| searchBy.equals("director") || searchBy.equals("first_name") || searchBy.equals("last_name") || searchBy.equals("all"))) {
+					searchBy = "all";
 				}
 			} catch (NullPointerException e) {
-				searchBy = "title";
+				searchBy = "all";
 			}
 
 			// ===Argument value
@@ -69,7 +69,7 @@ public class ListResults extends HttpServlet {
 				}
 			}
 
-			if (searchBy.equals("title")) {
+			if (searchBy.equals("title") || searchBy.equals("all")) {
 				try {
 					Pattern.compile(arg);
 				} catch (PatternSyntaxException exception) {
@@ -156,6 +156,9 @@ public class ListResults extends HttpServlet {
 						+ searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT " + listStart + "," + resultsPerPage;
 				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE "
 						+ searchBy + " = '" + cleanArg + "') as results";
+			} else if (searchBy.equals("all")) {
+				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE title REGEXP '" + cleanArg + "' OR year REGEXP '" + cleanArg + "' OR director REGEXP '" + cleanArg + "' OR s1.first_name REGEXP '" + cleanArg + "' OR s1.last_name REGEXP '" + cleanArg + "'   " + sortBy + " LIMIT " + listStart+ "," + resultsPerPage;
+				fullQuery = "SELECT count(*)  FROM (SELECT DISTINCT m.id FROM movies m LEFT OUTER JOIN stars_in_movies s ON movie_id=m.id LEFT OUTER JOIN stars s1 ON s.star_id=s1.id WHERE  title REGEXP '" + cleanArg + "' OR year REGEXP '" + cleanArg + "' OR director REGEXP '" + cleanArg + "' OR s1.first_name REGEXP '" + cleanArg + "' OR s1.last_name REGEXP '" + cleanArg + "' ) as results";
 			} else {
 				query = "SELECT DISTINCT m.id,title,year,director,banner_url FROM movies m WHERE " + searchBy + " = '" + cleanArg + "' " + sortBy + " LIMIT "
 						+ listStart + "," + resultsPerPage;
