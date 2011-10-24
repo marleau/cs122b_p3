@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import javax.sql.DataSource;
 
 
 // Servlet implementation class listResults
@@ -33,8 +32,8 @@ public class ListResults extends HttpServlet {
 	}
 	
 	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
-		Login.kickNonUsers(request, response);// kick if not logged in
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
+		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -285,33 +284,6 @@ public class ListResults extends HttpServlet {
 		}
 		out.close();
 	}
-
-//	public static String cleanSQL(String arg) {
-//		return arg.replace("'", "''");
-//	}
-
-//	public static Connection openConnection() throws NamingException, SQLException {
-//		// Open context for mySQL pooling
-//		Context initCtx = new InitialContext();
-//		if (initCtx == null)
-//			System.err.println("initCtx is NULL");
-//
-//		Context envCtx = (Context) initCtx.lookup("java:comp/env");
-//		if (envCtx == null)
-//			System.err.println("envCtx is NULL");
-//
-//		// Look up our data source in context.xml
-//		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-//
-//		if (ds == null)
-//			System.err.println("ds is null.");
-//
-//		Connection dbcon = ds.getConnection();
-//		if (dbcon == null)
-//			System.err.println("dbcon is null.");
-//		// connection is now open
-//		return dbcon;
-//	}
 
 	public static void addToCart(PrintWriter out, Integer movieID) {
 		out.println("<a href=\"cart?add=" + movieID + "\">Add to Cart</a>");

@@ -41,12 +41,12 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>LoginPage</display-name>
-    <servlet-name>LoginPage</servlet-name>
-    <servlet-class>Fabflix.LoginPage</servlet-class>
+    <display-name>Login</display-name>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>Fabflix.Login</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>LoginPage</servlet-name>
+    <servlet-name>Login</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
   <servlet>

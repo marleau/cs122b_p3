@@ -24,7 +24,8 @@ public class CheckDB extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Login.kickNonAdmin(request, response);
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
+		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
 		HttpSession session = request.getSession();
 		ServletContext context = getServletContext();
 

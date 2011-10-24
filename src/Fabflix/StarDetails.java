@@ -31,7 +31,7 @@ public class StarDetails extends HttpServlet {
 	 *      response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		Login.kickNonUsers(request, response);// kick if not logged in
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 

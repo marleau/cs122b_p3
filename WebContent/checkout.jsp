@@ -1,6 +1,6 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
-<% if(LoginPage.kickNonUsers(request, response)){return;} %>
+<% if(Login.kickNonUsers(request, response)){return;} %>
 <% ShoppingCart.initCart(request, response); %>
 <% Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart"); %>
 
