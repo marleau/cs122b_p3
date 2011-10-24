@@ -77,7 +77,6 @@ public class Page {
 	}
 	
 	public static void footer(HttpSession session, PrintWriter out, Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
-		out.println(browse(resultsPerPage));
 		out.println("</div></body></html>");
 	}	
 	

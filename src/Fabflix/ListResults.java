@@ -190,6 +190,7 @@ public class ListResults extends HttpServlet {
 			// BODY
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2><BR>");
+			out.println(Page.browse(resultsPerPage));
 
 			if (numberOfResults > 0) {// if results exist
 				out.println("( " + numberOfResults + " Results )");
