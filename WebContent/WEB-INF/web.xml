@@ -41,12 +41,12 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>LoginPage</display-name>
-    <servlet-name>LoginPage</servlet-name>
-    <servlet-class>Fabflix.LoginPage</servlet-class>
+    <display-name>Login</display-name>
+    <servlet-name>Login</servlet-name>
+    <servlet-class>Fabflix.Login</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>LoginPage</servlet-name>
+    <servlet-name>Login</servlet-name>
     <url-pattern>/login</url-pattern>
   </servlet-mapping>
   <servlet>
@@ -91,12 +91,12 @@
   </servlet-mapping>
   <servlet>
     <description></description>
-    <display-name>HomePage</display-name>
-    <servlet-name>HomePage</servlet-name>
-    <servlet-class>Fabflix.HomePage</servlet-class>
+    <display-name>Home</display-name>
+    <servlet-name>Home</servlet-name>
+    <servlet-class>Fabflix.Home</servlet-class>
   </servlet>
   <servlet-mapping>
-    <servlet-name>HomePage</servlet-name>
+    <servlet-name>Home</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
   <servlet>

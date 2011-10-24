@@ -1,6 +1,6 @@
 <%@ page import="Fabflix.*, java.util.*" %>
 
-<% if(LoginPage.kickNonUsers(request, response)){return;} %>
+<% if(Login.kickNonUsers(request, response)){return;} %>
 
 <%@ include file="header.jsp" %>
 

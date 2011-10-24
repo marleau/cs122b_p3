@@ -10,7 +10,10 @@
 	boolean login = (Boolean) session.getAttribute("login"); 
 	if (!login) { %>
 		<p class="error">Your email or password is invalid.</p>
-	<% }
+	<% session.removeAttribute("login");
+	} else {
+		
+	}
  } %>
 
 <form action="login" method="post">

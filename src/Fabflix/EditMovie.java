@@ -29,9 +29,8 @@ public class EditMovie extends HttpServlet {
 	 *      response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		//if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
-		Login.kickNonUsers(request, response);
-		Login.kickNonAdmin(request, response);
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
+		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
 
 		response.setContentType("text/html"); // Response mime type
 

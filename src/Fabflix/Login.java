@@ -104,16 +104,12 @@ public class Login extends HttpServlet {
 	}
 
 	// if not logged in, redirect to login page
-	public static void kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public static boolean kickNonUsers(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 		Boolean login = (Boolean) session.getAttribute("login");
-		
-		if (login == null) {
-			session.setAttribute("login", false);
-		}
-		
+
 		// Check login
-		if (!login) {
+		if (login == null || !login) {
 			String URL = request.getRequestURL().toString();
 			String qs = request.getQueryString();
 			if (qs != null) {
@@ -123,15 +119,19 @@ public class Login extends HttpServlet {
 			session.setAttribute("user.dest", URL);
 			// send to login page if not logged in
 			response.sendRedirect("login");
+			return true;
 		}
+		return false;
 	}
 	
-	public static void kickNonAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
+	public static boolean kickNonAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		HttpSession session = request.getSession();
 		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
 		
-		if (!isAdmin) {
-			response.sendRedirect("login");
+		if (isAdmin == null || !isAdmin) {
+			response.sendRedirect("Home");
+			return true;
 		}
+		return false;
 	}
 }

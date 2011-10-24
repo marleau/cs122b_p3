@@ -26,8 +26,7 @@ public class ShoppingCart extends HttpServlet {
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		// get cart
-		//if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
-		Login.kickNonUsers(request, response);
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		HttpSession session = request.getSession();
 		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");

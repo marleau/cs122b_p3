@@ -15,7 +15,7 @@ public class Home extends HttpServlet {
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        Login.kickNonUsers(request, response);
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
         HttpSession session = request.getSession();
         session.setAttribute("title", "Home");
         response.sendRedirect("index.jsp");
