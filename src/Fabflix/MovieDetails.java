@@ -43,10 +43,10 @@ public class MovieDetails extends HttpServlet {
 				movieID = 0;
 			}
 
-			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-			
 			Boolean edit = false; // trigger edit mode
-			if (isAdmin != null && isAdmin){
+//			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+//			if (isAdmin != null && isAdmin){
+			if (Page.isAdmin(request)) {
 				try {
 					edit = Boolean.valueOf(request.getParameter("edit"));
 				} catch (Exception e) {
@@ -74,7 +74,7 @@ public class MovieDetails extends HttpServlet {
 
 				// Movie Info
 				out.println("<H1>" + title + " (" + year + ")");
-				if (isAdmin != null && isAdmin){
+				if (Page.isAdmin(request)){
 					if (edit){
 						out.println("(<A HREF=\"MovieDetails?id="+movieID+"&edit=false\">Stop Editing</A>)");
 					}else{
@@ -87,8 +87,8 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><BR>Trailer</a><BR><BR>");
 				
-				if (!edit){
-					ListResults.addToCart(out, movieID);
+				if (!edit && !Page.isAdmin(request)){
+					Page.addToCart(out, movieID);
 					out.println("<BR><BR>");
 				}
 
@@ -108,7 +108,7 @@ public class MovieDetails extends HttpServlet {
 				}
 				
 				
-				ListResults.listByYearLink(out, year);
+				ListResults.listByYearLink(out, year, 0);
 				
 				if (edit){
 					EditMovie.editMovieLink(out, movieID, year.toString(), "year");
@@ -116,7 +116,7 @@ public class MovieDetails extends HttpServlet {
 
 				out.println("<BR>");
 				
-				ListResults.listByDirectorLink(out, director);
+				ListResults.listByDirectorLink(out, director, 0);
 
 				if (edit){
 					EditMovie.editMovieLink(out, movieID, director, "director");
@@ -139,7 +139,7 @@ public class MovieDetails extends HttpServlet {
 
 			// Footer
 
-			Page.footer(session, out, dbcon, 0);
+			Page.footer(session, out, 0);
 
 			rs.close();
 			statement.close();

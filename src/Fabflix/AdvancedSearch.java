@@ -164,7 +164,7 @@ public class AdvancedSearch extends HttpServlet {
 						+ "Substring Search: <INPUT TYPE=\"CHECKBOX\" NAME=\"sub\" checked><BR>"
 						+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage
 						+ "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\"> <INPUT TYPE=\"RESET\" VALUE=\"Reset\"> </FORM>");
-				Page.footer(session, out, dbcon, resultsPerPage);
+				Page.footer(session, out, resultsPerPage);
 				out.println("</body></html>");
 			} else if (paramCount == 1 && sub.isEmpty()) {
 				// Redirect to simple search for single parameter
@@ -305,13 +305,13 @@ public class AdvancedSearch extends HttpServlet {
 					String director = searchResults.getString("director");
 
 					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
-					ListResults.addToCart(out, movieID);
+					Page.addToCart(out, movieID);
 					out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
-					ListResults.listByYearLink(out, year);
+					ListResults.listByYearLink(out, year, 0);
 
 					out.println("<BR>");
 					
-					ListResults.listByDirectorLink(out, director);
+					ListResults.listByDirectorLink(out, director, 0);
 
 					out.println("<BR>");
 
@@ -340,7 +340,7 @@ public class AdvancedSearch extends HttpServlet {
 					out.println("<H3>No Results.</H3>");
 				}
 
-				Page.footer(session, out, dbcon, 0);
+				Page.footer(session, out, 0);
 
 				searchResults.close();
 				statement.close();

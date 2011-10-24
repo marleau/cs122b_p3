@@ -82,7 +82,7 @@ public class EditGenre extends HttpServlet {
 						
 						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
 						
-						Page.footer(session, out, dbcon, 0);
+						Page.footer(session, out, 0);
 						
 						return;
 						

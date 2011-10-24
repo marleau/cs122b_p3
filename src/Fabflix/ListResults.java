@@ -217,7 +217,7 @@ public class ListResults extends HttpServlet {
 
 				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
 
-				addToCart(out, movieID);
+				Page.addToCart(out, movieID);
 
 				out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
 				listByYearLink(out, year, resultsPerPage);
@@ -255,7 +255,7 @@ public class ListResults extends HttpServlet {
 				out.println("<H3>No Results.</H3>");
 			}
 
-			Page.footer(session, out, dbcon, resultsPerPage);
+			Page.footer(session, out, resultsPerPage);
 
 			searchResults.close();
 			statement.close();
@@ -278,23 +278,18 @@ public class ListResults extends HttpServlet {
 		}
 		out.close();
 	}
-
-	public static void addToCart(PrintWriter out, Integer movieID) {
-		out.println("<a href=\"cart?add=" + movieID + "\">Add to Cart</a>");
-	}
-
-	
-	public static void listByYearLink(PrintWriter out, Integer year) {
-		listByYearLink(out, year, 0);
-	}
+//	
+//	public static void listByYearLink(PrintWriter out, Integer year) {
+//		listByYearLink(out, year, 0);
+//	}
 
 	public static void listByYearLink(PrintWriter out, Integer year, Integer rpp) {
 		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a>");
 	}
 
-	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
-		listByDirectorLink(out, director, 0);
-	}
+//	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
+//		listByDirectorLink(out, director, 0);
+//	}
 
 	public static void listByDirectorLink(PrintWriter out, String director, Integer rpp) throws UnsupportedEncodingException {
 		out.println("Director: <a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "&rpp=" + rpp + "\">" + director
@@ -382,10 +377,6 @@ public class ListResults extends HttpServlet {
 		out.println(")");
 	}
 
-//	public static void searchTitlesBox(PrintWriter out) {
-//		searchTitlesBox(out, 0);
-//	}
-
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box
 		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
@@ -421,89 +412,6 @@ public class ListResults extends HttpServlet {
 		}
 	}
 
-	public static void browseGenres(PrintWriter out, Connection dbcon) throws SQLException, UnsupportedEncodingException {
-		browseGenres(out, dbcon, 0);// Default results per page
-	}
-
-	public static void browseGenres(PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
-		Statement statement = dbcon.createStatement();
-		// ===GENRE browser
-		out.println("Browse Genres: <BR>");
-		int col = 0; // fix width of display
-		ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres g, genres_in_movies gi WHERE gi.genre_id=g.id ORDER BY name");
-		if (allGenre.next()) {
-			String genreName = allGenre.getString("name");
-			col += genreName.length();
-			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
-			while (allGenre.next()) {
-				genreName = allGenre.getString("name");
-				col += genreName.length();
-				out.println(" | <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
-				if (col >= 75 && allGenre.next()) { // column character width
-					genreName = allGenre.getString("name");
-					out.println("<br><a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>");
-					col = genreName.length();
-				}// 10 items per row
-			}
-		}
-		allGenre.close();
-		statement.close();
-	}
-	
-	public static String browseGenres(Integer resultsPerPage) throws SQLException, UnsupportedEncodingException, NamingException {
-		String rtn = "";
-		Connection dbcon = Database.openConnection();
-		Statement statement = dbcon.createStatement();
-		// ===GENRE browser
-		rtn += "Browse Genres: <BR>";
-		int col = 0; // fix width of display
-		ResultSet allGenre = statement.executeQuery("SELECT DISTINCT name FROM genres g, genres_in_movies gi WHERE gi.genre_id=g.id ORDER BY name");
-		if (allGenre.next()) {
-			String genreName = allGenre.getString("name");
-			col += genreName.length();
-			rtn += "<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
-			while (allGenre.next()) {
-				genreName = allGenre.getString("name");
-				col += genreName.length();
-				rtn += " | <a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
-				if (col >= 75 && allGenre.next()) { // column character width
-					genreName = allGenre.getString("name");
-					rtn += "<br><a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + genreName + "</a>";
-					col = genreName.length();
-				}// 10 items per row
-			}
-		}
-		allGenre.close();
-		statement.close();
-		dbcon.close();
-		return rtn;
-	}
-
-	public static void browseTitles(PrintWriter out) throws UnsupportedEncodingException {
-		browseTitles(out, 0);// Default results per page
-	}
-
-	public static void browseTitles(PrintWriter out, Integer resultsPerPage) throws UnsupportedEncodingException {
-		// ===Letter Browser
-		out.println(browseTitles(resultsPerPage));
-	}
-	
-	public static String browseTitles(Integer resultsPerPage) throws UnsupportedEncodingException{
-		String rtn = "Browse Titles: <BR>";
-		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-		for (int i = 0; i < alphaNum.length(); i++) {
-			if (i != 0) {
-				rtn += " - ";
-			}
-			rtn += "<a href=\"ListResults?by=letter&arg=" + java.net.URLEncoder.encode(alphaNum.substring(i,i+1), "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a>";
-		}
-		return rtn;
-	}
-
-	public static void listStars(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
-		listStars(out, dbcon, 0, movieID);// Default results per page
-	}
-
 	public static void listStars(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; comma separated list
@@ -522,14 +430,6 @@ public class ListResults extends HttpServlet {
 		}
 		stars.close();
 		statement.close();
-	}
-
-	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException {
-		listStarsIMG(out, dbcon, 0, movieID, false);
-	}
-
-	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
-		listStarsIMG(out, dbcon, rpp, movieID, false);
 	}
 
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException {
@@ -556,13 +456,6 @@ public class ListResults extends HttpServlet {
 		statement.close();
 	}
 
-	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer starID) throws SQLException {
-		listMoviesIMG(out, dbcon, 0, starID);
-	}
-
-	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer starID) throws SQLException {
-		
-	}
 	public static void listMoviesIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer starID, Boolean edit) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		out.println("Starred in:");
@@ -583,17 +476,11 @@ public class ListResults extends HttpServlet {
 			if (edit){
 				EditStar.removeMovieLink(out, starID, movieID, title + " ("+year+")");
 			}else{
-				out.println(" (");
-				ListResults.addToCart(out, movieID);
-				out.println(")");
+				Page.addToCart(out, movieID);
 			}
 			out.println("<BR><BR>");
 		}
 
-	}
-
-	public static void listGenres(PrintWriter out, Connection dbcon, Integer movieID) throws SQLException, UnsupportedEncodingException {
-		listGenres(out, dbcon, 0, movieID, false);// Default results per page
 	}
 
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException, UnsupportedEncodingException {

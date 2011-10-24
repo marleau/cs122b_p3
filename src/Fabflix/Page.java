@@ -7,9 +7,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class Page {
@@ -72,15 +76,68 @@ public class Page {
 		return rtn;
 	}
 	
-	public static void footer(HttpSession session, PrintWriter out, Connection dbcon, Integer resultsPerPage) throws SQLException, UnsupportedEncodingException {
-		boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-		if (!isAdmin) { 
-		out.println("<hr>");
-		ListResults.browseGenres(out, dbcon, resultsPerPage);
-		out.println("<hr>");
-		ListResults.browseTitles(out, resultsPerPage);
-		}
+	public static void footer(HttpSession session, PrintWriter out, Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
+		out.println(browse(resultsPerPage));
 		out.println("</div></body></html>");
 	}	
+	
+	// Browse
+	
+	public static String browse(Integer resultsPerPage) throws NamingException, SQLException, UnsupportedEncodingException {
+		String b = "<ul class=\"browse\">\n<li>Browse by</li>\n";
+		
+		b += "<li><a href=\"#\">Genre</a><ul class=\"sub-browse\">";
+		b += browseGenres(resultsPerPage);
+		b += "</ul></li>";
+		b += "<li>or</li>";
+		b += "<li><a href=\"#\">Title</a><ul class=\"sub-browse\">";
+		b += browseTitles(resultsPerPage);
+		b += "</ul></li>";
+		
+		b += "</ul>";
+		return b;
+	}
+	
+	public static String browseTitles(Integer resultsPerPage) throws UnsupportedEncodingException{
+		String rtn = "";
+		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+		for (int i = 0; i < alphaNum.length(); i++) {
+			rtn += "<li><a href=\"ListResults?by=letter&arg=" + java.net.URLEncoder.encode(alphaNum.substring(i,i+1), "UTF-8") + "&page=1&rpp=" + resultsPerPage + "\">" + alphaNum.charAt(i) + "</a></li>";
+		}
+		return rtn;
+	}
+	
+	public static String browseGenres(Integer rpp) throws NamingException, SQLException, UnsupportedEncodingException {
+		String g = "";
+		Connection dbcon = Database.openConnection();
+		Statement st = dbcon.createStatement();
+		ResultSet genres = st.executeQuery("SELECT DISTINCT name FROM genres g, genres_in_movies gi WHERE gi.genre_id=g.id ORDER BY name");
+		
+		while(genres.next()) {
+			String genreName = genres.getString("name");
+			g += "<li><a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genreName, "UTF-8") + "&page=1&rpp=" + rpp +"\">" + genreName + "</a></li>";
+		}
+		
+		genres.close();
+		st.close();
+		dbcon.close();
+		return g;
+	}
+	
+	// Helpers
+	
+	public static void addToCart(PrintWriter out, Integer movieID) {
+		out.println("<a class=\"addToCart\" href=\"cart?add=" + movieID + "\">Add to Cart</a>");
+	}
+	
+	public static boolean isAdmin(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+		if (isAdmin != null) {
+			return isAdmin;
+		} else {
+			return false;
+		}
+	}
 	
 }

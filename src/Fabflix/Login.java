@@ -31,6 +31,10 @@ public class Login extends HttpServlet {
 			session.setAttribute("login", true);
 			session.setAttribute("user.login", email);
 			ShoppingCart.initCart(request, response);
+			if ((Boolean)session.getAttribute("isAdmin")) {
+				response.sendRedirect("admin.jsp");
+				return;
+			}
 			try {
 				String target = (String) session.getAttribute("user.dest");
 				// retrieve address if user goes to a page w/o logging in

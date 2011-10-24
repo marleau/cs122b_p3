@@ -51,10 +51,10 @@ public class StarDetails extends HttpServlet {
 				starID = 0;
 			}
 			
-			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-			
 			Boolean edit = false; // trigger edit mode
-			if (isAdmin != null && isAdmin){
+//			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
+//			if (isAdmin != null && isAdmin){
+			if (Page.isAdmin(request)) {
 				try {
 					edit = Boolean.valueOf(request.getParameter("edit"));
 				} catch (Exception e) {
@@ -75,14 +75,13 @@ public class StarDetails extends HttpServlet {
 				String starIMG = rs.getString("photo_url");
 				String dob = rs.getString("dob");
 
-
-
 				session.setAttribute("title", starName);
 				out.println(Page.header(context, session));
 
 				// Star Details
 				out.println("<H1>" + starName + " " );
-				if (isAdmin != null && isAdmin){
+//				if (isAdmin != null && isAdmin){
+				if (Page.isAdmin(request)) {
 					if (edit){
 						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=false\">Stop Editing</A>)");
 					}else{
@@ -128,7 +127,7 @@ public class StarDetails extends HttpServlet {
 			}
 			// Footer
 
-			Page.footer(session, out, dbcon, 0);
+			Page.footer(session, out, 0);
 
 			rs.close();
 			statement.close();
