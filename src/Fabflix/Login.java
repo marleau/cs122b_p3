@@ -58,14 +58,15 @@ public class Login extends HttpServlet {
 		// Validate user
 		try {
 			Connection dbcon = Database.openConnection();
-			HttpSession session = request.getSession();// Get client session
+			HttpSession session = request.getSession();
 			boolean valid = false;
 
 			Statement statement = dbcon.createStatement();
 			String query = "SELECT * FROM employees e WHERE email = '" + email + "' AND password = '" + password + "'";
 			ResultSet rs = statement.executeQuery(query);
 			
-			// if employee exists with that password, then login as admin
+			// if employee exists, then login as admin
+			// else, if customer exists, then login
 			if (rs.next()) {
 				session.setAttribute("user.name", rs.getString("fullname"));
 				session.setAttribute("isAdmin", true);
@@ -75,7 +76,6 @@ public class Login extends HttpServlet {
 				query = "SELECT * FROM customers c WHERE email = '" + email + "' AND password = '" + password + "'";
 				rs = statement.executeQuery(query);
 				
-				// if person exists with that password
 				if (rs.next()) {
 					session.setAttribute("user.name", rs.getString("first_name") + " " + rs.getString("last_name"));
 					session.setAttribute("user.id", rs.getString("id"));

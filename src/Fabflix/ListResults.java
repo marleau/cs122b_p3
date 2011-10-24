@@ -388,9 +388,9 @@ public class ListResults extends HttpServlet {
 		out.println(")");
 	}
 
-	public static void searchTitlesBox(PrintWriter out) {
-		searchTitlesBox(out, 0);
-	}
+//	public static void searchTitlesBox(PrintWriter out) {
+//		searchTitlesBox(out, 0);
+//	}
 
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box

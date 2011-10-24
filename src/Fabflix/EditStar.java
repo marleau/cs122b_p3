@@ -31,9 +31,6 @@ public class EditStar extends HttpServlet {
 
 		response.setContentType("text/html"); // Response mime type
 
-		HttpSession session = request.getSession();
-		Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
 		String field = request.getParameter("field");
@@ -49,7 +46,6 @@ public class EditStar extends HttpServlet {
 
 		try {
 			Connection dbcon = Database.openConnection();
-
 			Statement statement = dbcon.createStatement();
 
 			if (action != null && field != null && value != null) {
@@ -83,20 +79,6 @@ public class EditStar extends HttpServlet {
 
 	}
 	
-//    public static boolean isValidDate(String date) {
-//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-//        java.util.Date testDate = null;
-//        try {
-//            testDate = sdf.parse(date);
-//        } catch (ParseException e) {
-//            return false;
-//        }
-//        if (!sdf.format(testDate).equals(date)) {
-//            return false;
-//        }
-//        return true;
-//
-//    }
 	public static void editStarLink(PrintWriter out, Integer starID, String oldVal, String field) {
 		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"text\" name=\"value\" value=\""+oldVal+"\" />" +
@@ -126,7 +108,8 @@ public class EditStar extends HttpServlet {
 				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");
 	}
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		response.sendRedirect("index.jsp");
 	}
 }

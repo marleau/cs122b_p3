@@ -12,15 +12,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-/**
- * Servlet implementation class FixDB
- */
+ // Servlet implementation class FixDB
 public class EditGenre extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @see HttpServlet#HttpServlet()
-	 */
 	public EditGenre() {
 		super();
 	}
@@ -29,10 +24,6 @@ public class EditGenre extends HttpServlet {
 		response.sendRedirect("index.jsp");
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
-	 *      response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
 		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin

@@ -22,9 +22,7 @@ import javax.sql.DataSource;
 
 
 public class Checkout extends HttpServlet {
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 1L;
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -38,48 +36,35 @@ public class Checkout extends HttpServlet {
 			session.removeAttribute("updated");	
 		try {
 			
-	// Open context for mySQL pooling
-		Context initCtx = new InitialContext();
-		Context envCtx = (Context) initCtx.lookup("java:comp/env");
-		if (envCtx == null)
-			System.out.println("envCtx is NULL");
-		// Look up our data source in context.xml
-		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-		if (ds == null)
-			System.out.println("ds is null.");
-		Connection dbcon = ds.getConnection();
-		if (dbcon == null)
-			System.out.println("dbcon is null.");
-		// connection is now open
-		
-		session.setAttribute("title", "Checkout");
-		
-		if (session.getAttribute("validCC") == null)
-			session.setAttribute("validCC", false);
-		else {
-			if ((Boolean)session.getAttribute("validCC")) {
-				session.removeAttribute("ccError");
-				processOrder(request, response, dbcon);
+			Connection dbcon = Database.openConnection();
+			
+			session.setAttribute("title", "Checkout");
+			
+			if (session.getAttribute("validCC") == null)
+				session.setAttribute("validCC", false);
+			else {
+				if ((Boolean)session.getAttribute("validCC")) {
+					session.removeAttribute("ccError");
+					processOrder(request, dbcon);
+				}
 			}
-		}
-		
-		if (session.getAttribute("ccError") != null ) {
-			if ((Boolean)session.getAttribute("ccError"))
+			
+			if (session.getAttribute("ccError") != null && (Boolean)session.getAttribute("ccError")) {
 				session.removeAttribute("ccError");
-		}
-		
-		Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");
-		
-		if (session.getAttribute("processed") != null) {
-			if ((Boolean)session.getAttribute("processed") && !cart.isEmpty()) {
+			}
+			
+			Map<String, Integer> cart = (Map<String, Integer>)session.getAttribute("cart");
+			
+			if (session.getAttribute("processed") != null) {
+				if ((Boolean)session.getAttribute("processed") && !cart.isEmpty()) {
+					session.setAttribute("processed", false);
+				}
+			} else {
 				session.setAttribute("processed", false);
 			}
-		} else {
-			session.setAttribute("processed", false);
-		}
-		
-		dbcon.close();
-		response.sendRedirect("checkout.jsp");
+			
+			dbcon.close();
+			response.sendRedirect("checkout.jsp");
 		} catch (Exception e) {
 			
 		}
@@ -106,43 +91,25 @@ public class Checkout extends HttpServlet {
 		}
 		
 		try {
-		// Open context for mySQL pooling
-		Context initCtx = new InitialContext();
-		Context envCtx = (Context) initCtx.lookup("java:comp/env");
-		if (envCtx == null)
-			System.out.println("envCtx is NULL");
-		// Look up our data source in context.xml
-		DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-		if (ds == null)
-			System.out.println("ds is null.");
-		Connection dbcon = ds.getConnection();
-		if (dbcon == null)
-			System.out.println("dbcon is null.");
-		// connection is now open
-		
-		// validate credit card
-		if (isValid(request, response)) {
-			session.setAttribute("validCC", true);
-			session.removeAttribute("ccError");
-			processOrder(request, response, dbcon);
-		} else {
-			session.setAttribute("validCC", false);
-		}
-		
-		response.sendRedirect("checkout.jsp");
-		
-		} catch (SQLException e) {
+			Connection dbcon = Database.openConnection();
 			
-		} catch (Exception e) {
+			// validate credit card
+			if (isValid(request)) {
+				session.setAttribute("validCC", true);
+				session.removeAttribute("ccError");
+				processOrder(request, dbcon);
+			} else {
+				session.setAttribute("validCC", false);
+			}
 			
-		}
+			response.sendRedirect("checkout.jsp");
+		
+		} catch (SQLException e) {} catch (Exception e) {}
 	}
 	
-	public void processOrder(HttpServletRequest request, HttpServletResponse response, Connection db) {
+	public void processOrder(HttpServletRequest request, Connection db) {
 		
 		try {
-		
-			//ArrayList<String> cart = (ArrayList<String>) request.getAttribute("cart");
 			HttpSession session = request.getSession();
 			session.setAttribute("validCC", false);
 			session.removeAttribute("ccError");
@@ -176,35 +143,18 @@ public class Checkout extends HttpServlet {
 		
 	}
 
-	public static boolean isValid(HttpServletRequest request, HttpServletResponse response) {
-		//Connection db = connectToDB();
-		HttpSession session = request.getSession();
-
+	public static boolean isValid(HttpServletRequest request) {
 		try {
-			// Open context for mySQL pooling
-			Context initCtx = new InitialContext();
-			Context envCtx = (Context) initCtx.lookup("java:comp/env");
-			if (envCtx == null)
-				System.out.println("envCtx is NULL");
-			// Look up our data source in context.xml
-			DataSource ds = (DataSource) envCtx.lookup("jdbc/TestDB");
-			if (ds == null)
-				System.out.println("ds is null.");
-			Connection dbcon = ds.getConnection();
-			if (dbcon == null)
-				System.out.println("dbcon is null.");
-			// connection is now open
-			
+			HttpSession session = request.getSession();
+			Connection dbcon = Database.openConnection();
 			Statement statement = dbcon.createStatement();
 			String firstName = request.getParameter("firstName");
 			String lastName = request.getParameter("lastName");
 			String id = request.getParameter("id");
+			
 			String expiration = request.getParameter("year") + "-" + request.getParameter("month") + "-" + request.getParameter("day");
 			String query = "SELECT * FROM creditcards WHERE first_name='" + firstName + "' AND last_name='" + lastName + "' AND id='" + id + "' AND expiration='" + expiration + "';";
-			System.out.println(query);
-			ResultSet result;
-			result = statement.executeQuery(query);
-			//disconnectFromDB(db);
+			ResultSet result = statement.executeQuery(query);
 			if (result.next()) {
 				session.setAttribute("validCC", true);
 				session.removeAttribute("ccError");
@@ -215,11 +165,9 @@ public class Checkout extends HttpServlet {
 				return false;
 			}
 		} catch (SQLException e) {
-		} catch (java.lang.Exception ex) {
-			System.out.println("MovieDB: Error\nSQL error in doGet: " + ex.getMessage() + "\n" + ex.toString());
-		}
+			System.out.println("MovieDB: Error\nSQL error in doGet: " + e.getMessage() + "\n" + e.toString());
+		} catch (Exception e) {} 
 		
-		//disconnectFromDB(db);
 		return false;
 	}
 
