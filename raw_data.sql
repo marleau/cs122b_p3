@@ -1,5 +1,4 @@
 INSERT INTO employees VALUES('test@inter.net','pass','Tester CS122B');
-INSERT INTO customers VALUES(104401,'Patrick', 'Marleau',941,'The Tank','marleau@sharks.com','password');
 INSERT INTO movies VALUES(490001, 'The Aviator', 2004, 'Martin Scorsese','http://ia.imdb.com/media/imdb/01/I/05/31/48m.jpg','http://movies.apple.com/movies/miramax/the_aviator/the_aviator-tlr-ref.mov');
 INSERT INTO movies VALUES(490002, 'Ocean\'s Twelve', 2004, 'StevenSoderbergh', 'http://ia.imdb.com/media/imdb/01/I/32/23/58m.jpg','http://raincloud.warnerbros.com/wbmovies/oceans12/trailer/trailer_lo/trailer_MSTR.mov');
 INSERT INTO movies VALUES(490003, 'Hostage', 2005, 'Florent Emilio Siri','http://ia.imdb.com/media/imdb/01/I/13/78/68m.jpg','http://images.apple.com/movies/miramax/hostage/hostage-ref.mov');
@@ -3945,3 +3944,4 @@ INSERT INTO sales(id, customer_id,movie_id,sales_date)  values (6515, 658015, 65
 INSERT INTO sales(id, customer_id,movie_id,sales_date)  values (6516, 658018, 658004,'2002-10-20 12:06:04');
 INSERT INTO sales(id, customer_id,movie_id,sales_date)  values (6517, 658016, 658011,'2002-10-20 12:10:10');
 INSERT INTO sales(id, customer_id,movie_id,sales_date)  values (6518, 658019, 658001,'2002-10-20 12:10:11');
+INSERT INTO customers VALUES(104401,'Patrick', 'Marleau',941,'The Tank','marleau@sharks.com','password');
