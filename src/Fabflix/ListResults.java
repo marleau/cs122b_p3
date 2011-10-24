@@ -360,13 +360,13 @@ public class ListResults extends HttpServlet {
 		InputStream is = context.getResourceAsStream("menu.jsp");
 		String rtn = "";
 		if (is != null) {
-			BufferedReader reader = new BufferedReader(new InputStreamReader(is));			
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 			try {
 				while (reader.ready()) {
 					rtn += reader.readLine();
 				}
 			} catch (IOException e) {
-				//If error... use old menu
+				// If error... use old menu
 				rtn = "<div class=\"menu\">	<ul class=\"main\">		<li class=\"first\"><a href=\"/project3_10\" class=\"first\">Fabflix</a></li>		<li><a href=\"ListResults\">Browse</a></li>		<li><FORM ACTION=\"ListResults\" METHOD=\"GET\">				<INPUT TYPE=\"TEXT\" NAME=\"arg\">				<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"5\">				<input TYPE=\"SUBMIT\" VALUE=\"Search Movies\">			</FORM>		</li>		<li class=\"last\"><a href=\"AdvancedSearch\">Advanced Search</a></li>		<li><a href=\"cart\">View Cart</a></li>		<li><a href=\"checkout\">Check out</a></li>		<li><a href=\"logout\">Logout</a></li>	</ul></div>";
 			}
 		}
@@ -387,7 +387,7 @@ public class ListResults extends HttpServlet {
 		}
 		return rtn;
 	}
-	
+
 	public static void listByYearLink(PrintWriter out, Integer year) {
 		listByYearLink(out, year, 0);
 	}
@@ -553,7 +553,7 @@ public class ListResults extends HttpServlet {
 		allGenre.close();
 		statement.close();
 	}
-	
+
 	public static String browseGenres(Integer resultsPerPage) throws SQLException, UnsupportedEncodingException, NamingException {
 		String rtn = "";
 		Connection dbcon = openConnection();
@@ -590,8 +590,8 @@ public class ListResults extends HttpServlet {
 		// ===Letter Browser
 		out.println(browseTitles(resultsPerPage));
 	}
-	
-	public static String browseTitles(Integer resultsPerPage) throws UnsupportedEncodingException{
+
+	public static String browseTitles(Integer resultsPerPage) throws UnsupportedEncodingException {
 		String rtn = "Browse Titles: <BR>";
 		String alphaNum = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 		for (int i = 0; i < alphaNum.length(); i++) {

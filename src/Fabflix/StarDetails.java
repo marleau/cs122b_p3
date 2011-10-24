@@ -151,4 +151,6 @@ public class StarDetails extends HttpServlet {
 		out.close();
 	}
 
+	
+
 }
