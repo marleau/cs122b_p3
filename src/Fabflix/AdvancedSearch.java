@@ -33,8 +33,7 @@ public class AdvancedSearch extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-	//	if (LoginPage.kickNonUsers(request, response)){return;}// kick if not logged in
-		Login.kickNonUsers(request, response);
+		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
 
 		response.setContentType("text/html"); // Response mime type
 
@@ -275,21 +274,18 @@ public class AdvancedSearch extends HttpServlet {
 				// BODY
 
 				out.println(Page.header(context, session));
+				out.println("<div class=\"list-results\">");
 
 				out.println("<H2>Advanced Search</H2>"); // Show search options
-
-				out.println("<BR>");
-
+				
 				if (numberOfResults > 0) {// if results exist
 					out.println("( " + numberOfResults + " Results )");
 					showRppOptions(out, searchString, order, page, resultsPerPage);
-					out.println("<BR><BR>");
+					out.println("<BR>");
 					if (numberOfPages > 1) {
 						showPageControls(out, searchString, order, page, resultsPerPage, numberOfPages);
-						out.println("<BR><BR>");
+						out.println("<BR><hr>");
 					}
-					showSortOptions(out, searchString, order, page, resultsPerPage);
-					out.println("<BR>");
 				}
 				while (searchResults.next()) {// For each movie, DISPLAY
 					// INFORMATION
@@ -304,24 +300,32 @@ public class AdvancedSearch extends HttpServlet {
 					String bannerURL = searchResults.getString("banner_url");
 					String director = searchResults.getString("director");
 
-					out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\"></a><BR><BR>");
+					out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title);
 					Page.addToCart(out, movieID);
-					out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
-					ListResults.listByYearLink(out, year, 0);
-
-					out.println("<BR>");
+					out.println("</h2><img src=\"" + bannerURL + "\" height=\"200\"></a>");
 					
-					ListResults.listByDirectorLink(out, director, 0);
+					out.println("<div class=\"info\"><ul>");	
+					out.println("<li>ID</li><li><a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a></li></ul>");
+					
+					out.println("<ul><li>Year</li><li>");
+					ListResults.listByYearLink(out, year, resultsPerPage);
+					out.println("</li></ul>");
 
-					out.println("<BR>");
+					out.println("<ul><li>Director</li><li>");
+					ListResults.listByDirectorLink(out, director, resultsPerPage);
+					out.println("</li></ul>");
 
+					out.println("<ul><li>Genres</li><li>");
 					ListResults.listGenres(out, dbcon, resultsPerPage, movieID);
+					out.println("</li></ul>");
 
-					out.println("<BR>");
-
+					out.println("<ul><li>Stars</li><li>");
 					ListResults.listStars(out, dbcon, resultsPerPage, movieID);
+					out.println("</li></ul>");
 
-					out.println("<BR><BR><HR>");
+
+					out.println("</div><HR>");
+
 				}
 
 				if (numberOfResults > 0) {
@@ -340,6 +344,7 @@ public class AdvancedSearch extends HttpServlet {
 					out.println("<H3>No Results.</H3>");
 				}
 
+				out.println("</div>");
 				Page.footer(out);
 
 				searchResults.close();

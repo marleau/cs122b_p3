@@ -91,7 +91,13 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("<div class=\"info\"><ul>");
 				out.println("<li>ID</li>\n<li>"+movieID+"</li>");
-				out.println("<li>Trailer</li>\n<li><a href=\"" + trailerURL + "\">View</a></li></ul>");
+				out.println("<li>Trailer</li>\n<li>");
+				if (edit) {
+					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
+				} else {
+					out.println("<a href=\"" + trailerURL + "\">View</a>");
+				}
+				out.println("</li></ul>");
 //				out.println("ID: " + movieID + "<BR>");
 				
 //				if (edit){

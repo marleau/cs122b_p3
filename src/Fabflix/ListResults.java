@@ -262,7 +262,6 @@ public class ListResults extends HttpServlet {
 			}
 			
 			out.println("</div>");
-
 			Page.footer(out);
 
 			searchResults.close();
