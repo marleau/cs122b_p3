@@ -186,6 +186,7 @@ public class ListResults extends HttpServlet {
 			session.setAttribute("title", "Search by " + searchBy + ": " + arg);
 
 			out.println(Page.header(context, session));
+			out.println("<div class=\"list-results\">");
 			// BODY
 
 			out.println("<H2>Search by " + searchBy + ": " + arg + "</H2>");
@@ -194,12 +195,11 @@ public class ListResults extends HttpServlet {
 			if (numberOfResults > 0) {// if results exist
 				out.println("( " + numberOfResults + " Results )");
 				showRppOptions(out, searchBy, arg, order, page, resultsPerPage);
-				out.println("<BR><BR>");
+				out.println("<BR>");
 				if (numberOfPages > 1) {
 					showPageControls(out, searchBy, arg, order, page, resultsPerPage, numberOfPages);
-					out.println("<BR><BR>");
+					out.println("<BR><hr>");
 				}
-				out.println("<BR>");
 			}
 
 			while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
@@ -214,28 +214,32 @@ public class ListResults extends HttpServlet {
 				String bannerURL = searchResults.getString("banner_url");
 				String director = searchResults.getString("director");
 
-				out.println("<BR><a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")</h2><img src=\"" + bannerURL + "\" height=\"200\" alt=\""+title+"\"></a><BR><BR>");
-
+				out.println("<a href=\"MovieDetails?id=" + movieID + "\"><h2>" + title + " (" + year + ")");
 				Page.addToCart(out, movieID);
+				out.println("</h2><img src=\"" + bannerURL + "\" height=\"200\" alt=\""+title+"\" width=\"200px\"></a>");
 
-				out.println("<BR><BR>ID: <a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a><BR>");
+				out.println("<div class=\"info\"><ul>");
+				out.println("<li>ID</li><li><a href=\"MovieDetails?id=" + movieID + "\">" + movieID + "</a></li></ul>");
+				
+				out.println("<ul><li>Year</li><li>");
 				listByYearLink(out, year, resultsPerPage);
+				out.println("</li></ul>");
 
-				out.println("<BR>");
-
+				out.println("<ul><li>Director</li><li>");
 				listByDirectorLink(out, director, resultsPerPage);
+				out.println("</li></ul>");
 
-				out.println("<BR>");
-
+				out.println("<ul><li>Genres</li><li>");
 				listGenres(out, dbcon, resultsPerPage, movieID);
+				out.println("</li></ul>");
 
-				out.println("<BR>");
-
+				out.println("<ul><li>Stars</li><li>");
 				listStars(out, dbcon, resultsPerPage, movieID);
+				out.println("</li></ul>");
 
 				// String target = (String) session.getAttribute("user.dest");
 
-				out.println("<BR><BR><HR>");
+				out.println("</div><HR>");
 			}
 
 			if (numberOfResults > 0) {
@@ -253,6 +257,8 @@ public class ListResults extends HttpServlet {
 			} else {
 				out.println("<H3>No Results.</H3>");
 			}
+			
+			out.println("</div>");
 
 			Page.footer(out);
 
@@ -283,7 +289,7 @@ public class ListResults extends HttpServlet {
 //	}
 
 	public static void listByYearLink(PrintWriter out, Integer year, Integer rpp) {
-		out.println("Year: <a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a>");
+		out.println("<a href=\"ListResults?by=year&arg=" + year + "&rpp=" + rpp + "\">" + year + "</a>");
 	}
 
 //	public static void listByDirectorLink(PrintWriter out, String director) throws UnsupportedEncodingException {
@@ -291,7 +297,7 @@ public class ListResults extends HttpServlet {
 //	}
 
 	public static void listByDirectorLink(PrintWriter out, String director, Integer rpp) throws UnsupportedEncodingException {
-		out.println("Director: <a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "&rpp=" + rpp + "\">" + director
+		out.println("<a href=\"ListResults?by=director&arg=" + java.net.URLEncoder.encode(director, "UTF-8") + "&rpp=" + rpp + "\">" + director
 				+ "</a>");
 	}
 
@@ -372,18 +378,19 @@ public class ListResults extends HttpServlet {
 	public static void listStars(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; comma separated list
-		out.println("Stars: ");
+		out.println("<ul class=\"list\">");
 		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "
 				+ "AND s.star_id=s1.id " + "AND m.id = '" + movieID + "' ORDER BY last_name");
 		if (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starID = stars.getString("star_id");
-			out.println("<a href=\"StarDetails?id=" + starID + "\">" + starName + "</a>");
+			out.println("<li><a href=\"StarDetails?id=" + starID + "\">" + starName + "</a></li>");
 			while (stars.next()) {
 				starName = stars.getString("first_name") + " " + stars.getString("last_name");
 				starID = stars.getString("star_id");
-				out.println(", <a href=\"StarDetails?id=" + starID + "\">" + starName + "</a>");
+				out.println("<li><a href=\"StarDetails?id=" + starID + "\">" + starName + "</a></li>");
 			}
+			out.println("</ul>");
 		}
 		stars.close();
 		statement.close();
@@ -392,23 +399,29 @@ public class ListResults extends HttpServlet {
 	public static void listStarsIMG(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException {
 		Statement statement = dbcon.createStatement();
 		// ===STARS; list of images
-		out.println("Stars: ");
+//		out.println("Stars: ");
+		out.println("<ul class=\"list\">");
 		if (edit) {
+			out.println("<li>");
 			EditMovie.addStarGenreLink(out, movieID, "star ID");
+			out.println("</li>");
 		}
-		out.println("<BR><BR>");
+//		out.println("<BR><BR>");
 		ResultSet stars = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 WHERE s.movie_id=m.id AND s.star_id=s1.id AND m.id = '" + movieID
 						+ "' ORDER BY last_name");
 		while (stars.next()) {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
 			int starID = stars.getInt("star_id");
-			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\" height=\"120\">" + starName + "</a>");
+			out.println("<li>");
+			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img class=\"star\" src=\"" + starIMG + "\" height=\"120\">" + starName + "</a>");
 			if (edit) {
 				EditMovie.removeStarGenreLink(out, movieID, starID, "star", starName);
 			}
-			out.println("<BR><BR>");
+			out.println("</li>");
+//			out.println("<BR>");
 		}
+		out.println("</ul>");
 		stars.close();
 		statement.close();
 	}
@@ -447,10 +460,12 @@ public class ListResults extends HttpServlet {
 	public static void listGenres(PrintWriter out, Connection dbcon, Integer rpp, Integer movieID, Boolean edit) throws SQLException,
 			UnsupportedEncodingException {
 		// ===GENRES; comma separated list
-		out.println("Genre: ");
+//		out.println("Genre: ");
+		out.println("<ul class=\"list\">");
 		if (edit) {
+			out.println("<li>");
 			EditMovie.addStarGenreLink(out, movieID, "genre");
-			out.println("<BR>");
+			out.println("</li>");
 		}
 		Statement statement = dbcon.createStatement();
 		ResultSet genres = statement.executeQuery("SELECT DISTINCT name,genre_id FROM movies m, genres_in_movies g, genres g1 WHERE g.movie_id=m.id AND g.genre_id=g1.id AND m.id ='"
@@ -458,24 +473,24 @@ public class ListResults extends HttpServlet {
 		if (genres.next()) {
 			String genre = genres.getString("name").trim();
 			Integer delID = genres.getInt("genre_id");
+			out.println("<li>");
 			out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
 			if (edit) {
 				EditMovie.removeStarGenreLink(out, movieID, delID, "genre", genre);
-				out.println("<BR>");
 			}
+			out.println("</li>");
 			while (genres.next()) {
 				genre = genres.getString("name").trim();
 				delID = genres.getInt("genre_id");
-				if (!edit) {
-					out.println(", ");
-				}
+				out.println("<li>");
 				out.println("<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(genre, "UTF-8") + "&rpp=" + rpp + "\">" + genre + "</a>");
 				if (edit) {
 					EditMovie.removeStarGenreLink(out, movieID, delID, "genre", genre);
-					out.println("<BR>");
 				}
+				out.println("</li>");
 			}
 		}
+		out.println("</ul>");
 		genres.close();
 		statement.close();
 	}

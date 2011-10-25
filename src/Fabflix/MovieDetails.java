@@ -44,8 +44,6 @@ public class MovieDetails extends HttpServlet {
 			}
 
 			Boolean edit = false; // trigger edit mode
-//			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-//			if (isAdmin != null && isAdmin){
 			if (Page.isAdmin(request)) {
 				try {
 					edit = Boolean.valueOf(request.getParameter("edit"));
@@ -70,67 +68,68 @@ public class MovieDetails extends HttpServlet {
 
 				session.setAttribute("title", title);
 				out.println(Page.header(context, session));
-
-
-				// Movie Info
-				out.println("<H1>" + title + " (" + year + ")");
-				if (Page.isAdmin(request)){
-					if (edit){
-						out.println("(<A HREF=\"MovieDetails?id="+movieID+"&edit=false\">Stop Editing</A>)");
-					}else{
-						out.println("(<A HREF=\"MovieDetails?id="+movieID+"&edit=true\">Edit</A>)");
+				out.println("<div class=\"movie-detail\">");
+				
+				if (Page.isAdmin(request)) {
+					if (edit) {
+						out.println("<div class=\"editing\">You are currently editing "+title+". To stop, click <a href=\"MovieDetails?id="+movieID+"&edit=false\">here</a>.</div>");
+					} else {
+						out.println("<div class=\"editing\">To edit "+title+", click <a href=\"MovieDetails?id="+movieID+"&edit=true\">here</a>.</div>");
 					}
 				}
-				out.println("</H1><BR>");
+
+				// Movie Info
+				out.println("<H1>" + title );
+				if (!edit && !Page.isAdmin(request)){
+					Page.addToCart(out, movieID);
+				}
+				out.println("</H1>");
 				
 				//TODO add DELETE MOVIE
 				
-				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" height=\"300\"><BR>Trailer</a><BR><BR>");
+				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" width=\"200\"></a>");
 				
-				if (!edit && !Page.isAdmin(request)){
-					Page.addToCart(out, movieID);
-					out.println("<BR><BR>");
-				}
-
-				out.println("ID: " + movieID + "<BR>");
+				out.println("<div class=\"info\"><ul>");
+				out.println("<li>ID</li>\n<li>"+movieID+"</li>");
+				out.println("<li>Trailer</li>\n<li><a href=\"" + trailerURL + "\">View</a></li></ul>");
+//				out.println("ID: " + movieID + "<BR>");
 				
-				if (edit){
-					EditMovie.editMovieLink(out, movieID, title, "title");
-					out.println("<BR>");
-				}
-				if (edit){
-					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
-					out.println("<BR>");
-				}
-				if (edit){
-					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
-					out.println("<BR>");
-				}
+//				if (edit){
+//					out.println("<li>Title</li>\n<li>");
+//					EditMovie.editMovieLink(out, movieID, title, "title");
+//					out.println("</li>");
+//					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
+//					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
+//				}
 				
-				
-				ListResults.listByYearLink(out, year, 0);
-				
+				out.println("<ul><li>Year</li>\n<li>");
 				if (edit){
 					EditMovie.editMovieLink(out, movieID, year.toString(), "year");
+				} else {
+					ListResults.listByYearLink(out, year, 0);
 				}
-
-				out.println("<BR>");
+				out.println("</li></ul>");
 				
-				ListResults.listByDirectorLink(out, director, 0);
-
+				out.println("<ul><li>Director</li>\n<li>");
 				if (edit){
 					EditMovie.editMovieLink(out, movieID, director, "director");
+				} else {
+					ListResults.listByDirectorLink(out, director, 0);
 				}
-				
-				out.println("<BR>");
-				
+				out.println("</li></ul>");
 
+				out.println("<ul><li>Genres</li>\n<li>");
 				ListResults.listGenres(out, dbcon, 0, movieID, edit);
+				out.println("</li>");
+				out.println("</ul>");
 
-				out.println("<BR><BR>");
-
+				out.println("<ul><li>Stars</li>\n<li>");
 				ListResults.listStarsIMG(out, dbcon, 0, movieID, edit);
-
+				out.println("</li></ul>");
+				
+				out.println("</div>");
+			out.println("</div>");
+			
 			} else {
 				session.setAttribute("title", "FabFlix -- Movie Not Found");
 				out.println(Page.header(context, session));
@@ -138,7 +137,6 @@ public class MovieDetails extends HttpServlet {
 			}
 
 			// Footer
-
 			Page.footer(out);
 
 			rs.close();

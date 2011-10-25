@@ -77,17 +77,25 @@ public class StarDetails extends HttpServlet {
 
 				session.setAttribute("title", starName);
 				out.println(Page.header(context, session));
-
+				out.println("<div class=\"star-detail\">");
+				
+				if (Page.isAdmin(request)) {
+					if (edit) {
+						out.println("<div class=\"editing\">You are currently editing "+starName+". To stop, click <a href=\"StarDetails?id="+starID+"&edit=false\">here</a>.</div>");
+					} else {
+						out.println("<div class=\"editing\">To edit "+starName+", click <a href=\"StarDetails?id="+starID+"&edit=true\">here</a>.</div>");
+					}
+				}
 				// Star Details
 				out.println("<H1>" + starName + " " );
 //				if (isAdmin != null && isAdmin){
-				if (Page.isAdmin(request)) {
-					if (edit){
-						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=false\">Stop Editing</A>)");
-					}else{
-						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=true\">Edit</A>)");
-					}
-				}
+//				if (Page.isAdmin(request)) {
+//					if (edit){
+//						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=false\">Stop Editing</A>)");
+//					}else{
+//						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=true\">Edit</A>)");
+//					}
+//				}
 				out.println("</H1><BR>");
 				//TODO add DELETE STAR
 				
@@ -118,6 +126,7 @@ public class StarDetails extends HttpServlet {
 				
 				ListResults.listMoviesIMG(out, dbcon, 0, starID, edit);
 
+				out.println("</div>");
 				
 			} else {// starID didn't return a star
 				session.setAttribute("title", "FabFlix -- Star Not Found");
