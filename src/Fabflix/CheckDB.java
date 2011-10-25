@@ -150,7 +150,6 @@ public class CheckDB extends HttpServlet {
 					break;
 
 				default:
-					// TODO display genres
 					savePath(request);
 					out.println("<H1>All Genres:</H1><BR>");
 					out.println(printGenres());
@@ -334,7 +333,7 @@ public class CheckDB extends HttpServlet {
 			String name = searchResults.getString("name");
 			int id = searchResults.getInt("id");
 
-			rtn += "ID: " + id + "<BR>" + name + "<BR>";
+			rtn += name + "<BR>ID: " + id + " ";
 			rtn += EditGenre.deleteGenreLink(id, name);
 
 			rtn += "<BR><BR>";
