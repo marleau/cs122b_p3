@@ -252,6 +252,7 @@ ul.browse li ul.sub-browse {
 	left: 0px;
 	display: none;
 	background: #999999;
+	width: 200px;
 }
 
 ul.browse li:hover ul {
@@ -365,4 +366,34 @@ div.info ul.list li {
 div.star-detail {
 	border: 1px solid green;
 	width: 800 px;
+}
+
+/* ADD MOVIE */
+
+div.content div.add-movie form {
+	width: 400px;
+}
+
+div.content div.add-movie input {
+	clear: right;
+	width: 240px;
+	float: right;
+}
+
+div.content div.add-movie label {
+	clear: left;
+	display: block;
+	float: left;
+	width: 140px;
+	text-align: right;
+	margin-bottom: 5px;
+}
+
+div.content div.add-movie p {
+	clear: both;
+}
+
+div.content div.add-movie button {
+	clear: both;
+	float: right;
 }
