@@ -85,6 +85,7 @@ public class EditMovie extends HttpServlet {
 							statement = dbcon.createStatement();
 							query = "SELECT id FROM genres g WHERE name = '" + genreName + "'";
 							genreQ = statement.executeQuery(query);
+							genreQ.next();
 							genreID = genreQ.getString("id");
 						}
 						

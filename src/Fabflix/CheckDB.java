@@ -2,6 +2,7 @@ package Fabflix;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -204,7 +205,7 @@ public class CheckDB extends HttpServlet {
 		out.close();
 	}
 
-	private String printGenres() throws NamingException, SQLException {
+	private String printGenres() throws NamingException, SQLException, UnsupportedEncodingException {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
@@ -214,7 +215,7 @@ public class CheckDB extends HttpServlet {
 			String name = searchResults.getString("name");
 			int genreID = searchResults.getInt("id");
 
-			rtn += name + "<BR>ID: " + genreID + "<BR>";
+			rtn += "<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a><BR>ID: " + genreID + "<BR>";
 
 			rtn += EditGenre.renameGenreLink(name, genreID);
 
@@ -237,21 +238,21 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		switch (option) {
 		case 1:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Movie</li>" + "		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>"
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Movie</li>" + "		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>"
 					+ "		<li><a href=\"CheckDB?option=1&sub=2\">Missing Genre</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=3\">Duplicate Movies</a></li>"
 					+ "   </ul>" + "</div>";
 			break;
 		case 2:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Star</li>" + "		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>"
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Star</li>" + "		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>"
 					+ "		<li><a href=\"CheckDB?option=2&sub=2\">DOB Warning</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=3\">Missing Movies</a></li>"
 					+ "		<li><a href=\"CheckDB?option=2&sub=4\">Duplicate Stars</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 3:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Genre</li>" + "		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>"
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Genre</li>" + "		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>"
 					+ "		<li><a href=\"CheckDB?option=3&sub=2\">Duplicate Genre</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 4:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Customer</li>" + "		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>"
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Customer</li>" + "		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>"
 					+ "		<li><a href=\"CheckDB?option=4&sub=2\">Invalid CC</a></li>" + "   </ul>" + "</div>";
 			break;
 

@@ -414,7 +414,7 @@ public class ListResults extends HttpServlet {
 			String starName = stars.getString("first_name") + " " + stars.getString("last_name");
 			String starIMG = stars.getString("photo_url");
 			int starID = stars.getInt("star_id");
-			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\" height=\"120\">" + starName + "</a>");
+			out.println("<a href=\"StarDetails?id=" + starID + "\">" + "<img src=\"" + starIMG + "\" height=\"120\"><BR>" + starName + "</a>");
 			if (edit) {
 				EditMovie.removeStarGenreLink(out, movieID, starID, "star", starName);
 			}
