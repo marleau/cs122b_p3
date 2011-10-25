@@ -336,16 +336,20 @@ div.info li {
 }
 
 div.movie-detail img {
+	clear: left;
 	float: left;
 }
 
 div.info ul li:nth-child(odd) {
+	clear: left;
 	float: left;
 	width: 150px;
 	text-align: right;
+	padding-right: 10px;
 }
 
 div.info ul li:nth-child(even) {
+	clear: right;
 	float: right;
 	width: 440px;
 }
