@@ -7,7 +7,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -94,7 +93,7 @@ public class EditStar extends HttpServlet {
 							sid = similarNames.getInt("id");
 							first_name = similarNames.getString("first_name");
 							last_name = similarNames.getString("last_name");
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"starID\" VALUE=\""+sid+"\"><img src=\""+photo_url+"\"> "+first_name +" " + last_name+"<BR><BR>");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"starID\" id=\""+sid+"\" VALUE=\""+sid+"\"><label for=\""+sid+"\"><img src=\""+photo_url+"\" height=\"100\"> "+first_name +" " + last_name+"</label><BR><BR>");
 						}
 						
 						out.println("<INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"onStar\">");

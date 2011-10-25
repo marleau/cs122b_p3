@@ -125,15 +125,16 @@ public class EditMovie extends HttpServlet {
 
 						String banner_url;
 						int mid=0;
-						String title, year;
+						String title, year, director;
 						while (similarNames.next()){
 							banner_url = similarNames.getString("banner_url");
 							mid = similarNames.getInt("id");
 							title = similarNames.getString("title");
 							year = similarNames.getString("year");
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"movieID\" VALUE=\""+mid+"\"><img src=\""+banner_url+"\"> "+title +" (" + year+")<BR><BR>");
+							director = similarNames.getString("director");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"movieID\" id=\""+mid+"\" VALUE=\""+mid+"\"><label for=\""+mid+"\"><img src=\""+banner_url+"\" height=\"100\"><BR>"+title +" (" + year+")<BR>Director: "+director+"</label><BR><BR>");
 						}
-						
+
 						out.println("<INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"onMovie\">");
 						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
 						

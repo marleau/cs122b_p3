@@ -69,6 +69,11 @@ public class EditGenre extends HttpServlet {
 						String query = "DELETE FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
 						statement.executeUpdate(query);
 					}
+				} else if (action.equals("edit") && value != null && !value.isEmpty() && genreID != null){
+					if (field.equals("name")){
+						String update = "UPDATE genres SET name = '"+value+"' WHERE id = '"+genreID+"'";
+						statement.executeUpdate(update);
+					}
 				} else if (action.equals("merge")){
 					if (field.equals("genre") && value != null && !value.isEmpty() && genreID == null){
 						// Get all similar names
@@ -86,10 +91,10 @@ public class EditGenre extends HttpServlet {
 						while (similarNames.next()){
 							name = similarNames.getString("name");
 							gid = similarNames.getInt("id");
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\""+gid+"\">"+name+"<BR><BR>");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" id=\""+gid+"\" VALUE=\""+gid+"\"><label for=\""+gid+"\">"+name+"</label><BR><BR>");
 						}
 						
-						out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\"0\"> New Name: <INPUT TYPE=\"TEXT\" NAME=\"value\"><BR><BR>");
+						out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" id=\"0\" VALUE=\"0\"><label for=\"0\"> New Name: </label><INPUT TYPE=\"TEXT\" NAME=\"value\" id=\"0\"><BR><BR>");
 						
 						out.println("<INPUT TYPE=\"Hidden\" NAME=\"oldName\" VALUE=\""+value+"\"><INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"setGenre\">");
 						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
@@ -171,6 +176,16 @@ public class EditGenre extends HttpServlet {
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"allEmpty\">" +
 				"<button type=\"submit\" value=\"submit\">Delete All Empty Genres</button>" +
 				"</form>";
+	}
+
+	public static String renameGenreLink(String name, int genreID) {
+		return "<form method=\"post\" action=\"EditGenre\">" +
+		"<input type=\"text\" name=\"value\" />" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"genreID\" VALUE=\""+genreID+"\" />" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"action\" VALUE=\"edit\">" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"field\" VALUE=\"name\">" +
+		"<button type=\"submit\" value=\"submit\">Rename "+name+"</button>" +
+		"</form>";
 	}
 
 

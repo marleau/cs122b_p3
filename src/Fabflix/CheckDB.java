@@ -92,7 +92,7 @@ public class CheckDB extends HttpServlet {
 
 				case 3:
 					savePath(request);
-					out.println("<H1>Duplicate Movies.</H1><BR>");
+					out.println("<H1>Duplicate Movies:</H1><BR>");
 					out.println(printSimilarMoivies());
 					break;
 
@@ -124,7 +124,7 @@ public class CheckDB extends HttpServlet {
 
 				case 4:
 					savePath(request);
-					out.println("<H1>Duplicate Stars.</H1><BR>");
+					out.println("<H1>Duplicate Stars:</H1><BR>");
 					out.println(printSimilarStar());
 					break;
 
@@ -144,12 +144,15 @@ public class CheckDB extends HttpServlet {
 
 				case 2:
 					savePath(request);
-					out.println("<H1>Duplicate Genres.</H1><BR>");
+					out.println("<H1>Duplicate Genres:</H1><BR>");
 					out.println(printSimilarGenres());
 					break;
 
 				default:
 					// TODO display genres
+					savePath(request);
+					out.println("<H1>All Genres:</H1><BR>");
+					out.println(printGenres());
 					break;
 				}
 				break;
@@ -201,9 +204,32 @@ public class CheckDB extends HttpServlet {
 		out.close();
 	}
 
+	private String printGenres() throws NamingException, SQLException {
+		String rtn = "";
+		Connection dbcon = Database.openConnection();
+		Statement statement = dbcon.createStatement();
+		String query = "SELECT * FROM genres ORDER BY name";
+		ResultSet searchResults = statement.executeQuery(query);
+		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
+			String name = searchResults.getString("name");
+			int genreID = searchResults.getInt("id");
+
+			rtn += name + "<BR>ID: " + genreID + "<BR>";
+
+			rtn += EditGenre.renameGenreLink(name, genreID);
+
+			rtn += "<BR><BR>";
+		}
+
+		searchResults.close();
+		statement.close();
+		dbcon.close();
+		return rtn;
+	}
+
 	private String printOptionMenu() {
 		return "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>"
-				+ "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>"
+				+ "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Management</a></li>"
 				+ "		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" + "   </ul>" + "</div>";
 	}
 
@@ -548,7 +574,7 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a><BR>Count: " + count
+		return "<img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")<BR>Count: " + count
 				+ "<BR>" + EditMovie.mergeMovieLink(movieID);
 	}
 
