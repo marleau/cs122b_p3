@@ -7,9 +7,12 @@
 
 	<h2>Add Movie</h2>
 	
-	<% if (session.getAttribute("addMovie_err") != null && (Boolean)session.getAttribute("addMovie_err") == true) { %>
-		<p class="error">You must provide all information.</p>
+	<% if (session.getAttribute("addMovie_err") != null ) { %>
+		<p class="error">You must provide all information.
+		<%= session.getAttribute("addMovie_err") %>
+		</p>
 	<% } %>
+	<% session.removeAttribute("addMovie_err"); %>
 	
 	<form method="post" action="AddMovie">
 	
