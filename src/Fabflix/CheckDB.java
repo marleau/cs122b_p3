@@ -561,20 +561,20 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
-		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
+		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"><BR>" + first_name + " " + last_name + "</a><BR> ID: " + starID;
 	}
 
 	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, String dob, Integer count) {
-		return "<img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "<BR>Date of Birth: " + dob + "<BR>Count: " + count + "<BR>"
+		return "<img src=\"" + photoURL + "\" height=\"60\"><BR>" + first_name + " " + last_name + "<BR> Date of Birth: " + dob + "<BR> Count: " + count + "<BR>"
 				+ EditStar.mergeStarLink(starID);
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
+		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"><BR>" + title + " (" + year + ")</a><BR> ID: " + movieID;
 	}
 
 	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
-		return "<img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")<BR>Count: " + count
+		return "<img src=\"" + bannerURL + "\" height=\"60\"><BR>" + title + " (" + year + ")<BR> Count: " + count
 				+ "<BR>" + EditMovie.mergeMovieLink(movieID);
 	}
 

@@ -91,9 +91,9 @@ public class EditStar extends HttpServlet {
 						while (similarNames.next()){
 							photo_url = similarNames.getString("photo_url");
 							sid = similarNames.getInt("id");
-							first_name = similarNames.getString("first_name");
-							last_name = similarNames.getString("last_name");
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"starID\" id=\""+sid+"\" VALUE=\""+sid+"\"><label for=\""+sid+"\"><img src=\""+photo_url+"\" height=\"100\"> "+first_name +" " + last_name+"</label><BR><BR>");
+							first_name = Database.cleanSQL(similarNames.getString("first_name"));
+							last_name = Database.cleanSQL(similarNames.getString("last_name"));
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"starID\" id=\""+sid+"\" VALUE=\""+sid+"\"><label for=\""+sid+"\"><img src=\""+photo_url+"\" height=\"100\"><BR>"+first_name +" " + last_name+"</label><BR><BR>");
 						}
 						
 						out.println("<INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"onStar\">");

@@ -150,7 +150,7 @@ public class EditMovie extends HttpServlet {
 						
 						starQ.next();
 						String year = starQ.getString("year");
-						String title = starQ.getString("title");
+						String title = Database.cleanSQL(starQ.getString("title"));
 
 						//Update all stars to use new movieID
 						statement = dbcon.createStatement();

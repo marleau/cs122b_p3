@@ -122,7 +122,7 @@ public class EditGenre extends HttpServlet {
 							String query = "SELECT * FROM genres g WHERE id = '"+genreID+"'";
 							ResultSet similarNames = statement.executeQuery(query);
 							similarNames.next();
-							newName = similarNames.getString("name");
+							newName = Database.cleanSQL(similarNames.getString("name"));
 						}
 						
 						//Rename genreID to new name

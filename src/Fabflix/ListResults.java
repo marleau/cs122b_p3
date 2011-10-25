@@ -337,6 +337,14 @@ public class ListResults extends HttpServlet {
 		}
 	}
 
+	public static void searchTitlesBox(PrintWriter out, String arg, Integer resultsPerPage) {
+		// ===Search Box
+		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\" VALUE=\""+arg+"\">"
+				+ "<INPUT TYPE=\"HIDDEN\" NAME=rpp VALUE=\"" + resultsPerPage + "\"><INPUT TYPE=\"SUBMIT\" VALUE=\"Search\">");
+		AdvancedSearch.advancedSearchButton(out);
+		out.println("</FORM>");
+	}
+
 	public static void searchTitlesBox(PrintWriter out, Integer resultsPerPage) {
 		// ===Search Box
 		out.println("<FORM ACTION=\"ListResults\" METHOD=\"GET\">  Search Titles (RegEx): <INPUT TYPE=\"TEXT\" NAME=\"arg\">"
