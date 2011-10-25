@@ -20,6 +20,7 @@ public class AddMovie extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (Login.kickNonUsers(request, response)) {return;}
 		if (Login.kickNonAdmin(request, response)) {return;}
 		HttpSession session = request.getSession();
 		session.setAttribute("title", "Add Movie");

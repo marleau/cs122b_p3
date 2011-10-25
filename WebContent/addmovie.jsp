@@ -1,5 +1,6 @@
 <%@ page import="Fabflix.*" %>
-
+<% if(Login.kickNonUsers(request, response)){return;} %>
+<% if(Login.kickNonAdmin(request, response)){return;} %>
 <%@ include file="header.jsp" %>
 
 <div class="add-movie">
