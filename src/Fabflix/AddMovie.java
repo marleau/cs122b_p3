@@ -1,9 +1,7 @@
 package Fabflix;
 
 import java.io.IOException;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.*;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -91,7 +89,17 @@ public class AddMovie extends HttpServlet {
 			cst.setString(6, genre);
 			cst.execute();
 			
+			Statement st = dbcon.createStatement();
+			//TODO include genre and star name to search for ID for accuracy
+			ResultSet rs = st.executeQuery("SELECT id FROM movies WHERE title = '"+title+"' AND year = '"+year+"' AND director = '"+director+"'");
+			rs.next();
+			int id = rs.getInt("id");
+			
+			dbcon.close();
 			session.removeAttribute("addMovie_err");
+			
+			//Try to redirect to newly added movie
+			response.sendRedirect("MovieDetails?id="+id);
 		} catch (NamingException e) {
 		} catch (SQLException e) {
 		}

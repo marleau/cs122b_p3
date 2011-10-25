@@ -503,7 +503,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM stars s WHERE dob <= '1900/01/01' OR dob >= CURDATE()";
+		String query = "SELECT * FROM stars s WHERE dob <= '1900/01/01' OR dob >= CURDATE() OR dob IS NULL";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each star, DISPLAY INFORMATION
 			Integer starID;
