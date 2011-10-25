@@ -66,21 +66,21 @@ public class MovieDetails extends HttpServlet {
 				String bannerURL = rs.getString("banner_url");
 				String trailerURL = rs.getString("trailer_url");
 
-				session.setAttribute("title", title);
+				session.setAttribute("title", title + " ("+year+")");
 				out.println(Page.header(context, session));
 				out.println("<div class=\"movie-detail\">");
 				
 				if (Page.isAdmin(request)) {
 					if (edit) {
-						out.println("<div class=\"editing\">You are currently editing "+title+". To stop, click <a href=\"MovieDetails?id="+movieID+"&edit=false\">here</a>.</div>");
+						out.println("<div class=\"editing\">You are currently editing "+title+ " ("+year+"). To stop, click <a href=\"MovieDetails?id="+movieID+"&edit=false\">here</a>.</div>");
 					} else {
-						out.println("<div class=\"editing\">To edit "+title+", click <a href=\"MovieDetails?id="+movieID+"&edit=true\">here</a>.</div>");
+						out.println("<div class=\"editing\">To edit "+title+ " ("+year+"), click <a href=\"MovieDetails?id="+movieID+"&edit=true\">here</a>.</div>");
 					}
 				}
 
 				// Movie Info
-				out.println("<H1>" + title );
-				if (!edit && !Page.isAdmin(request)){
+				out.println("<H1>" + title + " ("+year+")");
+				if (!edit){
 					Page.addToCart(out, movieID);
 				}
 				out.println("</H1>");
@@ -91,13 +91,16 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("<div class=\"info\"><ul>");
 				out.println("<li>ID</li>\n<li>"+movieID+"</li>");
-				out.println("<li>Trailer</li>\n<li>");
+				out.println("</li></ul>");
 				if (edit) {
+					EditMovie.editMovieLink(out, movieID, title, "title");
+					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
 					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
 				} else {
+					out.println("<li>Trailer</li>\n<li>");
 					out.println("<a href=\"" + trailerURL + "\">View</a>");
+					out.println("</li></ul>");
 				}
-				out.println("</li></ul>");
 //				out.println("ID: " + movieID + "<BR>");
 				
 //				if (edit){

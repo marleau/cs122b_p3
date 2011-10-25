@@ -59,7 +59,6 @@ public class EditGenre extends HttpServlet {
 
 			Statement statement = dbcon.createStatement();
 
-			//TODO genre editing
 			if (action != null && field != null) {
 				if (action.equals("delete")) {// ==========DELETE
 					if (field.equals("genre") && genreID != null) {
