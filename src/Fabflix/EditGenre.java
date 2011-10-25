@@ -69,6 +69,11 @@ public class EditGenre extends HttpServlet {
 						String query = "DELETE FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
 						statement.executeUpdate(query);
 					}
+				} else if (action.equals("edit") && value != null && !value.isEmpty() && genreID != null){
+					if (field.equals("name")){
+						String update = "UPDATE genres SET name = '"+value+"' WHERE id = '"+genreID+"'";
+						statement.executeUpdate(update);
+					}
 				} else if (action.equals("merge")){
 					if (field.equals("genre") && value != null && !value.isEmpty() && genreID == null){
 						// Get all similar names
@@ -86,10 +91,10 @@ public class EditGenre extends HttpServlet {
 						while (similarNames.next()){
 							name = similarNames.getString("name");
 							gid = similarNames.getInt("id");
-							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\""+gid+"\">"+name+"<BR><BR>");
+							out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" id=\""+gid+"\" VALUE=\""+gid+"\"><label for=\""+gid+"\">"+name+"</label><BR><BR>");
 						}
 						
-						out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" VALUE=\"0\"> New Name: <INPUT TYPE=\"TEXT\" NAME=\"value\"><BR><BR>");
+						out.println("<INPUT TYPE=\"RADIO\" NAME=\"genreID\" id=\"0\" VALUE=\"0\"><label for=\"0\"> New Name: </label><INPUT TYPE=\"TEXT\" NAME=\"value\" id=\"0\"><BR><BR>");
 						
 						out.println("<INPUT TYPE=\"Hidden\" NAME=\"oldName\" VALUE=\""+value+"\"><INPUT TYPE=\"Hidden\" NAME=\"action\" VALUE=\"merge\"><INPUT TYPE=\"Hidden\" NAME=\"field\" VALUE=\"setGenre\">");
 						out.println("<INPUT TYPE=\"SUBMIT\" VALUE=\"Submit\"></FORM>");
@@ -100,26 +105,11 @@ public class EditGenre extends HttpServlet {
 						return;
 						
 					} else if (field.equals("setGenre") && genreID != null && !genreID.isEmpty() && !oldName.isEmpty()){
-						//TODO merge genres
-
 						if (genreID.equals("0") && value.isEmpty()){//No blank name for a genre
-							try {
-								String target = (String) session.getAttribute("EditGenre.dest");
-								if (target != null) {
-									session.removeAttribute("EditGenre.dest");
-									response.sendRedirect(target);
-									return;
-								}
-							} catch (Exception ignored) {
-							}
-							response.sendRedirect("CheckDB");
+							CheckDB.returnPath(session, response);
 							return;
 						}
 						
-//						PrintWriter out = response.getWriter();
-//						ServletContext context = getServletContext();
-//						out.println(Page.header(context, session));
-
 						String newName = "";
 						
 						if (genreID.equals("0")){
@@ -132,7 +122,7 @@ public class EditGenre extends HttpServlet {
 							String query = "SELECT * FROM genres g WHERE id = '"+genreID+"'";
 							ResultSet similarNames = statement.executeQuery(query);
 							similarNames.next();
-							newName = similarNames.getString("name");
+							newName = Database.cleanSQL(similarNames.getString("name"));
 						}
 						
 						//Rename genreID to new name
@@ -149,9 +139,6 @@ public class EditGenre extends HttpServlet {
 						statement = dbcon.createStatement();
 						update = "DELETE FROM genres WHERE SOUNDEX(name) = SOUNDEX('"+oldName+"') AND id != '"+genreID+"'";
 						statement.executeUpdate(update);
-
-//						Page.footer(out);
-//						out.close();
 					}
 				}
 				
@@ -159,26 +146,13 @@ public class EditGenre extends HttpServlet {
 				
 			}
 			
-			
-			
 			dbcon.close();
 		} catch (NamingException e) {
 		} catch (SQLException e) {
 		} catch (Exception e) {
 		}
 
-		try {
-			String target = (String) session.getAttribute("EditGenre.dest");
-			if (target != null) {
-				session.removeAttribute("EditGenre.dest");
-				response.sendRedirect(target);
-				return;
-			}
-		} catch (Exception ignored) {
-		}
-		
-		response.sendRedirect("CheckDB");// TODO correct return EditGenre.dest
-
+		CheckDB.returnPath(session, response);
 	}
 	public static String mergeGenreLink(String name) {
 		return "<form method=\"post\" action=\"EditGenre\">" +
@@ -204,15 +178,16 @@ public class EditGenre extends HttpServlet {
 				"</form>";
 	}
 
-	public static void savePath(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		String URL = request.getRequestURL().toString();
-		String qs = request.getQueryString();
-		if (qs != null) {
-			URL += "?" + qs;
-		}
-		// Save destination
-		session.setAttribute("EditGenre.dest", URL);
+	public static String renameGenreLink(String name, int genreID) {
+		return "<form method=\"post\" action=\"EditGenre\">" +
+		"<input type=\"text\" name=\"value\" />" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"genreID\" VALUE=\""+genreID+"\" />" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"action\" VALUE=\"edit\">" +
+		"<INPUT TYPE=\"HIDDEN\" NAME=\"field\" VALUE=\"name\">" +
+		"<button type=\"submit\" value=\"submit\">Rename "+name+"</button>" +
+		"</form>";
 	}
+
+
 
 }

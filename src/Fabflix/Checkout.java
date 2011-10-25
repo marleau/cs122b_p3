@@ -115,7 +115,6 @@ public class Checkout extends HttpServlet {
 			session.removeAttribute("ccError");
 			session.setAttribute("processed", true);
 			Map<String,Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
-			//TODO block admins from making purchases
 			String userID = (String) session.getAttribute("user.id");
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = new Date();

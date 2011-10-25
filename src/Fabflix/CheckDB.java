@@ -2,6 +2,7 @@ package Fabflix;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,8 +25,12 @@ public class CheckDB extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if (Login.kickNonUsers(request, response)){return;}// kick if not logged in
-		if (Login.kickNonAdmin(request, response)){return;}// kick if not admin
+		if (Login.kickNonUsers(request, response)) {
+			return;
+		}// kick if not logged in
+		if (Login.kickNonAdmin(request, response)) {
+			return;
+		}// kick if not admin
 		HttpSession session = request.getSession();
 		ServletContext context = getServletContext();
 
@@ -75,17 +80,20 @@ public class CheckDB extends HttpServlet {
 				// Movies Errors
 				switch (sub) {
 				case 1:
+					savePath(request);
 					out.println("<H1>Missing Stars:</H1><BR>");
 					out.println(printMovieWoStar());
 					break;
 
 				case 2:
+					savePath(request);
 					out.println("<H1>Missing Genres:</H1><BR>");
 					out.println(printMovieWoGenres());
 					break;
 
 				case 3:
-					out.println("<H1>Duplicate Movies.</H1><BR>");
+					savePath(request);
+					out.println("<H1>Duplicate Movies:</H1><BR>");
 					out.println(printSimilarMoivies());
 					break;
 
@@ -98,22 +106,26 @@ public class CheckDB extends HttpServlet {
 				// Stars Errors
 				switch (sub) {
 				case 1:
+					savePath(request);
 					out.println("<H1>Missing First Or Last Name:</H1><BR>");
 					out.println(printStarWoName());
 					break;
 
 				case 2:
+					savePath(request);
 					out.println("<H1>Date Of Birth Flagged:</H1><BR>");
 					out.println(printInvlaidDOB());
 					break;
 
 				case 3:
+					savePath(request);
 					out.println("<H1>Missing Movies:</H1><BR>");
 					out.println(printStarWoMovie());
 					break;
 
 				case 4:
-					out.println("<H1>Stars that are the same or almost the same.</H1><BR>");
+					savePath(request);
+					out.println("<H1>Duplicate Stars:</H1><BR>");
 					out.println(printSimilarStar());
 					break;
 
@@ -126,18 +138,22 @@ public class CheckDB extends HttpServlet {
 				// Genre Errors
 				switch (sub) {
 				case 1:
-					EditGenre.savePath(request);
+					savePath(request);
 					out.println("<H1>Empty Genres:</H1><BR>");
 					out.println(printGenreWoMovie());
 					break;
 
 				case 2:
-					EditGenre.savePath(request);
-					out.println("<H1>Genres that are the same or almost the same.</H1><BR>");
+					savePath(request);
+					out.println("<H1>Duplicate Genres:</H1><BR>");
 					out.println(printSimilarGenres());
 					break;
 
 				default:
+					// TODO display genres
+					savePath(request);
+					out.println("<H1>All Genres:</H1><BR>");
+					out.println(printGenres());
 					break;
 				}
 				break;
@@ -146,11 +162,13 @@ public class CheckDB extends HttpServlet {
 				// Customer Errors
 				switch (sub) {
 				case 1:
+					savePath(request);
 					out.println("<H1>Invalid Email:</H1><BR>");
 					out.println(printInvalidEmails());
 					break;
 
 				case 2:
+					savePath(request);
 					out.println("<H1>Expired Credit Card:</H1><BR>");
 					out.println(printExpiredCC());
 					break;
@@ -158,7 +176,6 @@ public class CheckDB extends HttpServlet {
 				default:
 					break;
 				}
-				// TODO check sales date in future?
 				break;
 
 			default:
@@ -188,24 +205,55 @@ public class CheckDB extends HttpServlet {
 		out.close();
 	}
 
+	private String printGenres() throws NamingException, SQLException, UnsupportedEncodingException {
+		String rtn = "";
+		Connection dbcon = Database.openConnection();
+		Statement statement = dbcon.createStatement();
+		String query = "SELECT * FROM genres ORDER BY name";
+		ResultSet searchResults = statement.executeQuery(query);
+		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
+			String name = searchResults.getString("name");
+			int genreID = searchResults.getInt("id");
+
+			rtn += "<a href=\"ListResults?by=genre&arg=" + java.net.URLEncoder.encode(name, "UTF-8") + "\">" + name + "</a><BR>ID: " + genreID + "<BR>";
+
+			rtn += EditGenre.renameGenreLink(name, genreID);
+
+			rtn += "<BR><BR>";
+		}
+
+		searchResults.close();
+		statement.close();
+		dbcon.close();
+		return rtn;
+	}
+
 	private String printOptionMenu() {
-		return "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>" + "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Warnings</a></li>" + "		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" + "   </ul>" + "</div>";
+		return "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>"
+				+ "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Management</a></li>"
+				+ "		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" + "   </ul>" + "</div>";
 	}
 
 	private String printSubMenu(Integer option) {
 		String rtn = "";
 		switch (option) {
 		case 1:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Movie</li>" + "		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=2\">Missing Genre</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=3\">Duplicate Movies</a></li>" + "   </ul>" + "</div>";
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Movie</li>" + "		<li><a href=\"CheckDB?option=1&sub=1\">Missing Star</a></li>"
+					+ "		<li><a href=\"CheckDB?option=1&sub=2\">Missing Genre</a></li>" + "		<li><a href=\"CheckDB?option=1&sub=3\">Duplicate Movies</a></li>"
+					+ "   </ul>" + "</div>";
 			break;
 		case 2:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Star</li>" + "		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=2\">DOB Warning</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=3\">Missing Movies</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=4\">Duplicate Stars</a></li>" + "   </ul>" + "</div>";
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Star</li>" + "		<li><a href=\"CheckDB?option=2&sub=1\">Missing Name</a></li>"
+					+ "		<li><a href=\"CheckDB?option=2&sub=2\">DOB Warning</a></li>" + "		<li><a href=\"CheckDB?option=2&sub=3\">Missing Movies</a></li>"
+					+ "		<li><a href=\"CheckDB?option=2&sub=4\">Duplicate Stars</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 3:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Genre</li>" + "		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>" + "		<li><a href=\"CheckDB?option=3&sub=2\">Duplicate Genre</a></li>" + "   </ul>" + "</div>";
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Genre</li>" + "		<li><a href=\"CheckDB?option=3&sub=1\">Empty Genre</a></li>"
+					+ "		<li><a href=\"CheckDB?option=3&sub=2\">Duplicate Genre</a></li>" + "   </ul>" + "</div>";
 			break;
 		case 4:
-			rtn = "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li>Customer</li>" + "		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>" + "		<li><a href=\"CheckDB?option=4&sub=2\">Invalid CC</a></li>" + "   </ul>" + "</div>";
+			rtn = "<div class=\"admin-menu\">" + "	<ul class=\"admin-main\">" + "		<li>Customer</li>" + "		<li><a href=\"CheckDB?option=4&sub=1\">Invalid Email</a></li>"
+					+ "		<li><a href=\"CheckDB?option=4&sub=2\">Invalid CC</a></li>" + "   </ul>" + "</div>";
 			break;
 
 		default:
@@ -306,15 +354,12 @@ public class CheckDB extends HttpServlet {
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
 			String name = searchResults.getString("name");
-			int id = searchResults.getInt("id");
 			int count = searchResults.getInt("cnt");
 
-			// TODO make remove button combine genre
-			// TODO make a combine all similar genres button
 			rtn += name + "<BR>Count: " + count + "<BR>";
 
 			rtn += EditGenre.mergeGenreLink(name);
-			
+
 			rtn += "<BR><BR>";
 		}
 
@@ -414,11 +459,10 @@ public class CheckDB extends HttpServlet {
 			String first_name = searchResults.getString("first_name");
 			String last_name = searchResults.getString("last_name");
 			String photoURL = searchResults.getString("photo_url");
+			String dob = searchResults.getString("dob");
 			Integer count = searchResults.getInt("cnt");
 
-			rtn += printSimilarStarSummary(starID, first_name, last_name, photoURL, count);
-
-			// TODO add merge similar stars
+			rtn += printSimilarStarSummary(starID, first_name, last_name, photoURL, dob, count);
 
 			rtn += "<BR><BR>";
 		}
@@ -513,30 +557,49 @@ public class CheckDB extends HttpServlet {
 	}
 
 	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
-		// TODO remove button
 		// TODO link to customer info page
 		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
-		// TODO remove and mergeWith buttons
-		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID;
+		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"><BR>" + first_name + " " + last_name + "</a><BR> ID: " + starID;
 	}
 
-	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, Integer count) {
-		// TODO mergeWith buttons
-		return "<a href=\"StarDetails?id=" + starID + "\"><img src=\"" + photoURL + "\" height=\"60\"> " + first_name + " " + last_name + "</a> ID: " + starID + "<BR>Count: " + count + "<BR>Merge";
+	public String printSimilarStarSummary(Integer starID, String first_name, String last_name, String photoURL, String dob, Integer count) {
+		return "<img src=\"" + photoURL + "\" height=\"60\"><BR>" + first_name + " " + last_name + "<BR> Date of Birth: " + dob + "<BR> Count: " + count + "<BR>"
+				+ EditStar.mergeStarLink(starID);
 	}
 
 	public String printMovieSummary(Integer movieID, String title, Integer year, String bannerURL) {
-		// TODO remove and mergeWith buttons
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a> ID: " + movieID;
+		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"><BR>" + title + " (" + year + ")</a><BR> ID: " + movieID;
 	}
 
 	public String printSimilarMovieSummary(Integer movieID, String title, Integer year, String bannerURL, Integer count) {
-		// TODO mergeWith buttons
-		// TODO searchBy similar to, or display similar
-		return "<a href=\"MovieDetails?id=" + movieID + "\"><img src=\"" + bannerURL + "\" height=\"60\"> " + title + " (" + year + ")</a><BR>Count: " + count + "<BR>Merge";
+		return "<img src=\"" + bannerURL + "\" height=\"60\"><BR>" + title + " (" + year + ")<BR> Count: " + count
+				+ "<BR>" + EditMovie.mergeMovieLink(movieID);
 	}
 
+	public static void savePath(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		String URL = request.getRequestURL().toString();
+		String qs = request.getQueryString();
+		if (qs != null) {
+			URL += "?" + qs;
+		}
+		// Save destination
+		session.setAttribute("CheckDB.dest", URL);
+	}
+
+	public static void returnPath(HttpSession session, HttpServletResponse response) throws IOException {
+		try {
+			String target = (String) session.getAttribute("CheckDB.dest");
+			if (target != null) {
+				session.removeAttribute("CheckDB.dest");
+				response.sendRedirect(target);
+				return;
+			}
+		} catch (Exception ignored) {
+		}
+		response.sendRedirect("CheckDB");
+	}
 }
