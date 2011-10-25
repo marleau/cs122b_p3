@@ -91,25 +91,20 @@ public class MovieDetails extends HttpServlet {
 				
 				out.println("<div class=\"info\"><ul>");
 				out.println("<li>ID</li>\n<li>"+movieID+"</li>");
-				out.println("</li></ul>");
+				out.println("</li></ul><ul>");
 				if (edit) {
+					out.println("<li>Title</li><li>");
 					EditMovie.editMovieLink(out, movieID, title, "title");
+					out.println("</li><li>Banner URL</li>");
 					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
+					out.println("</li><li>Trailer</li>\n<li>");
 					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
+					out.println("</li></ul>");
 				} else {
 					out.println("<li>Trailer</li>\n<li>");
 					out.println("<a href=\"" + trailerURL + "\">View</a>");
 					out.println("</li></ul>");
 				}
-//				out.println("ID: " + movieID + "<BR>");
-				
-//				if (edit){
-//					out.println("<li>Title</li>\n<li>");
-//					EditMovie.editMovieLink(out, movieID, title, "title");
-//					out.println("</li>");
-//					EditMovie.editMovieLink(out, movieID, bannerURL, "banner_url");
-//					EditMovie.editMovieLink(out, movieID, trailerURL, "trailer_url");
-//				}
 				
 				out.println("<ul><li>Year</li>\n<li>");
 				if (edit){
