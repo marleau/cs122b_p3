@@ -159,4 +159,14 @@
     <servlet-name>EditGenre</servlet-name>
     <url-pattern>/EditGenre</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>AddMovie</display-name>
+    <servlet-name>AddMovie</servlet-name>
+    <servlet-class>Fabflix.AddMovie</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AddMovie</servlet-name>
+    <url-pattern>/AddMovie</url-pattern>
+  </servlet-mapping>
 </web-app>

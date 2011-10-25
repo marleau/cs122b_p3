@@ -88,14 +88,6 @@ public class StarDetails extends HttpServlet {
 				}
 				// Star Details
 				out.println("<H1>" + starName + " " );
-//				if (isAdmin != null && isAdmin){
-//				if (Page.isAdmin(request)) {
-//					if (edit){
-//						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=false\">Stop Editing</A>)");
-//					}else{
-//						out.println("(<A HREF=\"StarDetails?id="+starID+"&edit=true\">Edit</A>)");
-//					}
-//				}
 				out.println("</H1><BR>");
 				//TODO add DELETE STAR
 				
