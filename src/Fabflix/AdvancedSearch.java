@@ -284,8 +284,9 @@ public class AdvancedSearch extends HttpServlet {
 					out.println("<BR>");
 					if (numberOfPages > 1) {
 						showPageControls(out, searchString, order, page, resultsPerPage, numberOfPages);
-						out.println("<BR><hr>");
+						out.println("<BR>");
 					}
+					out.println("<hr>");
 				}
 				while (searchResults.next()) {// For each movie, DISPLAY
 					// INFORMATION
