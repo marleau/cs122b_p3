@@ -265,7 +265,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM stars_in_movies)";
+		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM stars_in_movies) ORDER BY title";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
 			Integer movieID;
@@ -293,7 +293,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM stars WHERE id NOT IN (SELECT star_id FROM stars_in_movies)";
+		String query = "SELECT * FROM stars WHERE id NOT IN (SELECT star_id FROM stars_in_movies) ORDER BY last_name";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each star, DISPLAY INFORMATION
 			Integer starID;
@@ -321,7 +321,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
+		String query = "SELECT * FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies) ORDER BY name";
 		ResultSet searchResults = statement.executeQuery(query);
 		searchResults.last();
 		if (searchResults.getRow() > 0) {
@@ -372,7 +372,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM genres_in_movies)";
+		String query = "SELECT * FROM movies WHERE id NOT IN (SELECT movie_id FROM genres_in_movies) ORDER BY title";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each movie, DISPLAY INFORMATION
 			Integer movieID;
@@ -423,7 +423,7 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM stars s WHERE first_name = '' OR last_name = '' OR first_name IS NULL OR last_name IS NULL";
+		String query = "SELECT * FROM stars s WHERE first_name = '' OR last_name = '' OR first_name IS NULL OR last_name IS NULL ORDER BY last_name";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each star, DISPLAY INFORMATION
 			Integer starID;
@@ -476,19 +476,23 @@ public class CheckDB extends HttpServlet {
 		String rtn = "";
 		Connection dbcon = Database.openConnection();
 		Statement statement = dbcon.createStatement();
-		String query = "SELECT * FROM customers WHERE cc_id IN (SELECT id FROM creditcards WHERE expiration <= CURDATE() )";
+		String query = "SELECT * FROM customers c LEFT OUTER JOIN creditcards cc ON c.cc_id=cc.id WHERE cc_id IN (SELECT id FROM creditcards WHERE expiration <= CURDATE() ) OR cc_id IS NULL ORDER BY c.last_name";
 		ResultSet searchResults = statement.executeQuery(query);
 		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
-			String first_name = searchResults.getString("first_name");
-			String last_name = searchResults.getString("last_name");
-			String id = searchResults.getString("id");
+			String first_name = searchResults.getString("c.first_name");
+			String last_name = searchResults.getString("c.last_name");
+			String ccfirst_name = searchResults.getString("cc.first_name");
+			String cclast_name = searchResults.getString("cc.last_name");
+			String expiration = searchResults.getString("expiration");
+			Integer customerID = searchResults.getInt("id");
 			String email = searchResults.getString("email");
 			String cc_id = searchResults.getString("cc_id");
 			String address = searchResults.getString("address");
 
-			// TODO edit CC for customer; maybe customer edit page?
+			rtn += printCustomerSummary(customerID, first_name, last_name, email, address);
 
-			rtn += printCustomerSummary(id, first_name, last_name, email, cc_id, address);
+			rtn += printCreditCardSummary(cc_id, ccfirst_name, cclast_name, expiration);
+			rtn += EditCustomer.editCreditCardLink(customerID, first_name + " " + last_name);
 
 			rtn += "<BR><BR>";
 		}
@@ -537,15 +541,13 @@ public class CheckDB extends HttpServlet {
 		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
 			String first_name = searchResults.getString("first_name");
 			String last_name = searchResults.getString("last_name");
-			String id = searchResults.getString("id");
+			Integer customerID = searchResults.getInt("id");
 			String email = searchResults.getString("email");
 			String cc_id = searchResults.getString("cc_id");
 			String address = searchResults.getString("address");
 
-			// TODO edit email for customer; maybe customer edit page?
-
-			rtn += printCustomerSummary(id, first_name, last_name, email, cc_id, address);
-
+			rtn += printCustomerSummary(customerID, first_name, last_name, email, address);
+			
 			rtn += "<BR><BR>";
 		}
 
@@ -555,9 +557,12 @@ public class CheckDB extends HttpServlet {
 		return rtn;
 	}
 
-	public String printCustomerSummary(String id, String first_name, String last_name, String email, String cc_id, String address) {
-		// TODO link to customer info page
-		return "ID: " + id + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>CC: " + cc_id + "<BR>Address: " + address;
+	public String printCustomerSummary(Integer customerID, String first_name, String last_name, String email, String address) {
+		return "ID: " + customerID + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>Address: " + address + EditCustomer.editCustomerLink(customerID, first_name + " " + last_name);
+	}
+
+	public String printCreditCardSummary(String cc_id, String first_name, String last_name, String expiration) {
+		return "ID: " + cc_id + "<BR>Name: " + first_name + " " + last_name + "<BR>Expiration: " + expiration;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {

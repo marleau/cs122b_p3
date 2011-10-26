@@ -35,14 +35,6 @@ public class AddMovie extends HttpServlet {
 			
 			String title = request.getParameter("title");
 			Integer year = 0;
-			try{
-				year = Integer.valueOf(request.getParameter("year"));
-			}catch(Exception e){
-				year = 0;
-				session.setAttribute("addMovie_err", "Invalid Year.");
-				response.sendRedirect("addmovie.jsp");
-				return;
-			}
 			String director = request.getParameter("director");
 			String first_name = request.getParameter("first_name");
 			String last_name = request.getParameter("last_name");
@@ -53,6 +45,16 @@ public class AddMovie extends HttpServlet {
 				response.sendRedirect("addmovie.jsp");
 				return;
 			}
+
+			try{
+				year = Integer.valueOf(request.getParameter("year"));
+			}catch(Exception e){
+				year = 0;
+				session.setAttribute("addMovie_err", "Invalid Year.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+			
 			if ( year == 0 ){
 				session.setAttribute("addMovie_err", "Needs Year.");
 				response.sendRedirect("addmovie.jsp");
@@ -90,8 +92,8 @@ public class AddMovie extends HttpServlet {
 			cst.execute();
 			
 			Statement st = dbcon.createStatement();
-			//TODO include genre and star name to search for ID for accuracy
-			ResultSet rs = st.executeQuery("SELECT id FROM movies WHERE title = '"+title+"' AND year = '"+year+"' AND director = '"+director+"'");
+			//Grabs newest instance of that movie
+			ResultSet rs = st.executeQuery("SELECT id FROM movies WHERE title = '"+title+"' AND year = '"+year+"' AND director = '"+director+"' ORDER BY id DESC");
 			rs.next();
 			int id = rs.getInt("id");
 			

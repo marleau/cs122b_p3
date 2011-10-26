@@ -5,8 +5,11 @@
 <% Map<String, Integer> cart = (Map<String, Integer>) session.getAttribute("cart"); %>
 
 <%@ include file="header.jsp" %>
+<%@page import="java.sql.*"%>
+<%@page import="java.text.*"%>
 
-<h1>Checkout</h1>
+
+<%@page import="java.util.Date"%><h1>Checkout</h1>
 
 <% if (!(Boolean)session.getAttribute("processed")) { %>
 
@@ -38,7 +41,22 @@
 
 <% if ((Boolean)session.getAttribute("isAdmin") != null && !(Boolean)session.getAttribute("isAdmin")) { %>
 	<div class="ccinfo">
-		
+		<% Connection dbcon = Database.openConnection();
+			Statement st = dbcon.createStatement();
+			ResultSet cust = st.executeQuery("SELECT * FROM customers c LEFT OUTER JOIN creditcards cc ON c.cc_id=cc.id WHERE c.id = '"+session.getAttribute("user.id")+"'");
+			cust.next();
+			String first_name = cust.getString("cc.first_name");
+			String last_name = cust.getString("cc.last_name");
+			String cc_id = cust.getString("cc_id");
+			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		    Date expiration = (Date)formatter.parse(cust.getString("expiration"));
+			SimpleDateFormat yearF = new SimpleDateFormat("yyyy");
+			SimpleDateFormat monthF = new SimpleDateFormat("MM");
+			SimpleDateFormat dayF = new SimpleDateFormat("dd");
+			String year = yearF.format(expiration);
+			String day = dayF.format(expiration);
+			String month = monthF.format(expiration);
+		%>
 		<br><br>
 	
 		<form method="post" action="checkout">
@@ -48,33 +66,35 @@
 				<p class="error">Your credit card information is not valid.</p>
 			<% } %>
 			
-			<label>First Name</label><input type="text" name="firstName" />
+			<label>First Name</label><input type="text" name="firstName" value="<%= first_name %>"/>
 			
 			<br>
 			
-			<label>Last Name</label><input type="text" name="lastName" />
+			<label>Last Name</label><input type="text" name="lastName" value="<%= last_name %>" />
 			
 			<br>
 			
-			<label>Card Number</label><input type="text" name="id" />
+			<label>Card Number</label><input type="text" name="id"  value="<%= cc_id %>"/>
 			
 			<br>
 			
 			<p><b>Expiration Date</b></p>
 			
-			<label>Month</label><input type=text" name="month" />
+			<label>Month</label><input type=text" name="month" value="<%= month %>"/>
 			
 			<br>
 			
-			<label>Day</label><input type=text" name="day" />
+			<label>Day</label><input type=text" name="day" value="<%= day %>"/>
 			
 			<br>
 			
-			<label>Year</label><input type=text" name="year" />
+			<label>Year</label><input type=text" name="year" value="<%= year %>" />
 			
 			<br>
 			
 			<button type="submit" value="submit">Process Order</button>
+
+			<button type="reset" value="reset">Reset Form</button>
 		
 		</form>
 	</div>

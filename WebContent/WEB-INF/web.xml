@@ -169,4 +169,14 @@
     <servlet-name>AddMovie</servlet-name>
     <url-pattern>/AddMovie</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>EditCustomer</display-name>
+    <servlet-name>EditCustomer</servlet-name>
+    <servlet-class>Fabflix.EditCustomer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>EditCustomer</servlet-name>
+    <url-pattern>/EditCustomer</url-pattern>
+  </servlet-mapping>
 </web-app>
