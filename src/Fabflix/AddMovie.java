@@ -48,7 +48,7 @@ public class AddMovie extends HttpServlet {
 			String last_name = request.getParameter("last_name");
 			String genre = request.getParameter("genre");
 			
-			if (title == null){
+			if (title == null || title.isEmpty()){
 				session.setAttribute("addMovie_err", "Needs Title.");
 				response.sendRedirect("addmovie.jsp");
 				return;
@@ -58,22 +58,22 @@ public class AddMovie extends HttpServlet {
 				response.sendRedirect("addmovie.jsp");
 				return;
 			} 
-			if (director == null ){
+			if (director == null || director.isEmpty() ){
 				session.setAttribute("addMovie_err", "Needs Director.");
 				response.sendRedirect("addmovie.jsp");
 				return;
 			} 
-			if (genre == null ){
+			if (genre == null || genre.isEmpty() ){
 				session.setAttribute("addMovie_err", "Needs Genre.");
 				response.sendRedirect("addmovie.jsp");
 				return;
 			}
-			if(first_name == null ){
+			if(first_name == null || first_name.isEmpty() ){
 				session.setAttribute("addMovie_err", "Needs Star First Name.");
 				response.sendRedirect("addmovie.jsp");
 				return;
 			}
-			if(last_name == null) {
+			if(last_name == null || last_name.isEmpty()) {
 				session.setAttribute("addMovie_err", "Needs Star Last Name.");
 				response.sendRedirect("addmovie.jsp");
 				return;
