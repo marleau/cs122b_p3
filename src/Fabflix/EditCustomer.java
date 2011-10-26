@@ -2,6 +2,7 @@ package Fabflix;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.*;
 
 import javax.servlet.ServletContext;
@@ -66,6 +67,15 @@ public class EditCustomer extends HttpServlet {
 				String email = customer.getString("email");
 				String password = customer.getString("password");
 
+				if (session.getAttribute("custError") != null) {
+					out.println("<p class=\"error\">" + session.getAttribute("custError") + "</p>");
+					session.removeAttribute("custError");
+				}
+				if (session.getAttribute("custSuccess") != null){
+					out.println("<p class=\"success\">" + session.getAttribute("custSuccess") + "</p>");
+					session.removeAttribute("custSuccess");
+				}
+
 				out.println("First Name: " + first_name + "<BR>");
 				editFieldLink(out, customerID, first_name, "first_name");
 				out.println("<BR>Last Name: " + last_name + "<BR>");
@@ -124,6 +134,8 @@ public class EditCustomer extends HttpServlet {
 
 		response.setContentType("text/html"); // Response mime type
 
+		HttpSession session = request.getSession();
+
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
 		String field = request.getParameter("field");
@@ -147,13 +159,19 @@ public class EditCustomer extends HttpServlet {
 
 			if (action != null && field != null) {
 				if (action.equals("edit")) {// ==========EDIT
-					if ((field.equals("first_name") || field.equals("last_name") || field.equals("address") || field.equals("email") || field
-							.equals("password"))
-							&& value != null && !value.isEmpty()) {
-						String query = "UPDATE customers SET " + field + " = '" + value + "' WHERE id = '" + customerID + "'";
-						statement.executeUpdate(query);
-						response.sendRedirect("EditCustomer?customerID=" + customerID);
-						return;
+					if ( field.equals("first_name") || field.equals("last_name") || field.equals("address") || field.equals("email") || field.equals("password") ) {
+						if (value != null && !value.isEmpty()){
+							String query = "UPDATE customers SET " + field + " = '" + value + "' WHERE id = '" + customerID + "'";
+							statement.executeUpdate(query);
+							session.setAttribute("custSuccess", field+ " Updated!");
+							response.sendRedirect("EditCustomer?customerID=" + customerID);
+							return;
+						}else {
+							session.setAttribute("custError", "Missing "+field);
+							backToEdit(response, customerID);
+							dbcon.close();
+							return;
+						}
 					}
 				} else if (action.equals("update")) {
 					if (field.equals("cc_id")) {
@@ -161,22 +179,46 @@ public class EditCustomer extends HttpServlet {
 						String expiration = request.getParameter("expiration");
 						String first_name = request.getParameter("first_name");
 						String last_name = request.getParameter("last_name");
-						if (cc_id != null && !cc_id.isEmpty() && expiration != null && !expiration.isEmpty() && first_name != null && !first_name.isEmpty()
-								&& last_name != null && !last_name.isEmpty() && Database.isValidDate(expiration)) {
-							String query = "SELECT * FROM creditcards WHERE id = '" + cc_id + "' AND first_name = '" + first_name + "' AND last_name = '"
-									+ last_name + "' AND expiration = '" + expiration + "'";
-							ResultSet ccLookup = statement.executeQuery(query);
-							if (ccLookup.next()) {
-								statement = dbcon.createStatement();
-								query = "UPDATE customers c SET cc_id = '" + cc_id + "' WHERE id = '" + customerID + "'";
-								statement.executeUpdate(query);
 
-								response.sendRedirect("EditCustomer?customerID=" + customerID);
-								dbcon.close();
-								return;
-							}
-						} else {
+						if (first_name == null || first_name.isEmpty()) {
+							session.setAttribute("custError", "Missing First Name");
+							backToEdit(response, customerID);
+							dbcon.close();
+							return;
+						}
+						if (last_name == null || last_name.isEmpty()) {
+							session.setAttribute("custError", "Missing Last Name");
+							backToEdit(response, customerID);
+							dbcon.close();
+							return;
+						}
+						if (cc_id == null || cc_id.isEmpty()) {
+							session.setAttribute("custError", "Missing Credit Card Number.");
+							backToEdit(response, customerID);
+							dbcon.close();
+							return;
+						}
+						if (expiration == null || expiration.isEmpty() || !Database.isValidDate(expiration)) {
+							session.setAttribute("custError", "Missing Expiration Date");
+							backToEdit(response, customerID);
+							dbcon.close();
+							return;
+						}
+
+						String query = "SELECT * FROM creditcards WHERE id = '" + cc_id + "' AND first_name = '" + first_name + "' AND last_name = '" + last_name + "' AND expiration = '" + expiration + "'";
+						ResultSet ccLookup = statement.executeQuery(query);
+						if (ccLookup.next()) {
+							statement = dbcon.createStatement();
+							query = "UPDATE customers c SET cc_id = '" + cc_id + "' WHERE id = '" + customerID + "'";
+							statement.executeUpdate(query);
+
+							session.setAttribute("custSuccess", "Credit Card Updated!");
 							response.sendRedirect("EditCustomer?customerID=" + customerID);
+							dbcon.close();
+							return;
+						}else {
+							session.setAttribute("custError", "Invalid Credit Card");
+							backToEdit(response, customerID);
 							dbcon.close();
 							return;
 						}
@@ -185,7 +227,6 @@ public class EditCustomer extends HttpServlet {
 			} else if (action.equals("ccForm")) {
 				PrintWriter out = response.getWriter();
 				ServletContext context = getServletContext();
-				HttpSession session = request.getSession();
 				out.println(Page.header(context, session));
 
 				out.println("<H1>Customer ID #" + customerID + "</H1>");
@@ -228,7 +269,6 @@ public class EditCustomer extends HttpServlet {
 		} catch (SQLException ex) {
 			PrintWriter out = response.getWriter();
 			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
@@ -239,36 +279,32 @@ public class EditCustomer extends HttpServlet {
 		catch (java.lang.Exception ex) {
 			PrintWriter out = response.getWriter();
 			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>" + ex.toString() + "</P></DIV></BODY></HTML>");
 			return;
 		}
 
-		HttpSession session = request.getSession();
 		CheckDB.returnPath(session, response);
 	}
 
+	private void backToEdit(HttpServletResponse response, String customerID)
+			throws IOException, UnsupportedEncodingException {
+		response.sendRedirect("EditCustomer?customerID=" + java.net.URLEncoder.encode(customerID, "UTF-8") );
+	}
+
 	public static String editCustomerLink(String customerID, String buttonName) {
-		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">"
-				+ "<button type=\"submit\" value=\"submit\">Edit " + buttonName + "</button>" + "</form>";
+		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName + "</button>" + "</form>";
 	}
 
 	public static String editCustomerIDLink() {
-		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"TEXT\" NAME=customerID \">"
-				+ "<button type=\"submit\" value=\"submit\">Lookup Customer By ID</button>" + "</form>";
+		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"TEXT\" NAME=customerID \">" + "<button type=\"submit\" value=\"submit\">Lookup Customer By ID</button>" + "</form>";
 	}
 
 	public static String editCreditCardLink(String customerID, String buttonName) {
-		return "<form method=\"post\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"ccForm\">"
-				+ "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName
-				+ "'s Credit Card</button>" + "</form>";
+		return "<form method=\"post\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"ccForm\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName + "'s Credit Card</button>" + "</form>";
 	}
 
 	public static void editFieldLink(PrintWriter out, String customerID, String oldVal, String field) {
-		out.println("<form method=\"post\" action=\"EditCustomer\">" + "<input type=\"text\" name=\"value\" value=\"" + oldVal + "\" />"
-				+ "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" + "<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"" + field + "\">"
-				+ "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Change " + field
-				+ "</button>" + "</form>");
+		out.println("<form method=\"post\" action=\"EditCustomer\">" + "<input type=\"text\" name=\"value\" value=\"" + oldVal + "\" />" + "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"edit\">" + "<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"" + field + "\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Change " + field + "</button>" + "</form>");
 	}
 }
