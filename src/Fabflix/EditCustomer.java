@@ -55,12 +55,16 @@ public class EditCustomer extends HttpServlet {
 			out.println("<H1>Customer ID #" + customerID + "</H1>");
 			out.println("<FORM ACTION=\"EditCustomer\" METHOD=\"POST\">");
 
-			String query = "SELECT * FROM customers WHERE id = '" + customerID + "'";
+			String query = "SELECT * FROM customers c LEFT OUTER JOIN creditcards cc ON c.cc_id=cc.id WHERE c.id = '" + customerID + "'";
 			ResultSet customer = statement.executeQuery(query);
 			customer.next();
 
-			String first_name = customer.getString("first_name");
-			String last_name = customer.getString("last_name");
+			String first_name = customer.getString("c.first_name");
+			String last_name = customer.getString("c.last_name");
+			String ccfirst_name = customer.getString("cc.first_name");
+			String cclast_name = customer.getString("cc.last_name");
+			String cc_id = customer.getString("cc_id");
+			String expiration = customer.getString("expiration");
 			String address = customer.getString("address");
 			String email = customer.getString("email");
 			String password = customer.getString("password");
@@ -75,6 +79,11 @@ public class EditCustomer extends HttpServlet {
 			editFieldLink(out, customerID, email, "email");
 			out.println("Password: " + password + "<BR>");
 			editFieldLink(out, customerID, password, "password");
+			
+
+			out.println("<BR><HR>");
+			out.println(CheckDB.printCreditCardSummary(cc_id, ccfirst_name, cclast_name, expiration));
+			out.println(editCreditCardLink(customerID, first_name + " " + last_name));
 
 			Page.footer(out);
 			out.close();
@@ -141,7 +150,7 @@ public class EditCustomer extends HttpServlet {
 
 			if (action != null && field != null) {
 				if (action.equals("edit")) {// ==========EDIT
-					if ((field.equals("first_name") || field.equals("last_name") || field.equals("address") || field.equals("email") || field.equals("password")) && value != null) {
+					if ((field.equals("first_name") || field.equals("last_name") || field.equals("address") || field.equals("email") || field.equals("password")) && value != null && !value.isEmpty()) {
 						String query = "UPDATE customers SET " + field + " = '" + value + "' WHERE id = '" + customerID + "'";
 						statement.executeUpdate(query);
 						response.sendRedirect("EditCustomer?customerID=" + customerID);
@@ -149,8 +158,31 @@ public class EditCustomer extends HttpServlet {
 					}
 				} else if (action.equals("update")) {
 					if (field.equals("cc_id")) {
-//						String query = "UPDATE customers SET " + cc_id + " = null WHERE id = '" + customerID + "'";
-//						statement.executeUpdate(query);
+						String cc_id = request.getParameter("cc_id");
+						String expiration = request.getParameter("expiration");
+						String first_name = request.getParameter("first_name");
+						String last_name = request.getParameter("last_name");
+						if (cc_id != null && !cc_id.isEmpty() &&
+								expiration != null && !expiration.isEmpty() &&
+								first_name != null && !first_name.isEmpty() &&
+								last_name != null && !last_name.isEmpty() &&
+								Database.isValidDate(expiration)){
+							String query = "SELECT * FROM creditcards WHERE id = '"+cc_id+"' AND first_name = '"+first_name+"' AND last_name = '"+last_name+"' AND expiration = '"+expiration+"'";
+							ResultSet ccLookup = statement.executeQuery(query);
+							if (ccLookup.next()){
+								statement = dbcon.createStatement();
+								query = "UPDATE customers c SET cc_id = '"+cc_id+"' WHERE id = '"+customerID+"'";
+								statement.executeUpdate(query);
+
+								response.sendRedirect("EditCustomer?customerID="+customerID);
+								dbcon.close();
+								return;
+							}
+						}else {
+							response.sendRedirect("EditCustomer?customerID="+customerID);
+							dbcon.close();
+							return;
+						}
 					}
 				}
 			} else if (action.equals("ccForm")) {
@@ -160,6 +192,7 @@ public class EditCustomer extends HttpServlet {
 				out.println(Page.header(context, session));
 
 				out.println("<H1>Customer ID #" + customerID + "</H1>");
+				out.println("<H2>Enter New Credit Card Information:</H2>");
 				out.println("<FORM ACTION=\"EditCustomer\" METHOD=\"POST\">");
 
 				String query = "SELECT * FROM customers c LEFT OUTER JOIN creditcards cc ON c.cc_id=cc.id WHERE c.id = '" + customerID + "'";
@@ -172,6 +205,7 @@ public class EditCustomer extends HttpServlet {
 				String last_name = customer.getString("cc.last_name");
 
 				out.println("<form method=\"post\" action=\"EditCustomer\">");
+				out.println("<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\""+customerID+"\">");
 				out.println("<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"update\">");
 				out.println("<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"cc_id\">");
 				out.println("First Name:<BR>");
@@ -185,7 +219,7 @@ public class EditCustomer extends HttpServlet {
 				out.println("<BR>");
 				out.println("Expiration (yyyy-MM-dd):<BR>");
 				out.println("<INPUT TYPE=\"TEXT\" NAME=expiration VALUE=\"" + expiration + "\">");
-				out.println("<BR>");
+				out.println("<BR><BR>");
 				out.println("<button type=\"submit\" value=\"submit\">Update Credit Card</button></form>");
 				Page.footer(out);
 				out.close();
@@ -218,12 +252,17 @@ public class EditCustomer extends HttpServlet {
 		CheckDB.returnPath(session, response);
 	}
 
-	public static String editCustomerLink(Integer customerID, String buttonName) {
+	public static String editCustomerLink(String customerID, String buttonName) {
 		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName + "</button>" + "</form>";
 	}
+	public static String editCustomerIDLink() {
+		return "<form method=\"get\" action=\"EditCustomer\">" + 
+		"<INPUT TYPE=\"TEXT\" NAME=customerID \">" + 
+		"<button type=\"submit\" value=\"submit\">Edit Customer ID</button>" + "</form>";
+	}
 
-	public static String editCreditCardLink(Integer customerID, String buttonName) {
-		return "<form method=\"post\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"ccForm\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName + " Credit Card</button>" + "</form>";
+	public static String editCreditCardLink(String customerID, String buttonName) {
+		return "<form method=\"post\" action=\"EditCustomer\">" + "<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"ccForm\">" + "<INPUT TYPE=\"HIDDEN\" NAME=customerID VALUE=\"" + customerID + "\">" + "<button type=\"submit\" value=\"submit\">Edit " + buttonName + "'s Credit Card</button>" + "</form>";
 	}
 
 	public static void editFieldLink(PrintWriter out, String customerID, String oldVal, String field) {

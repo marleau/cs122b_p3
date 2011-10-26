@@ -41,6 +41,10 @@
 
 <% if ((Boolean)session.getAttribute("isAdmin") != null && !(Boolean)session.getAttribute("isAdmin")) { %>
 	<div class="ccinfo">
+		
+		<br><br>
+	
+		<form method="post" action="checkout">
 		<% Connection dbcon = Database.openConnection();
 			Statement st = dbcon.createStatement();
 			ResultSet cust = st.executeQuery("SELECT * FROM customers c LEFT OUTER JOIN creditcards cc ON c.cc_id=cc.id WHERE c.id = '"+session.getAttribute("user.id")+"'");
@@ -50,16 +54,26 @@
 			String cc_id = cust.getString("cc_id");
 			DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		    Date expiration = (Date)formatter.parse(cust.getString("expiration"));
-			SimpleDateFormat yearF = new SimpleDateFormat("yyyy");
-			SimpleDateFormat monthF = new SimpleDateFormat("MM");
-			SimpleDateFormat dayF = new SimpleDateFormat("dd");
-			String year = yearF.format(expiration);
-			String day = dayF.format(expiration);
-			String month = monthF.format(expiration);
+		    Date currentDate = new Date();
+		    String year = "";
+		    String day = "";
+		    String month = "";
+		    if ( expiration.after(currentDate) ){
+				SimpleDateFormat yearF = new SimpleDateFormat("yyyy");
+				SimpleDateFormat monthF = new SimpleDateFormat("MM");
+				SimpleDateFormat dayF = new SimpleDateFormat("dd");
+				year = yearF.format(expiration);
+				day = dayF.format(expiration);
+				month = monthF.format(expiration);
+		    }else {
+		    	//Invalid CC
+		    	cc_id = "";
+				first_name = cust.getString("c.first_name");
+				last_name = cust.getString("c.last_name");
+		    	%><p class="error">Your credit card on file has expired.<BR>Please enter a new one.</p><% 
+		    }
+		    dbcon.close();
 		%>
-		<br><br>
-	
-		<form method="post" action="checkout">
 			<h3>Credit Card Information</h3>
 			
 			<% if (session.getAttribute("ccError") != null) { %>

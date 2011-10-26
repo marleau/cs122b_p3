@@ -68,7 +68,7 @@ public class CheckDB extends HttpServlet {
 			// HEADER
 			out.println(Page.header(context, session));
 
-			out.println(printOptionMenu());
+//			out.println(printOptionMenu());
 			if (option > 0) {
 				out.println(printSubMenu(option));
 			}
@@ -173,6 +173,9 @@ public class CheckDB extends HttpServlet {
 					break;
 
 				default:
+					savePath(request);
+					out.println("<H1>Customer Lookup:</H1><BR>");
+					out.println(EditCustomer.editCustomerIDLink());
 					break;
 				}
 				break;
@@ -230,7 +233,7 @@ public class CheckDB extends HttpServlet {
 	private String printOptionMenu() {
 		return "<div class=\"menu\">" + "	<ul class=\"main\">" + "		<li><a href=\"CheckDB?option=1\">Movie Warnings</a></li>"
 				+ "		<li><a href=\"CheckDB?option=2\">Star Warnings</a></li>" + "		<li><a href=\"CheckDB?option=3\">Genre Management</a></li>"
-				+ "		<li><a href=\"CheckDB?option=4\">Customer Warnings</a></li>" + "   </ul>" + "</div>";
+				+ "		<li><a href=\"CheckDB?option=4\">Customer Management</a></li>" + "   </ul>" + "</div>";
 	}
 
 	private String printSubMenu(Integer option) {
@@ -484,7 +487,7 @@ public class CheckDB extends HttpServlet {
 			String ccfirst_name = searchResults.getString("cc.first_name");
 			String cclast_name = searchResults.getString("cc.last_name");
 			String expiration = searchResults.getString("expiration");
-			Integer customerID = searchResults.getInt("id");
+			String customerID = searchResults.getString("id");
 			String email = searchResults.getString("email");
 			String cc_id = searchResults.getString("cc_id");
 			String address = searchResults.getString("address");
@@ -541,7 +544,7 @@ public class CheckDB extends HttpServlet {
 		while (searchResults.next()) {// For each genre, DISPLAY INFORMATION
 			String first_name = searchResults.getString("first_name");
 			String last_name = searchResults.getString("last_name");
-			Integer customerID = searchResults.getInt("id");
+			String customerID = searchResults.getString("id");
 			String email = searchResults.getString("email");
 			String cc_id = searchResults.getString("cc_id");
 			String address = searchResults.getString("address");
@@ -557,12 +560,12 @@ public class CheckDB extends HttpServlet {
 		return rtn;
 	}
 
-	public String printCustomerSummary(Integer customerID, String first_name, String last_name, String email, String address) {
+	public String printCustomerSummary(String customerID, String first_name, String last_name, String email, String address) {
 		return "ID: " + customerID + "<BR>Name: " + first_name + " " + last_name + "<BR>Email: " + email + "<BR>Address: " + address + EditCustomer.editCustomerLink(customerID, first_name + " " + last_name);
 	}
 
-	public String printCreditCardSummary(String cc_id, String first_name, String last_name, String expiration) {
-		return "ID: " + cc_id + "<BR>Name: " + first_name + " " + last_name + "<BR>Expiration: " + expiration;
+	public static String printCreditCardSummary(String cc_id, String first_name, String last_name, String expiration) {
+		return "Credit Card #: " + cc_id + "<BR>Name: " + first_name + " " + last_name + "<BR>Expiration: " + expiration;
 	}
 
 	public String printStarSummary(Integer starID, String first_name, String last_name, String photoURL) {
