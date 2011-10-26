@@ -256,7 +256,7 @@ public class EditCustomer extends HttpServlet {
 
 	public static String editCustomerIDLink() {
 		return "<form method=\"get\" action=\"EditCustomer\">" + "<INPUT TYPE=\"TEXT\" NAME=customerID \">"
-				+ "<button type=\"submit\" value=\"submit\">Edit Customer ID</button>" + "</form>";
+				+ "<button type=\"submit\" value=\"submit\">Lookup Customer By ID</button>" + "</form>";
 	}
 
 	public static String editCreditCardLink(String customerID, String buttonName) {
