@@ -35,6 +35,7 @@ public class Database {
 	}
 	
 	public static String cleanSQL(String arg) {
+		arg = arg.replace("\\", "\\\\");
 		return arg.replace("'", "''");
 	}
 	
