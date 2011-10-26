@@ -54,9 +54,12 @@ public class EditStar extends HttpServlet {
 			Statement statement = dbcon.createStatement();
 
 			if (action != null && field != null) {
-				if (action.equals("delete") && value != null) {// ==========DELETE
-					if (field.equals("movie")) {
+				if (action.equals("delete") ) {// ==========DELETE
+					if (field.equals("movie") && value != null) {
 						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + starID + "' AND movie_id = '" + value + "'";
+						statement.executeUpdate(query);
+					} else if (field.equals("star")){
+						String query = "DELETE FROM stars WHERE id = '" + starID + "'";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("add") && value != null) {// ==========ADD
@@ -164,13 +167,13 @@ public class EditStar extends HttpServlet {
 				"</form>");
 	}
 
-	public static void addMovieLink(PrintWriter out, Integer starID, String field) {
+	public static void addMovieLink(PrintWriter out, Integer starID) {
 		out.println("<form method=\"post\" action=\"EditStar\">" +
 				"<input type=\"text\" name=\"value\" />" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"add\">" +
-				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
-				"<button type=\"submit\" value=\"submit\">Add "+field+" ID</button>" +
+				"<button type=\"submit\" value=\"submit\">Add Movie ID</button>" +
 				"</form>");
 	}
 
@@ -188,6 +191,15 @@ public class EditStar extends HttpServlet {
 				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
+				"</form>");
+	}
+
+	public static void deleteStarLink(PrintWriter out, Integer starID, String name) {
+		out.println("<form method=\"post\" action=\"EditStar\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"star\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=starID VALUE=\""+ starID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");

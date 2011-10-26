@@ -82,6 +82,8 @@ public class MovieDetails extends HttpServlet {
 				out.println("<H1>" + title + " ("+year+")");
 				if (!edit){
 					Page.addToCart(out, movieID);
+				} else {
+					EditMovie.deleteMovieLink(out, movieID, title);
 				}
 				out.println("</H1>");
 				

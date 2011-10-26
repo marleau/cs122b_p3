@@ -87,8 +87,11 @@ public class StarDetails extends HttpServlet {
 					}
 				}
 				// Star Details
-				out.println("<H1>" + starName + " " );
-				out.println("</H1><BR>");
+				out.println("<H1>" + starName + "</H1>" );
+				if(edit){
+					EditStar.deleteStarLink(out, starID, starName);
+				}
+				out.println("<BR>");
 				//TODO add DELETE STAR
 				
 				out.println("<img src=\"" + starIMG + "\" height=\"300\"><BR><BR>");

@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
 
-import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -66,6 +65,9 @@ public class EditMovie extends HttpServlet {
 						statement.executeUpdate(query);
 					} else if (field.equals("star")) {
 						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
+						statement.executeUpdate(query);
+					} else if (field.equals("movie")){
+						String query = "DELETE FROM movies WHERE id = '" + movieID + "' ";
 						statement.executeUpdate(query);
 					}
 				} else if (action.equals("add") && value != null) {// ==========ADD
@@ -175,8 +177,25 @@ public class EditMovie extends HttpServlet {
 				}
 			}
 			dbcon.close();
-		} catch (NamingException e) {
-		} catch (SQLException e) {
+		} catch (SQLException ex) {
+			PrintWriter out = response.getWriter();
+			ServletContext context = getServletContext();
+			HttpSession session = request.getSession();
+			out.println(Page.header(context, session));
+			while (ex != null) {
+				out.println("SQL Exception:  " + ex.getMessage());
+				ex = ex.getNextException();
+			} // end while
+			out.println("</DIV></BODY></HTML>");
+		} // end catch SQLException
+		catch (java.lang.Exception ex) {
+			PrintWriter out = response.getWriter();
+			ServletContext context = getServletContext();
+			HttpSession session = request.getSession();
+			out.println(Page.header(context, session));
+			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
+					+ ex.toString() + "</P></DIV></BODY></HTML>");
+			return;
 		}
 
 		response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
@@ -217,6 +236,15 @@ public class EditMovie extends HttpServlet {
 				"<input type=\"HIDDEN\" name=\"value\" value=\""+ delID +"\"/>" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\""+field+"\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
+				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
+				"</form>");
+	}
+
+	public static void deleteMovieLink(PrintWriter out, Integer movieID, String name) {
+		out.println("<form method=\"post\" action=\"EditMovie\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=action VALUE=\"delete\">" +
+				"<INPUT TYPE=\"HIDDEN\" NAME=field VALUE=\"movie\">" +
 				"<INPUT TYPE=\"HIDDEN\" NAME=movieID VALUE=\""+ movieID+"\">" +
 				"<button type=\"submit\" value=\"submit\">Remove "+name+"</button>" +
 				"</form>");
