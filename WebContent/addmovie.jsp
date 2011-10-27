@@ -1,4 +1,4 @@
-<%@ page import="Fabflix.*" %>
+<%@ page import="Fabflix.*, java.util.ArrayList" %>
 <% if(Login.kickNonUsers(request, response)){return;} %>
 <% if(Login.kickNonAdmin(request, response)){return;} %>
 <%@ include file="header.jsp" %>
@@ -8,8 +8,11 @@
 	<h2>Add Movie</h2>
 	
 	<% if (session.getAttribute("addMovie_err") != null ) { %>
-		<p class="error">You must provide all information.
-		<%= session.getAttribute("addMovie_err") %>
+		<% ArrayList<String> errors = (ArrayList<String>) session.getAttribute("addMovie_err"); %>
+		<p class="error">
+			<% for (String err : errors) { %>
+				<%= err %><br />
+			<% } %>
 		</p>
 	<% } %>
 	<% session.removeAttribute("addMovie_err"); %>

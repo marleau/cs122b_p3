@@ -1,7 +1,12 @@
 package Fabflix;
 
 import java.io.IOException;
-import java.sql.*;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -35,64 +40,59 @@ public class AddMovie extends HttpServlet {
 			HttpSession session = request.getSession();
 			
 			String title = request.getParameter("title");
-			System.out.println(title);
-			Integer year = Integer.valueOf(request.getParameter("year"));
-			System.out.println(year);
+			Integer year = 0;
 			String director = request.getParameter("director");
-			System.out.println(director);
 			String first_name = request.getParameter("first_name");
-			System.out.println(first_name);
 			String last_name = request.getParameter("last_name");
-			System.out.println(last_name);
 			String genre = request.getParameter("genre");
-			System.out.println(genre);
+			
+			ArrayList<String> errors = new ArrayList<String>();
 			
 			if (title == null || title.isEmpty()){
-				session.setAttribute("addMovie_err", "Needs Title.");
-				response.sendRedirect("addmovie.jsp");
-				return;
+				errors.add("Must provide a title.");
+				session.setAttribute("addMovie_err", errors);
 			}
-
+			
 			try{
 				year = Integer.valueOf(request.getParameter("year"));
 			}catch(Exception e){
-				year = 0;
-				session.setAttribute("addMovie_err", "Invalid Year.");
-				response.sendRedirect("addmovie.jsp");
-				return;
+				errors.add("Provided year is invalid.");
+				session.setAttribute("addMovie_err", errors);
 			}
-			
 			if ( year == 0 ){
-				session.setAttribute("addMovie_err", "Needs Year.");
-				response.sendRedirect("addmovie.jsp");
-				return;
-			} 
+				errors.remove("Provided year is invalid.");
+				errors.add("Must provide a year.");
+				session.setAttribute("addMovie_err", errors);
+			} 	
+			
 			if (director == null || director.isEmpty() ){
-				session.setAttribute("addMovie_err", "Needs Director.");
-				response.sendRedirect("addmovie.jsp");
-				return;
-			} 
-			if (genre == null || genre.isEmpty() ){
-				session.setAttribute("addMovie_err", "Needs Genre.");
-				response.sendRedirect("addmovie.jsp");
-				return;
-			}
-			if(first_name == null || first_name.isEmpty() ){
-				session.setAttribute("addMovie_err", "Needs Star First Name.");
-				response.sendRedirect("addmovie.jsp");
-				return;
-			}
-			if(last_name == null || last_name.isEmpty()) {
-				session.setAttribute("addMovie_err", "Needs Star Last Name.");
-				response.sendRedirect("addmovie.jsp");
-				return;
+				errors.add("Must provide a director.");
+				session.setAttribute("addMovie_err", errors);
 			} 
 			
-			System.out.println("after if");
+			if (genre == null || genre.isEmpty() ){
+				errors.add("Must provide a genre.");
+				session.setAttribute("addMovie_err", errors);
+			}
+			
+			if(first_name == null || first_name.isEmpty() ){
+				errors.add("Must provide star's first name.");
+				session.setAttribute("addMovie_err", errors);
+			}
+			
+			if(last_name == null || last_name.isEmpty()) {
+				errors.add("Must provide Star's last name");
+				session.setAttribute("addMovie_err", errors);
+			} 
+			
+			if (!errors.isEmpty()) {
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+				
 			
 			dbcon = Database.openConnection();
 			cst = dbcon.prepareCall("{call add_movie(?, ?, ?, ?, ?, ?)}");
-			System.out.println("before");
 			cst.setString(1, title);
 			cst.setInt(2, year);
 			cst.setString(3, director);
@@ -100,16 +100,20 @@ public class AddMovie extends HttpServlet {
 			cst.setString(5, last_name);
 			cst.setString(6, genre);
 			cst.execute();
-			System.out.println("after");
 			
-			session.setAttribute("addMovie_err", false);
+			session.removeAttribute("addMovie_err");
 			
 			Statement st = dbcon.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * from movies where title='" + title + "';");
+			ResultSet rs = st.executeQuery("SELECT * FROM movies WHERE title='" + title + "' AND year='"+year+"' AND director='"+director+"';");
 			if (rs.next()) {
 				Integer id = rs.getInt("id");
+				rs.close();
+				st.close();
+				cst.close();
+				dbcon.close();
 				response.sendRedirect("MovieDetails?id=" + id);
 			}
+			
 		} catch (NamingException e) {
 			e.printStackTrace();
 		} catch (SQLException e) {
