@@ -56,25 +56,54 @@ public class EditStar extends HttpServlet {
 			if (action != null && field != null) {
 				if (action.equals("delete") ) {// ==========DELETE
 					if (field.equals("movie") && value != null) {
-						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + starID + "' AND movie_id = '" + value + "'";
+						String query = "SELECT * FROM movies WHERE id = '" + value + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("title") + " ("+nameQ.getString("year")+")";
+						
+						statement = dbcon.createStatement();
+						query = "DELETE FROM stars_in_movies WHERE star_id = '" + starID + "' AND movie_id = '" + value + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("starSuccess", name + " Removed!");
 					} else if (field.equals("star")){
-						String query = "DELETE FROM stars WHERE id = '" + starID + "'";
+						String query = "SELECT * FROM stars WHERE id = '" + starID + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("first_name") + " " + nameQ.getString("last_name");
+
+						statement = dbcon.createStatement();
+						query = "DELETE FROM stars WHERE id = '" + starID + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("starSuccess", name + " Removed!");
 					}
-				} else if (action.equals("add") && value != null) {// ==========ADD
+				} else if (action.equals("add") && value != null && !value.isEmpty()) {// ==========ADD
 					if (field.equals("movie")) {
-						String query = "INSERT INTO stars_in_movies VALUES(" + starID + ", " + value + ");";
+						String query = "SELECT * FROM movies WHERE id = '" + value + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+
+						String name = nameQ.getString("title");
+						String year = nameQ.getString("year");
+
+						statement = dbcon.createStatement();
+						query = "INSERT INTO stars_in_movies VALUES('" + starID + "', '" + value + "');";
 						statement.executeUpdate(query);
+						session.setAttribute("starSuccess", name + " ("+year+") Added!");
 					}
 				} else if (action.equals("edit") && value != null) {// ==========EDIT
 					if (field.equals("first_name") || field.equals("last_name") || field.equals("dob") || field.equals("photo_url")) {
 						if (field.equals("dob") && !Database.isValidDate(value)) {
+							session.setAttribute("starError", "Invalid Date Of Birth!");
 							response.sendRedirect("StarDetails?id=" + starID + "&edit=true");
 							return;
 						}
 						String query = "UPDATE stars SET " + field + " = '" + value + "' WHERE id = '" + starID + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("starSuccess", field + " Updated!");
+					}else{
+						session.setAttribute("starError", field + " Not Valid!");
 					}
 				} else if (action.equals("merge")){
 					if (field.equals("star") && !starID.isEmpty()){
@@ -126,6 +155,8 @@ public class EditStar extends HttpServlet {
 						update = "DELETE FROM stars WHERE SOUNDEX(first_name) = SOUNDEX('"+first_name+"') AND SOUNDEX(last_name) = SOUNDEX('"+last_name+"') AND dob = '"+dob+"' AND id != '"+starID+"'";
 						statement.executeUpdate(update);
 						
+
+						session.setAttribute("checkSuccess", first_name +" "+ last_name + " Merged!");
 						CheckDB.returnPath(session, response);
 						dbcon.close();
 						return;

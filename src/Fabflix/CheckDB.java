@@ -74,6 +74,15 @@ public class CheckDB extends HttpServlet {
 			}
 
 			out.println("<BR>");
+			
+			if (session.getAttribute("checkError") != null) {
+				out.println("<p class=\"error\">" + session.getAttribute("checkError") + "</p>");
+				session.removeAttribute("checkError");
+			}
+			if (session.getAttribute("checkSuccess") != null){
+				out.println("<p class=\"success\">" + session.getAttribute("checkSuccess") + "</p>");
+				session.removeAttribute("checkSuccess");
+			}
 
 			switch (option) {
 			case 1:

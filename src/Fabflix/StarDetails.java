@@ -52,8 +52,6 @@ public class StarDetails extends HttpServlet {
 			}
 			
 			Boolean edit = false; // trigger edit mode
-//			Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-//			if (isAdmin != null && isAdmin){
 			if (Page.isAdmin(request)) {
 				try {
 					edit = Boolean.valueOf(request.getParameter("edit"));
@@ -85,7 +83,16 @@ public class StarDetails extends HttpServlet {
 					} else {
 						out.println("<div class=\"editing\">To edit "+starName+", click <a href=\"StarDetails?id="+starID+"&edit=true\">here</a>.</div>");
 					}
+					if (session.getAttribute("starError") != null) {
+						out.println("<p class=\"error\">" + session.getAttribute("starError") + "</p>");
+						session.removeAttribute("starError");
+					}
+					if (session.getAttribute("starSuccess") != null){
+						out.println("<p class=\"success\">" + session.getAttribute("starSuccess") + "</p>");
+						session.removeAttribute("starSuccess");
+					}
 				}
+				
 				// Star Details
 				out.println("<H1>" + starName + "</H1>" );
 				if(edit){
@@ -127,6 +134,15 @@ public class StarDetails extends HttpServlet {
 				session.setAttribute("title", "FabFlix -- Star Not Found");
 				out.println(Page.header(context, session));
 				out.println("<H1>Star Not Found</H1>");
+
+				if (session.getAttribute("starError") != null) {
+					out.println("<p class=\"error\">" + session.getAttribute("starError") + "</p>");
+					session.removeAttribute("starError");
+				}
+				if (session.getAttribute("starSuccess") != null){
+					out.println("<p class=\"success\">" + session.getAttribute("starSuccess") + "</p>");
+					session.removeAttribute("starSuccess");
+				}
 				
 			}
 			// Footer

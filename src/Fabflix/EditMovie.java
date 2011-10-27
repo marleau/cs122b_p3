@@ -34,6 +34,7 @@ public class EditMovie extends HttpServlet {
 
 		response.setContentType("text/html"); // Response mime type
 
+		HttpSession session = request.getSession();
 
 		String value = request.getParameter("value");
 		String action = request.getParameter("action");
@@ -60,15 +61,39 @@ public class EditMovie extends HttpServlet {
 
 			if (action != null && field != null) {
 				if (action.equals("delete")) {// ==========DELETE
-					if (field.equals("genre")) {
-						String query = "DELETE FROM genres_in_movies WHERE genre_id = '" + value + "' AND movie_id = '" + movieID + "'";
+					if (field.equals("genre") && value != null ) {
+						String query = "SELECT * FROM genres WHERE id = '" + value + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("name");
+
+						statement = dbcon.createStatement();
+						query = "DELETE FROM genres_in_movies WHERE genre_id = '" + value + "' AND movie_id = '" + movieID + "'";
 						statement.executeUpdate(query);
-					} else if (field.equals("star")) {
-						String query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
+						session.setAttribute("movieSuccess", name + " Deleted!");
+					} else if (field.equals("star") && value != null) {
+						String query = "SELECT * FROM stars WHERE id = '" + value + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("first_name") + " " + nameQ.getString("last_name");
+
+						statement = dbcon.createStatement();
+						query = "DELETE FROM stars_in_movies WHERE star_id = '" + value + "' AND movie_id = '" + movieID + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("movieSuccess", name + " Deleted!");
 					} else if (field.equals("movie")){
-						String query = "DELETE FROM movies WHERE id = '" + movieID + "' ";
+						String query = "SELECT * FROM movies WHERE id = '" + movieID + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("title") + " (" + nameQ.getString("year")+")";
+
+						statement = dbcon.createStatement();
+						query = "DELETE FROM movies WHERE id = '" + movieID + "' ";
 						statement.executeUpdate(query);
+						session.setAttribute("movieSuccess", name + " Deleted!");
 					}
 				} else if (action.equals("add") && value != null) {// ==========ADD
 					if (field.equals("genre") && !value.isEmpty()) {
@@ -95,9 +120,19 @@ public class EditMovie extends HttpServlet {
 						statement = dbcon.createStatement();
 						String update = "INSERT INTO genres_in_movies VALUES(" + genreID + ", " + movieID + ");";
 						statement.executeUpdate(update);
+						session.setAttribute("movieSuccess", genreName + " Added!");
 					} else if (field.equals("star ID")) {
-						String query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
+						String query = "SELECT * FROM stars WHERE id = '" + value + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("first_name") + " " + nameQ.getString("last_name");
+
+						statement = dbcon.createStatement();
+						query = "INSERT INTO stars_in_movies VALUES(" + value + ", " + movieID + ");";
 						statement.executeUpdate(query);
+
+						session.setAttribute("movieSuccess", name + " Added!");
 					}
 				} else if (action.equals("edit") && value != null) {// ==========EDIT
 					if (field.equals("title") || field.equals("year") || field.equals("director") || field.equals("banner_url") || field.equals("trailer_url")) {
@@ -106,17 +141,18 @@ public class EditMovie extends HttpServlet {
 								Integer year = Integer.valueOf(value);
 								value = year.toString();
 							} catch (Exception e) {
+								session.setAttribute("movieError", "Invalid Year");
 								response.sendRedirect("MovieDetails?id=" + movieID + "&edit=true");
 								return;
 							}
 						}
 						String query = "UPDATE movies SET " + field + " = '" + value + "' WHERE id = '" + movieID + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("movieSuccess", field + " Updated!");
 					}
 				}else if (action.equals("merge")){
 					if (field.equals("movie") && !movieID.isEmpty()){
 						// Get all similar names
-						HttpSession session = request.getSession();
 						String query = "SELECT * FROM movies WHERE SOUNDEX(title) = SOUNDEX((SELECT title FROM movies WHERE id = '"+movieID+"')) AND year = (SELECT year FROM movies WHERE id = '"+movieID+"')";
 						ResultSet similarNames = statement.executeQuery(query);
 
@@ -147,7 +183,6 @@ public class EditMovie extends HttpServlet {
 						return;
 						
 					} else if (field.equals("onMovie") && !movieID.isEmpty()){
-						HttpSession session = request.getSession();
 						String query = "SELECT * FROM movies WHERE id = '"+movieID+"'";
 						ResultSet starQ = statement.executeQuery(query);
 						
@@ -170,6 +205,7 @@ public class EditMovie extends HttpServlet {
 						update = "DELETE FROM movies WHERE SOUNDEX(title) = SOUNDEX('"+title+"') AND year = '"+year+"' AND id != '"+movieID+"'";
 						statement.executeUpdate(update);
 						
+						session.setAttribute("checkSuccess", title +" ("+ year + ") Merged!");
 						CheckDB.returnPath(session, response);
 						dbcon.close();
 						return;
@@ -180,7 +216,6 @@ public class EditMovie extends HttpServlet {
 		} catch (SQLException ex) {
 			PrintWriter out = response.getWriter();
 			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			out.println(Page.header(context, session));
 			while (ex != null) {
 				out.println("SQL Exception:  " + ex.getMessage());
@@ -191,7 +226,6 @@ public class EditMovie extends HttpServlet {
 		catch (java.lang.Exception ex) {
 			PrintWriter out = response.getWriter();
 			ServletContext context = getServletContext();
-			HttpSession session = request.getSession();
 			out.println(Page.header(context, session));
 			out.println("<P>SQL error in doGet: " + ex.getMessage() + "<br>"
 					+ ex.toString() + "</P></DIV></BODY></HTML>");

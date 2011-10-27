@@ -76,6 +76,15 @@ public class MovieDetails extends HttpServlet {
 					} else {
 						out.println("<div class=\"editing\">To edit "+title+ " ("+year+"), click <a href=\"MovieDetails?id="+movieID+"&edit=true\">here</a>.</div>");
 					}
+
+					if (session.getAttribute("movieError") != null) {
+						out.println("<p class=\"error\">" + session.getAttribute("movieError") + "</p>");
+						session.removeAttribute("movieError");
+					}
+					if (session.getAttribute("movieSuccess") != null){
+						out.println("<p class=\"success\">" + session.getAttribute("movieSuccess") + "</p>");
+						session.removeAttribute("movieSuccess");
+					}
 				}
 
 				// Movie Info
@@ -86,9 +95,7 @@ public class MovieDetails extends HttpServlet {
 					EditMovie.deleteMovieLink(out, movieID, title);
 				}
 				out.println("</H1>");
-				
-				//TODO add DELETE MOVIE
-				
+								
 				out.println("<a href=\"" + trailerURL + "\"><img src=\"" + bannerURL + "\" width=\"200\"></a>");
 				
 				out.println("<div class=\"info\"><ul>");
@@ -140,6 +147,15 @@ public class MovieDetails extends HttpServlet {
 				session.setAttribute("title", "FabFlix -- Movie Not Found");
 				out.println(Page.header(context, session));
 				out.println("<H1>Movie Not Found</H1>");
+
+				if (session.getAttribute("movieError") != null) {
+					out.println("<p class=\"error\">" + session.getAttribute("movieError") + "</p>");
+					session.removeAttribute("movieError");
+				}
+				if (session.getAttribute("movieSuccess") != null){
+					out.println("<p class=\"success\">" + session.getAttribute("movieSuccess") + "</p>");
+					session.removeAttribute("movieSuccess");
+				}
 			}
 
 			// Footer
