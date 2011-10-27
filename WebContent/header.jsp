@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<meta charset="utf-8" />
         <title>Fabflix - <%= (String) session.getAttribute("title") %></title>
 		<style>
 			<%@ include file="css/style.css" %>

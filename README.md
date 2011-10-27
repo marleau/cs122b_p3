@@ -30,6 +30,10 @@ To compile
 Keep in Mind
 ------------
 
+To execute procedures, database user _must_ have access to the mysql.proc table.
+
+    mysql> GRANT SELECT ON mysql.proc to testuser@localhost;
+
 To remove procedure
 
     mysql> DROP PROCEDURE add_movie;

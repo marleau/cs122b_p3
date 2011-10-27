@@ -152,7 +152,6 @@ hr {
 }
 
 button {
-	-moz-border-radius: 5px;
 	border-radius: 5px;
 	border: 0px;
 	background: #999999;
@@ -213,7 +212,6 @@ div.ccinfo label {
 }
 
 div.content a.addToCart {
-	-moz-border-radius: 5px;
 	border-radius: 5px;
 	background: #999999;
 	padding: 5px;
