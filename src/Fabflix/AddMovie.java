@@ -90,6 +90,7 @@ public class AddMovie extends HttpServlet {
 			cst.setString(5, last_name);
 			cst.setString(6, genre);
 			cst.execute();
+			session.setAttribute("movieSuccess", title + " Added!");
 			
 			Statement st = dbcon.createStatement();
 			//Grabs newest instance of that movie
