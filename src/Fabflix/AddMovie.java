@@ -89,7 +89,6 @@ public class AddMovie extends HttpServlet {
 				response.sendRedirect("addmovie.jsp");
 				return;
 			}
-				
 			
 			dbcon = Database.openConnection();
 			cst = dbcon.prepareCall("{call add_movie(?, ?, ?, ?, ?, ?)}");
