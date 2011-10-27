@@ -1,11 +1,7 @@
 package Fabflix;
 
 import java.io.IOException;
-import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import javax.naming.NamingException;
 import javax.servlet.ServletException;
@@ -22,14 +18,16 @@ public class AddMovie extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (Login.kickNonUsers(request, response)) {return;}
 		if (Login.kickNonAdmin(request, response)) {return;}
 		HttpSession session = request.getSession();
 		session.setAttribute("title", "Add Movie");
-		session.setAttribute("addMovie_err", false);
+		session.removeAttribute("addMovie_err");
 		response.sendRedirect("addmovie.jsp");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (Login.kickNonUsers(request, response)) {return;}
 		if (Login.kickNonAdmin(request, response)) {return;}
 		CallableStatement cst = null;
 		Connection dbcon = null;
@@ -49,8 +47,43 @@ public class AddMovie extends HttpServlet {
 			String genre = request.getParameter("genre");
 			System.out.println(genre);
 			
-			if (title == null || year == null || director == null || genre == null || first_name == null || last_name == null) {
-				session.setAttribute("addMovie_err", true);
+			if (title == null || title.isEmpty()){
+				session.setAttribute("addMovie_err", "Needs Title.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+
+			try{
+				year = Integer.valueOf(request.getParameter("year"));
+			}catch(Exception e){
+				year = 0;
+				session.setAttribute("addMovie_err", "Invalid Year.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+			
+			if ( year == 0 ){
+				session.setAttribute("addMovie_err", "Needs Year.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			} 
+			if (director == null || director.isEmpty() ){
+				session.setAttribute("addMovie_err", "Needs Director.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			} 
+			if (genre == null || genre.isEmpty() ){
+				session.setAttribute("addMovie_err", "Needs Genre.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+			if(first_name == null || first_name.isEmpty() ){
+				session.setAttribute("addMovie_err", "Needs Star First Name.");
+				response.sendRedirect("addmovie.jsp");
+				return;
+			}
+			if(last_name == null || last_name.isEmpty()) {
+				session.setAttribute("addMovie_err", "Needs Star Last Name.");
 				response.sendRedirect("addmovie.jsp");
 				return;
 			} 

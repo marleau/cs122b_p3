@@ -441,7 +441,7 @@ public class ListResults extends HttpServlet {
 		Statement statement = dbcon.createStatement();
 		out.println("Starred in:");
 		if (edit) {
-			EditStar.addMovieLink(out, starID, "movie");
+			EditStar.addMovieLink(out, starID);
 		}
 		out.println("<BR><BR>");
 		ResultSet movies = statement.executeQuery("SELECT DISTINCT * FROM movies m, stars_in_movies s, stars s1 " + "WHERE s.movie_id=m.id "

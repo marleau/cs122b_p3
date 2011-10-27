@@ -62,16 +62,26 @@ public class EditGenre extends HttpServlet {
 			if (action != null && field != null) {
 				if (action.equals("delete")) {// ==========DELETE
 					if (field.equals("genre") && genreID != null) {
-						String query = "DELETE FROM genres WHERE id = '" + genreID + "'";
+						String query = "SELECT * FROM genres WHERE id = '" + genreID + "'";
+						ResultSet nameQ = statement.executeQuery(query);
+						nameQ.next();
+						
+						String name = nameQ.getString("name"); 
+						
+						statement = dbcon.createStatement();
+						query = "DELETE FROM genres WHERE id = '" + genreID + "'";
 						statement.executeUpdate(query);
+						session.setAttribute("checkSuccess", name + " Removed!");
 					}else if (field.equals("allEmpty")){
 						String query = "DELETE FROM genres WHERE id NOT IN (SELECT genre_id FROM genres_in_movies)";
 						statement.executeUpdate(query);
+						session.setAttribute("checkSuccess", "All Empty Genres Removed!");
 					}
 				} else if (action.equals("edit") && value != null && !value.isEmpty() && genreID != null){
 					if (field.equals("name")){
 						String update = "UPDATE genres SET name = '"+value+"' WHERE id = '"+genreID+"'";
 						statement.executeUpdate(update);
+						session.setAttribute("checkSuccess", value + " Renamed!");
 					}
 				} else if (action.equals("merge")){
 					if (field.equals("genre") && value != null && !value.isEmpty() && genreID == null){
@@ -138,6 +148,8 @@ public class EditGenre extends HttpServlet {
 						statement = dbcon.createStatement();
 						update = "DELETE FROM genres WHERE SOUNDEX(name) = SOUNDEX('"+oldName+"') AND id != '"+genreID+"'";
 						statement.executeUpdate(update);
+						
+						session.setAttribute("checkSuccess", newName + " Merged!");
 					}
 				}
 				

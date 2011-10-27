@@ -111,9 +111,14 @@ public class Checkout extends HttpServlet {
 			session.setAttribute("processed", true);
 			Map<String,Integer> cart = (Map<String, Integer>) session.getAttribute("cart");
 			String userID = (String) session.getAttribute("user.id");
+			String cc_id = request.getParameter("id");
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			Date date = new Date();
 			String curDate = df.format(date);
+			
+
+			Statement updateCC = db.createStatement();
+			updateCC.executeUpdate("UPDATE customers c SET cc_id = '"+cc_id+"' WHERE id = '"+userID+"'");
 			
 			for (Map.Entry<String, Integer> entry : cart.entrySet()) {
 				String movieID = entry.getKey();
