@@ -103,7 +103,7 @@ public class AddMovie extends HttpServlet {
 			session.removeAttribute("addMovie_err");
 			
 			Statement st = dbcon.createStatement();
-			ResultSet rs = st.executeQuery("SELECT * FROM movies WHERE title='" + title + "' AND year='"+year+"' AND director='"+director+"';");
+			ResultSet rs = st.executeQuery("SELECT * FROM movies WHERE title='" + Database.cleanSQL(title) + "' AND year='"+year+"' AND director='"+Database.cleanSQL(director)+"';");
 			if (rs.next()) {
 				Integer id = rs.getInt("id");
 				rs.close();
@@ -111,6 +111,7 @@ public class AddMovie extends HttpServlet {
 				cst.close();
 				dbcon.close();
 				response.sendRedirect("MovieDetails?id=" + id);
+				return;
 			}
 			
 		} catch (NamingException e) {
@@ -118,6 +119,8 @@ public class AddMovie extends HttpServlet {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		response.sendRedirect("index.jsp");
 	}
 
 }
